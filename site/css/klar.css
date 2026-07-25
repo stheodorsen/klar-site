@@ -173,6 +173,11 @@ input {
   text-wrap: pretty;
 }
 
+/* Part of the handoff's type scale with no consumer on the page right now:
+   .panel-headline lost its only user when the heritage eyebrow became a full
+   heading, and .mono lost the "asset pending" caption. Both are kept because
+   the can's legal small print and panel headings are specified in them — but
+   nothing on the page exercises them, so treat them as untested. */
 .panel-headline {
   font-size: var(--fs-panel-headline);
   letter-spacing: var(--tr-panel);
@@ -298,7 +303,7 @@ input {
   .header__nav a:hover { border-bottom-color: var(--can); }
 }
 
-/* --- 1. hero ------------------------------------------------------------- */
+/* --- 1. hero --------------------------------------------------------------- */
 
 /* The photograph owns the right half of the fold outright: flush to the top,
    right and bottom edges, full height. The text column is inset by the gutter
@@ -359,7 +364,7 @@ input {
 
 .hero__media img { object-position: 26% 58%; }
 
-/* --- 2. øllen ------------------------------------------------------------ */
+/* --- 2. øllen -------------------------------------------------------------- */
 
 .product {
   display: grid;
@@ -503,7 +508,7 @@ input {
 .facts__value { font-size: var(--fs-mid); }
 .facts__note { font-size: var(--fs-label); font-weight: 400; color: var(--support-on-paper); }
 
-/* --- 3. wink band -------------------------------------------------------- */
+/* --- 3. wink band ---------------------------------------------------------- */
 
 .wink {
   display: flex;
@@ -518,15 +523,153 @@ input {
   line-height: 1.2;
   text-wrap: pretty;
 }
-.wink__gloss {
-  max-width: 320px;
-  font-size: var(--fs-lede);
+
+/* --- 4. frisk -------------------------------------------------------------- */
+
+.fresh {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding: var(--pad-y) var(--pad-x);
+}
+.fresh__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--gap-col);
+}
+.fresh__head .heading { max-width: 620px; }
+.fresh__head .lede { max-width: 480px; }
+
+/* The two figures are the pillar's evidence, so they are set at heading scale
+   and read as a pair. "omkring" stays in the figure, not the note — the number
+   is an approximation and should not be able to lose its qualifier. */
+.loss {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--gap-col);
+  max-width: 1000px;
+}
+.loss__item { display: flex; flex-direction: column; gap: 12px; }
+.loss__figure {
+  font-size: var(--fs-lead);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+.loss__note {
+  max-width: 300px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--support-on-paper);
+  text-wrap: pretty;
+}
+
+.fresh__payoff {
+  max-width: 760px;
+  font-size: var(--fs-mid);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.fresh__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--gap-col);
+}
+.fcard__title { font-size: var(--fs-mid); }
+.fcard__body {
+  margin-top: 12px;
+  max-width: 520px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--support-on-paper);
+  text-wrap: pretty;
+}
+
+/* --- 5. levering ----------------------------------------------------------- */
+
+.delivery {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding: var(--pad-y) var(--pad-x);
+}
+.delivery__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--gap-col);
+}
+.delivery__head .heading { max-width: 620px; }
+.delivery__head .lede { max-width: 400px; }
+
+.delivery__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--gap-card);
+}
+.dcard { display: flex; flex-direction: column; }
+/* The design drew these 405x280 in a 3-up. Dropping the third card widens each
+   to ~624, so the proportion is held as a ratio rather than the literal height
+   — a fixed 280 at that width would crop the photographs much harder than the
+   framing in the handoff. */
+.dcard__media { aspect-ratio: 405 / 280; }
+.dcard__media img { object-position: 50% 42%; }
+.dcard:nth-child(2) .dcard__media img { object-position: 52% 62%; }
+.dcard__title { margin-top: 32px; font-size: var(--fs-mid); color: var(--can); }
+.dcard__body {
+  margin-top: 12px;
+  font-size: var(--fs-body);
   line-height: 1.6;
   color: var(--muted);
   text-wrap: pretty;
 }
 
-/* --- 4. abonnement ------------------------------------------------------- */
+/* --- 6. sæson -------------------------------------------------------------- */
+
+/* Same 1:1.15 split as the product section, so the two editorial arguments on
+   paper share a measure rather than each inventing one. */
+.season {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: var(--gap-col);
+  padding: var(--pad-y) var(--pad-x);
+}
+.season__title { max-width: 520px; }
+.season__prose { display: flex; flex-direction: column; gap: 22px; }
+.season__prose .lede { max-width: 620px; }
+
+/* --- 7. hverdagsstyrke ----------------------------------------------------- */
+
+.heritage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-col);
+  align-items: center;
+  padding: var(--pad-y-lg) var(--pad-x);
+}
+.heritage__copy { display: flex; flex-direction: column; gap: 32px; }
+/* the three paragraphs are one argument, so they sit closer to each other than
+   to the statement they build up to */
+.heritage__prose { display: flex; flex-direction: column; gap: 20px; }
+.heritage__statement {
+  font-size: var(--fs-mid);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+.heritage__body {
+  max-width: 520px;
+  font-size: var(--fs-lede);
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.heritage__body span { color: var(--can); }
+.heritage__line { font-size: var(--fs-lede); color: var(--can); }
+.heritage__media { height: 560px; }
+.heritage__media img { object-position: 38% 74%; }
+
+/* --- 8. abonnement --------------------------------------------------------- */
 
 .shop { padding: var(--pad-y) var(--pad-x); }
 
@@ -537,8 +680,11 @@ input {
   gap: var(--gap-col);
   padding-bottom: 44px;
 }
-.shop__intro { display: flex; flex-direction: column; gap: 20px; }
+.shop__intro { display: flex; flex-direction: column; gap: 18px; }
 .shop__intro .lede { max-width: 560px; }
+/* the one promise worth lifting out of the support grey — weight 400 and full
+   ink, not the browser's bold, which is far too heavy for this face */
+.lede__strong { font-weight: 400; color: var(--ink); }
 .shop__service-line {
   flex: none;
   font-size: var(--fs-lede);
@@ -751,74 +897,71 @@ input {
 /* mobile checkout bar — desktop keeps the sticky summary instead */
 .checkout-bar { display: none; }
 
-/* --- 5. levering --------------------------------------------------------- */
+/* --- 9. brygbogen ---------------------------------------------------------- */
 
-.delivery {
+.brewlog {
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 48px;
   padding: var(--pad-y) var(--pad-x);
 }
-.delivery__head {
+.brewlog__head {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
   gap: var(--gap-col);
 }
-.delivery__head .heading { max-width: 620px; }
-.delivery__head .lede { max-width: 400px; }
+.brewlog__head .heading { max-width: 420px; }
+.brewlog__intro { display: flex; flex-direction: column; gap: 14px; }
+.brewlog__intro .lede { max-width: 480px; }
 
-.delivery__cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--gap-card);
-}
-.dcard { display: flex; flex-direction: column; }
-.dcard__media { height: 280px; }
-.dcard__media img { object-position: 50% 42%; }
-.dcard:nth-child(2) .dcard__media img { object-position: 52% 62%; }
-.dcard__media--pending {
-  display: flex;
-  align-items: flex-end;
-  padding: 28px;
-  background: repeating-linear-gradient(135deg, var(--letterbox-soft) 0 7px, var(--ink) 7px 14px);
-}
-.dcard__title { margin-top: 32px; font-size: var(--fs-mid); color: var(--can); }
-.dcard__body {
-  margin-top: 12px;
+/* The table scrolls inside its own box on narrow screens; the page itself must
+   never scroll sideways. tabindex on the wrapper makes that reachable by
+   keyboard, and the global focus ring covers it. */
+.brewlog__scroll { overflow-x: auto; }
+
+.brewlog__table {
+  width: 100%;
+  border-collapse: collapse;
   font-size: var(--fs-body);
+  text-align: left;
+  /* it is a record of months: the figures line up column to column */
+  font-variant-numeric: tabular-nums;
+}
+.brewlog__table th,
+.brewlog__table td {
+  padding: 17px 28px 17px 0;
+  font-weight: 300;
+  vertical-align: baseline;
+  border-bottom: 1px solid var(--support);
+  white-space: nowrap;
+}
+.brewlog__table thead th {
+  padding-bottom: 13px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-step);
+  color: var(--muted);
+}
+/* the notes are prose, so they wrap where the record columns do not */
+.brewlog__table td:last-child { white-space: normal; min-width: 230px; }
+.brewlog__table tbody tr:last-child th,
+.brewlog__table tbody tr:last-child td { border-bottom: 0; }
+
+/* the live brew reads at full contrast, the history steps back — no extra copy
+   needed to say which one is in the can right now */
+.brewlog__row { color: var(--muted); }
+.brewlog__row--current { color: var(--can); }
+
+.brewlog__next {
+  font-size: var(--fs-lede);
   line-height: 1.6;
   color: var(--muted);
   text-wrap: pretty;
 }
+.brewlog__next span { color: var(--can); font-variant-numeric: tabular-nums; }
 
-/* --- 6. hverdagsøl ------------------------------------------------------- */
-
-.heritage {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--gap-col);
-  align-items: center;
-  padding: var(--pad-y-lg) var(--pad-x);
-}
-.heritage__copy { display: flex; flex-direction: column; gap: 32px; }
-.heritage__statement {
-  font-size: var(--fs-heading);
-  line-height: 1.25;
-  text-wrap: pretty;
-}
-.heritage__body {
-  max-width: 520px;
-  font-size: var(--fs-lede);
-  line-height: 1.7;
-  color: var(--muted);
-  text-wrap: pretty;
-}
-.heritage__line { font-size: var(--fs-lede); color: var(--can); }
-.heritage__media { height: 560px; }
-.heritage__media img { object-position: 38% 74%; }
-
-/* --- 7. footer ----------------------------------------------------------- */
+/* --- 10. footer ------------------------------------------------------------ */
 
 .footer { padding-top: var(--pad-y-band); }
 .footer__cols {
@@ -920,13 +1063,18 @@ input {
   }
 
   .wink { flex-direction: column; align-items: flex-start; gap: 32px; }
-  .wink__gloss { max-width: 560px; }
 
   .shop__head { flex-direction: column; align-items: flex-start; gap: 24px; }
   .shop__grid { grid-template-columns: minmax(0, 1fr); }
   .summary { position: static; }
 
-  .delivery__head { flex-direction: column; align-items: flex-start; gap: 24px; }
+  /* the heading-beside-prose splits collapse; .loss, .fresh__cards and the
+     delivery cards are auto-fit and reflow on their own */
+  .season { grid-template-columns: minmax(0, 1fr); }
+
+  .delivery__head,
+  .fresh__head,
+  .brewlog__head { flex-direction: column; align-items: flex-start; gap: 24px; }
 
   .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
   .footer__brand, .footer__duty { grid-column: 1 / -1; }
@@ -980,6 +1128,10 @@ input {
 @media (max-width: 760px) {
   .delivery__cards { gap: 48px; }
   .dcard__media { height: auto; aspect-ratio: 3 / 2; }
+
+  .fresh { gap: 44px; }
+  .loss, .fresh__cards { gap: 36px; }
+  .brewlog__table th, .brewlog__table td { padding-right: 22px; }
 
   .opt__body--tall { gap: 16px; padding: 26px 28px; }
 

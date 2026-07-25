@@ -26,6 +26,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+
+      # The freshness copy is only true while the batch config is current, so a
+      # stale brewMonth fails the deploy rather than shipping a false claim.
+      - name: Check batch dates and prices
+        run: node site/tools/check-dates.mjs
+
       - uses: actions/configure-pages@v5
       # the site is static: no build step, publish site/ as-is
       - uses: actions/upload-pages-artifact@v3
