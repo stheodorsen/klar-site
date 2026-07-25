@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Klar — humlet hverdagsøl, leveret koldt på ladcykel</title>
+<meta name="description" content="Klar er en humlet hverdagsøl på 3,0%. Dansk økologisk malt, humle fra årets høst, brygget i København N. Én øl, altid — kun humlen følger årstiden. Leveret kold på ladcykel til abonnenter i indre København.">
+<meta name="theme-color" content="#26231F">
+
+<!-- PREVIEW DEPLOY ONLY — remove these two lines, robots.txt, and point the
+     canonical/og:url/og:image below at klar.dk before going live. The site
+     still carries placeholder AI photography and øko/pant claims that are not
+     yet certified, so it must not be indexed as a live brewery. -->
+<meta name="robots" content="noindex, nofollow">
+
+<link rel="canonical" href="https://stheodorsen.github.io/klar-site/">
+
+<link rel="icon" href="assets/icon/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="assets/icon/favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="apple-touch-icon" href="assets/icon/apple-touch-icon.png">
+<link rel="manifest" href="site.webmanifest">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="da_DK">
+<meta property="og:site_name" content="Klar">
+<meta property="og:title" content="Klar — humlet hverdagsøl">
+<meta property="og:description" content="3,0%. Dansk malt, humle fra årets høst, brygget i København N. Én øl, altid — kun humlen følger årstiden.">
+<meta property="og:url" content="https://stheodorsen.github.io/klar-site/">
+<meta property="og:image" content="https://stheodorsen.github.io/klar-site/assets/img/haze-1280.jpg">
+<meta property="og:image:alt" content="En dåse Klar og et uklart glas øl.">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preload" as="image" fetchpriority="high"
+      href="assets/img/haze-960.webp"
+      imagesrcset="assets/img/haze-480.webp 480w, assets/img/haze-720.webp 720w, assets/img/haze-960.webp 960w, assets/img/haze-1280.webp 1280w"
+      imagesizes="(max-width: 900px) 100vw, 50vw"
+      type="image/webp">
+<link rel="stylesheet" href="css/klar.css">
+</head>
+<body>
+
+<a class="skip-link" href="#main">spring til indhold</a>
+
+<header class="header" id="top">
+  <div class="header__bar">
+    <!-- wordmark and cart share a row on narrow screens; on desktop
+         header__top is display:contents so all three sit on one baseline -->
+    <div class="header__top">
+      <a class="header__wordmark" href="#top">Klar</a>
+      <p class="header__cart">
+        <span class="visually-hidden">kurv:</span>
+        <span aria-hidden="true">kurv ·</span>
+        <span data-bind="cartCount">0</span>
+        <span class="visually-hidden">vare</span>
+      </p>
+    </div>
+    <nav class="header__nav" aria-label="sektioner">
+      <a href="#oellen">øllen</a>
+      <a href="#levering">levering</a>
+      <a href="#abonnement">abonnement</a>
+      <a href="#hverdagsoel">hverdagsøl</a>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- 1. hero ---------------------------------------------------------- -->
+  <section class="hero zone-ink">
+    <div class="hero__text">
+      <svg class="mark mark--hero" viewBox="13 7 74 26" width="230" height="81" fill="none" aria-hidden="true">
+        <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.85" stroke-linecap="round"/>
+        <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.9"/>
+      </svg>
+      <h1 class="hero__title">
+        <span class="hero__wordmark">Klar</span>
+        <span class="hero__descriptor">humlet hverdagsøl</span>
+      </h1>
+      <ul class="hero__spec">
+        <li>3,0% vol.</li>
+        <li>440 ml</li>
+        <li>økologisk</li>
+      </ul>
+    </div>
+    <div class="hero__media letterbox">
+      <picture>
+        <source type="image/webp"
+                srcset="assets/img/haze-480.webp 480w, assets/img/haze-720.webp 720w, assets/img/haze-960.webp 960w, assets/img/haze-1280.webp 1280w"
+                sizes="(max-width: 900px) 100vw, 50vw">
+        <img src="assets/img/haze-960.jpg"
+             srcset="assets/img/haze-480.jpg 480w, assets/img/haze-720.jpg 720w, assets/img/haze-960.jpg 960w, assets/img/haze-1280.jpg 1280w"
+             sizes="(max-width: 900px) 100vw, 50vw"
+             width="1317" height="1536" fetchpriority="high" decoding="async"
+             alt="En dåse Klar ved siden af et uklart glas øl på et mørkt bord.">
+      </picture>
+    </div>
+  </section>
+
+  <!-- 2. øllen --------------------------------------------------------- -->
+  <section class="product zone-paper" id="oellen" aria-labelledby="oellen-title">
+    <figure class="cans">
+      <div class="can-slot">
+        <div class="can can--front" role="img"
+             aria-label="Dåsens forside: mærket, KLAR, humlet hverdagsøl, brygget 03.26 · nectaron, 3,0%, 440 ml · øko · drik før 05.26.">
+          <svg class="mark" viewBox="13 7 74 26" fill="none">
+            <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.84"/>
+            <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+          <span class="can__wordmark">Klar</span>
+          <span class="can__descriptor">humlet hverdagsøl</span>
+          <span class="can__spacer"></span>
+          <span class="can__batch" data-bind="canBatch">brygget 03.26 · nectaron</span>
+          <span class="can__rule"></span>
+          <span class="can__abv">3,0%</span>
+          <span class="can__duty">440 ml · øko · drik før 05.26</span>
+        </div>
+      </div>
+      <div class="can-slot">
+        <div class="can can--back" role="img"
+             aria-label="Dåsens bagside: HVERDAGSØL. Stærk øl til fest, let øl til maden — sådan drak vi i århundreder, det her er til tirsdag. Uklar i glasset, klar i hovedet.">
+          <svg class="mark" viewBox="13 7 74 26" fill="none">
+            <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.95"/>
+            <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.9" stroke-linecap="round"/>
+          </svg>
+          <span class="can__headline">hverdagsøl</span>
+          <span class="can__heritage">stærk øl til fest. let øl til maden.<br>sådan drak vi i århundreder. det her er til tirsdag.</span>
+          <span class="can__wink">uklar i glasset.<br>klar i hovedet.</span>
+          <span class="can__rule can__rule--back"></span>
+          <span class="can__provenance">økologisk dansk malt · frisk humle fra årets høst · leveret koldt på ladcykel i københavn</span>
+          <span class="can__spacer"></span>
+          <span class="can__legal">
+            <span>440 ml · 3,0% vol.</span>
+            <span>ingredienser: vand, økologisk maltet byg, humle, gær. indeholder gluten.</span>
+            <span>brygget af klar bryghus aps, københavn n · bedst før: 05.26</span>
+          </span>
+        </div>
+      </div>
+    </figure>
+
+    <div class="product__copy">
+      <h2 class="heading" id="oellen-title">én øl, altid. kun humlen følger årstiden.</h2>
+      <p class="lede">opskrift, krop og 3,0% er konstante. malten er økologisk og dansk, humlen er fra årets høst, og vi brygger i københavn n. kun brygmåned og humlenavn ændrer sig på dåsen — du skal ikke lære en ny øl at kende hver sæson.</p>
+      <hr class="rule rule--hair">
+      <dl class="facts">
+        <div class="facts__item">
+          <dt class="label">denne batch</dt>
+          <dd class="facts__value" data-bind="hop">nectaron</dd>
+          <dd class="facts__note" data-bind="hopNote">saftig, citrus, tør afslutning</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="label">brygget</dt>
+          <dd class="facts__value" data-bind="brewed">03.26</dd>
+          <dd class="facts__note" data-bind="brewedNote">drik før 05.26 — to måneder, som mælk</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="label">styrke</dt>
+          <dd class="facts__value">3,0% vol.</dd>
+          <dd class="facts__note">nok til at være en øl, lidt til at mærkes</dd>
+        </div>
+        <div class="facts__item">
+          <dt class="label">malt</dt>
+          <dd class="facts__value">økologisk dansk</dd>
+          <dd class="facts__note">uklar med vilje — ufiltreret</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 3. wink band ----------------------------------------------------- -->
+  <section class="wink zone-ink" aria-label="uklar i glasset. klar i hovedet.">
+    <p class="wink__statement">uklar i glasset. klar i hovedet.</p>
+    <p class="wink__gloss">øllen er ufiltreret, så den er sløret. det er hovedet ikke næste morgen.</p>
+  </section>
+
+  <!-- the wink band and this section are both ink, so they are divided by the
+       inset hairline the design uses for exactly this case -->
+  <div class="zone-ink"><hr class="rule rule--on-ink"></div>
+
+  <!-- 4. levering ------------------------------------------------------ -->
+  <section class="delivery zone-ink" id="levering" aria-labelledby="levering-title">
+    <div class="delivery__head">
+      <h2 class="heading" id="levering-title">den moderne mælkemand</h2>
+      <p class="lede lede--on-ink">kølekæden starter i bryghuset og slutter ved din dør. de sidste 10 meter er den del, de fleste taber — så dem kører vi selv.</p>
+    </div>
+    <div class="delivery__cards">
+      <article class="dcard">
+        <div class="dcard__media letterbox letterbox--soft">
+          <picture>
+            <source type="image/webp"
+                    srcset="assets/img/bike-420.webp 420w, assets/img/bike-640.webp 640w, assets/img/bike-860.webp 860w"
+                    sizes="(max-width: 760px) 100vw, min(405px, 28.1vw)">
+            <img src="assets/img/bike-640.jpg"
+                 srcset="assets/img/bike-420.jpg 420w, assets/img/bike-640.jpg 640w, assets/img/bike-860.jpg 860w"
+                 sizes="(max-width: 760px) 100vw, min(405px, 28.1vw)"
+                 width="2110" height="1459" loading="lazy" decoding="async"
+                 alt="Ladcyklen med Klar-mærket og teksten let med vilje, holdende i en københavnsk gade.">
+          </picture>
+        </div>
+        <h3 class="dcard__title">brygget i går, kørt i dag</h3>
+        <p class="dcard__body">vi brygger små hold og kører ud fra bryghuset i københavn n. brygmåneden står på forsiden, så du kan se hvor ung øllen er — ikke gætte.</p>
+      </article>
+
+      <article class="dcard">
+        <div class="dcard__media letterbox letterbox--soft">
+          <picture>
+            <source type="image/webp"
+                    srcset="assets/img/doorstep-420.webp 420w, assets/img/doorstep-640.webp 640w, assets/img/doorstep-860.webp 860w"
+                    sizes="(max-width: 760px) 100vw, min(405px, 28.1vw)">
+            <img src="assets/img/doorstep-640.jpg"
+                 srcset="assets/img/doorstep-420.jpg 420w, assets/img/doorstep-640.jpg 640w, assets/img/doorstep-860.jpg 860w"
+                 sizes="(max-width: 760px) 100vw, min(405px, 28.1vw)"
+                 width="2281" height="1577" loading="lazy" decoding="async"
+                 alt="En køletaske med Klar-mærket stillet i skyggen på et dørtrin.">
+          </picture>
+        </div>
+        <h3 class="dcard__title">kold hele vejen til døren</h3>
+        <p class="dcard__body">øllen forlader bryghuset kold og bliver kørt i køletaske. kassen stilles i skyggen ved døren, så kæden ikke bliver brudt — også hvis du først er hjemme klokken syv.</p>
+      </article>
+
+      <article class="dcard">
+        <!-- photography pending: see site/README.md -->
+        <div class="dcard__media dcard__media--pending">
+          <span class="mono">foto — det uklare glas, tirsdag 18.00</span>
+        </div>
+        <h3 class="dcard__title">humle venter ikke</h3>
+        <p class="dcard__body">humlearoma er det første, der forsvinder, og den går hurtigere, når øllen har stået varmt. derfor er der to måneder på dåsen og en cykel i stedet for et lager.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- 5. abonnement ---------------------------------------------------- -->
+  <section class="shop zone-paper" id="abonnement" aria-labelledby="abonnement-title">
+    <div class="shop__head">
+      <div class="shop__intro">
+        <h2 class="heading" id="abonnement-title">sæt dit abonnement</h2>
+        <p class="lede">vi kommer på ladcykel, sætter kassen kold ved døren og tager de tomme med. sæt på pause eller stop når du vil.</p>
+      </div>
+      <p class="shop__service-line">frisk øl, leveret koldt</p>
+    </div>
+    <hr class="rule">
+
+    <div class="shop__grid">
+      <div class="steps">
+
+        <!-- 01 box size -->
+        <div class="step">
+          <div class="step__head">
+            <h3 class="label" id="step-plan">01 — kassens størrelse</h3>
+            <p class="step__hint">pris pr. dåse falder med størrelsen</p>
+          </div>
+          <div class="opts opts--3" role="radiogroup" aria-labelledby="step-plan">
+            <label class="opt">
+              <input class="opt__input" type="radio" name="plan" value="6">
+              <span class="opt__body opt__body--tall">
+                <span class="opt__lead">6 dåser</span>
+                <span class="opt__rule"></span>
+                <span class="opt__price"><span>22 kr / dåse</span><span>132 kr</span></span>
+                <span class="opt__note">til én, en uge ad gangen</span>
+              </span>
+            </label>
+            <label class="opt">
+              <input class="opt__input" type="radio" name="plan" value="12" checked>
+              <span class="opt__body opt__body--tall">
+                <span class="opt__lead">12 dåser</span>
+                <span class="opt__rule"></span>
+                <span class="opt__price"><span>20 kr / dåse</span><span>240 kr</span></span>
+                <span class="opt__note">de flestes valg — to om aftenen, hver anden uge</span>
+              </span>
+            </label>
+            <label class="opt">
+              <input class="opt__input" type="radio" name="plan" value="24">
+              <span class="opt__body opt__body--tall">
+                <span class="opt__lead">24 dåser</span>
+                <span class="opt__rule"></span>
+                <span class="opt__price"><span>18 kr / dåse</span><span>432 kr</span></span>
+                <span class="opt__note">til husholdningen, eller gæster</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 02 frequency -->
+        <div class="step">
+          <div class="step__head">
+            <h3 class="label" id="step-freq">02 — hvor ofte</h3>
+          </div>
+          <div class="opts opts--3" role="radiogroup" aria-labelledby="step-freq">
+            <label class="opt">
+              <input class="opt__input" type="radio" name="freq" value="week">
+              <span class="opt__body">
+                <span class="opt__mid">hver uge</span>
+                <span class="opt__note">altid en frisk brygning</span>
+              </span>
+            </label>
+            <label class="opt">
+              <input class="opt__input" type="radio" name="freq" value="two" checked>
+              <span class="opt__body">
+                <span class="opt__mid">hver 14. dag</span>
+                <span class="opt__note">passer de fleste</span>
+              </span>
+            </label>
+            <label class="opt">
+              <input class="opt__input" type="radio" name="freq" value="month">
+              <span class="opt__body">
+                <span class="opt__mid">hver måned</span>
+                <span class="opt__note">til den langsomme tirsdag</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 03 window -->
+        <div class="step">
+          <div class="step__head">
+            <h3 class="label" id="step-slot">03 — leveringsvindue</h3>
+          </div>
+          <div class="opts opts--2" role="radiogroup" aria-labelledby="step-slot">
+            <label class="opt">
+              <input class="opt__input" type="radio" name="slot" value="early" checked>
+              <span class="opt__body opt__body--row">
+                <span class="opt__mid">16 — 18</span>
+                <span class="opt__note">før aftensmad</span>
+              </span>
+            </label>
+            <label class="opt">
+              <input class="opt__input" type="radio" name="slot" value="late">
+              <span class="opt__body opt__body--row">
+                <span class="opt__mid">18 — 20</span>
+                <span class="opt__note">efter arbejde</span>
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 04 postcode -->
+        <div class="step">
+          <div class="step__head">
+            <h3 class="label" id="step-zip">04 — leverer vi hos dig</h3>
+            <p class="step__hint">indre københavn · vi udvider bydel for bydel</p>
+          </div>
+          <form class="zip" id="zip-form" novalidate>
+            <label class="visually-hidden" for="zip-input">postnummer</label>
+            <input class="zip__input" id="zip-input" name="zip" type="text"
+                   inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{4}"
+                   maxlength="4" placeholder="postnummer" aria-describedby="zip-answer">
+            <button class="btn btn--fill-ink" type="submit">tjek adresse</button>
+          </form>
+          <p class="zip__answer" id="zip-answer" role="status"></p>
+        </div>
+      </div>
+
+      <!-- order summary -->
+      <aside class="summary" aria-labelledby="summary-label">
+        <h3 class="label" id="summary-label">din levering</h3>
+        <hr class="rule rule--panel">
+        <dl class="summary__rows">
+          <div class="summary__row">
+            <dt>kassen</dt>
+            <dd data-bind="planLabel">12 dåser · 440 ml</dd>
+          </div>
+          <div class="summary__row">
+            <dt>frekvens</dt>
+            <dd data-bind="freqLabel">hver 14. dag</dd>
+          </div>
+          <div class="summary__row">
+            <dt>vindue</dt>
+            <dd data-bind="slotLabel">16 — 18</dd>
+          </div>
+          <div class="summary__row">
+            <dt>batch</dt>
+            <dd data-bind="batchLabel">03.26 · nectaron</dd>
+          </div>
+          <div class="summary__row">
+            <dt>første levering</dt>
+            <dd data-bind="firstDeliveryLabel">tirsdag 28.07, 16 — 18</dd>
+          </div>
+        </dl>
+        <hr class="rule rule--panel">
+        <p class="summary__total">
+          <span class="summary__total-label">pr. levering</span>
+          <span class="summary__total-value" data-bind="totalLabel">240 kr</span>
+        </p>
+        <p class="summary__fineprint" data-bind="unitPantLabel">20 kr pr. dåse · pant 12 kr betales ved levering og retur</p>
+        <button class="btn btn--fill-ink btn--block summary__cta" type="button" data-action="subscribe" data-bind="ctaLabel">start abonnement</button>
+        <p class="summary__confirm" data-bind="confirmLabel" role="status"></p>
+        <hr class="rule rule--panel">
+        <ul class="summary__reassure">
+          <li>ingen binding · pause eller stop når som helst</li>
+          <li>tomme dåser tages med retur</li>
+          <li>18 år · vi tjekker alder ved døren</li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="trial">
+      <div class="trial__copy">
+        <p class="trial__title">vil du bare prøve?</p>
+        <p class="trial__detail" data-bind="trialDetail">prøvekasse · 6 dåser, én gang, 145 kr · leveres på ladcykel som alt andet</p>
+      </div>
+      <button class="btn btn--outline" type="button" data-action="trial" data-bind="trialLabel" aria-pressed="false">læg prøvekasse i kurv</button>
+    </div>
+
+    <!-- mobile: sticks to the bottom of the viewport for the length of this
+         section only, then releases — mirrors the desktop sticky summary
+         without introducing scroll-triggered motion -->
+    <div class="checkout-bar">
+      <div class="checkout-bar__row">
+        <div class="checkout-bar__price">
+          <span class="checkout-bar__label">pr. levering</span>
+          <span class="checkout-bar__value" data-bind="totalLabel">240 kr</span>
+        </div>
+        <button class="btn btn--fill-paper" type="button" data-action="subscribe" data-bind="ctaLabel">start abonnement</button>
+      </div>
+      <p class="checkout-bar__confirm" data-bind="confirmLabel" role="status"></p>
+    </div>
+  </section>
+
+  <!-- 6. hverdagsøl ---------------------------------------------------- -->
+  <section class="heritage zone-ink" id="hverdagsoel" aria-labelledby="hverdagsoel-title">
+    <div class="heritage__copy">
+      <h2 class="panel-headline" id="hverdagsoel-title">hverdagsøl</h2>
+      <p class="heritage__statement">stærk øl til fest. let øl til maden. sådan drak vi i århundreder. det her er til tirsdag.</p>
+      <p class="heritage__body">i nordiske husholdninger var let øl hverdagens drik — til maden, til arbejdet, til aftenen. den stærke var til fest. 3% er ikke et moderne kompromis; det er normen, som den var, med moderne humle.</p>
+      <p class="heritage__line">let med vilje</p>
+    </div>
+    <div class="heritage__media letterbox">
+      <picture>
+        <source type="image/webp"
+                srcset="assets/img/kitchen-480.webp 480w, assets/img/kitchen-720.webp 720w, assets/img/kitchen-960.webp 960w, assets/img/kitchen-1280.webp 1280w"
+                sizes="(max-width: 900px) 100vw, min(592px, 41.1vw)">
+        <img src="assets/img/kitchen-960.jpg"
+             srcset="assets/img/kitchen-480.jpg 480w, assets/img/kitchen-720.jpg 720w, assets/img/kitchen-960.jpg 960w, assets/img/kitchen-1280.jpg 1280w"
+             sizes="(max-width: 900px) 100vw, min(592px, 41.1vw)"
+             width="1856" height="1756" loading="lazy" decoding="async"
+             alt="En dåse Klar på køkkenbordet i dagslys, midt i aftensmaden.">
+      </picture>
+    </div>
+  </section>
+
+</main>
+
+<!-- 7. footer ---------------------------------------------------------- -->
+<footer class="footer zone-ink">
+  <div class="footer__cols">
+    <div class="footer__brand">
+      <span class="footer__wordmark">Klar</span>
+      <p class="footer__address">klar bryghus aps<br>københavn n<br><a href="mailto:hej@klar.dk">hej@klar.dk</a></p>
+    </div>
+    <nav class="footer__links" aria-label="sektioner, gentaget">
+      <a href="#oellen">øllen</a>
+      <a href="#levering">levering</a>
+      <a href="#abonnement">abonnement</a>
+      <a href="#hverdagsoel">hverdagsøl</a>
+    </nav>
+    <nav class="footer__links" aria-label="praktisk">
+      <a href="#abonnement">pause eller stop</a>
+      <a href="#levering">leveringsområder</a>
+      <a href="#levering">pant og retur</a>
+      <a href="#oellen">handelsbetingelser</a>
+    </nav>
+    <ul class="footer__duty">
+      <li>salg kun til personer over 18 år</li>
+      <li>øko-certificering: fødevarestyrelsen</li>
+      <li>pant registreret hos dansk retursystem</li>
+    </ul>
+  </div>
+  <hr class="rule rule--on-ink">
+  <div class="footer__base">
+    <span>humlet hverdagsøl · 3,0% · 440 ml</span>
+    <span>frisk øl, leveret koldt</span>
+  </div>
+</footer>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "Klar",
+  "description": "Humlet hverdagsøl på 3,0%. Dansk økologisk malt og humle fra årets høst, brygget i København N. Én øl, altid — kun humlen følger årstiden.",
+  "brand": { "@type": "Brand", "name": "Klar" },
+  "category": "Øl",
+  "offers": {
+    "@type": "AggregateOffer",
+    "priceCurrency": "DKK",
+    "lowPrice": "132",
+    "highPrice": "432",
+    "offerCount": "3",
+    "availability": "https://schema.org/InStock",
+    "areaServed": { "@type": "City", "name": "København" }
+  }
+}
+</script>
+
+<script src="js/klar.js" defer></script>
+</body>
+</html>

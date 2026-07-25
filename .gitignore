@@ -1,0 +1,9 @@
+.DS_Store
+.claude/
+
+# Internal design handoff — deliberately NOT published.
+# klar-design-brief.md contains business-sensitive material: duty-band
+# planning, pending Fødevarestyrelsen certification, pant registration and
+# supplier negotiation notes. Keep it in a private repo or out of git.
+# site/tools/build-images.py reads its assets/ folder to regenerate imagery.
+design_handoff_klar_site/

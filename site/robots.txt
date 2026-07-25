@@ -1,0 +1,4 @@
+# Preview deploy — this is a prototype, not the live klar.dk.
+# Delete this file when the real site ships.
+User-agent: *
+Disallow: /

@@ -1,0 +1,1025 @@
+/* ==========================================================================
+   Klar — subscription site
+   Built from design_handoff_klar_site/. Design tokens below are the single
+   source of truth; see site/README.md for the deviations from the handoff
+   and why each one was made.
+   ========================================================================== */
+
+/* --- tokens --------------------------------------------------------------- */
+
+:root {
+  /* colour — monochrome, no accent, ever */
+  --ink: #26231F;
+  --ink-hover: #3A362F;
+  --paper: #EBE9E3;
+  --can: #FDFCF7;
+  --support: #7C7365;       /* hairlines on ink; text on the can-body substrate */
+  --muted: #948C7F;         /* secondary text on ink; hairlines on paper */
+  --panel-edge: #DEDBD4;
+  --divider: #EBE9E3;       /* hairlines inside can-body panels */
+  --letterbox: #1E1B18;
+  --letterbox-soft: #302C27;
+
+  /* Secondary text on paper. The handoff sets this at --support (#7C7365),
+     but that is 3.85:1 on paper, which the brief itself restricts to >=24px.
+     The design uses it at 15px/400 and 19px/300 throughout, so it is darkened
+     here to clear 4.5:1 while staying inside the monochrome ramp. */
+  --support-on-paper: #71685C;
+
+  /* type — one stack, so the licensed grotesque swaps in here and nowhere else */
+  --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --fs-wordmark-hero: clamp(52px, 5.833vw, 84px);
+  --fs-wordmark: 22px;
+  --fs-panel-headline: clamp(17px, 1.319vw, 19px);
+  --fs-heading: clamp(30px, 3.056vw, 44px);
+  --fs-wink: clamp(30px, 3.611vw, 52px);
+  --fs-descriptor: clamp(18px, 1.528vw, 22px);
+  --fs-lede: clamp(17px, 1.319vw, 19px);
+  --fs-body: 17px;
+  --fs-label: 15px;
+  --fs-mid: clamp(21px, 1.667vw, 24px);
+  --fs-lead: clamp(28px, 2.361vw, 34px);
+  --fs-total: clamp(32px, 2.778vw, 40px);
+  --fs-mono: 11.5px;
+
+  --tr-wordmark: 0.1em;
+  --tr-panel: 0.12em;
+  --tr-copy: 0.02em;
+  --tr-label: 0.04em;
+  --tr-step: 0.05em;
+
+  /* layout — 1440 canvas, 80px gutter, content capped at 1280 */
+  --gutter: clamp(20px, 5.5556vw, 80px);
+  --pad-x: max(var(--gutter), (100% - 1280px) / 2);
+  --pad-y: clamp(64px, 7.222vw, 104px);
+  --pad-y-lg: clamp(68px, 7.778vw, 112px);
+  --pad-y-band: clamp(60px, 6.667vw, 96px);
+
+  --gap-hero: clamp(40px, 5.5556vw, 80px);
+  --gap-col: clamp(44px, 6.667vw, 96px);
+  --gap-card: clamp(24px, 2.222vw, 32px);
+  --gap-opt: clamp(16px, 1.3889vw, 20px);
+
+  --header-h: 76px;
+  --rise-distance: 34px;
+  --rise-duration: 760ms;
+  --rise-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- reset --------------------------------------------------------------- */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  background: var(--ink);
+  scroll-padding-top: var(--header-h);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 300 var(--fs-body)/1.6 var(--font);
+  letter-spacing: var(--tr-copy);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, p, dl, dd, figure, ul, fieldset { margin: 0; padding: 0; }
+ul { list-style: none; }
+h1, h2, h3 { font-size: inherit; font-weight: 300; }
+img, svg, picture { display: block; }
+img { max-width: 100%; }
+button { font: inherit; letter-spacing: inherit; }
+
+a { color: inherit; text-decoration: none; }
+
+input {
+  font: 300 var(--fs-body) var(--font);
+  color: var(--ink);
+}
+
+/* Focus is always visible, never removed — the design has no other
+   affordance for keyboard users. */
+:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0; left: 50%;
+  transform: translate(-50%, -110%);
+  z-index: 40;
+  padding: 14px 24px;
+  background: var(--can);
+  color: var(--ink);
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+}
+.skip-link:focus { transform: translate(-50%, 0); }
+
+/* --- zones --------------------------------------------------------------- */
+
+.zone-ink { background: var(--ink); color: var(--can); }
+.zone-paper { background: var(--paper); color: var(--ink); }
+
+/* --- the mark ------------------------------------------------------------ */
+
+/* The viewBox is framed to the horizon (y 7-33), not to the circle, so that
+   margins below the mark measure from the horizon line as the lockup spec
+   requires. The lower third of the circle therefore renders outside the box
+   — overflow must stay visible. */
+.mark {
+  overflow: visible;
+  height: auto;
+}
+.mark__circle, .mark__horizon { stroke: var(--ink); fill: none; }
+.zone-ink .mark__circle, .zone-ink .mark__horizon { stroke: var(--can); }
+
+.mark--hero { width: 230px; max-width: 100%; }
+
+/* The one animation in the brand: the circle rises through the horizon into
+   its 2:1 position, once, on load. The horizon fades and does not move. */
+@keyframes klar-rise {
+  from { transform: translateY(var(--rise-distance)); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes klar-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.mark--hero .mark__circle {
+  animation: klar-rise var(--rise-duration) var(--rise-ease) both;
+}
+.mark--hero .mark__horizon {
+  animation: klar-fade 500ms ease-out both;
+}
+
+/* --- shared type --------------------------------------------------------- */
+
+.heading {
+  font-size: var(--fs-heading);
+  line-height: 1.15;
+  text-wrap: pretty;
+}
+
+.panel-headline {
+  font-size: var(--fs-panel-headline);
+  letter-spacing: var(--tr-panel);
+  text-transform: uppercase;
+}
+
+.lede {
+  font-size: var(--fs-lede);
+  line-height: 1.65;
+  color: var(--support-on-paper);
+  text-wrap: pretty;
+}
+.lede--on-ink { color: var(--muted); }
+
+.label {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-step);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--fs-mono);
+  letter-spacing: 0.06em;
+  line-height: 1.7;
+  color: var(--muted);
+}
+
+.rule { height: 1px; border: 0; margin: 0; background: var(--ink); }
+.rule--hair { background: var(--muted); }
+.rule--panel { background: var(--divider); margin: 26px 0; }
+.rule--on-ink { background: var(--support); margin-inline: var(--pad-x); }
+
+/* --- buttons ------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 0;                 /* square everywhere, by rule */
+  padding: 19px 34px;
+  font-family: var(--font);
+  font-weight: 300;
+  font-size: var(--fs-body);
+  letter-spacing: var(--tr-copy);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color 120ms linear, color 120ms linear;
+}
+
+.btn--fill-paper { background: var(--can); color: var(--ink); }
+.btn--fill-ink   { background: var(--ink); color: var(--can); }
+.btn--outline    { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+
+.btn--block { display: flex; width: 100%; }
+
+@media (hover: hover) {
+  .btn--fill-paper:hover { background: var(--paper); }
+  .btn--fill-ink:hover   { background: var(--ink-hover); }
+  .btn--outline:hover    { background: var(--ink); color: var(--can); }
+}
+
+.btn[aria-pressed="true"] { background: var(--ink); color: var(--can); }
+
+/* --- header -------------------------------------------------------------- */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--ink);
+  color: var(--can);
+  box-shadow: 0 1px 0 var(--ink-hover);
+}
+
+.header__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 44px;
+  padding: 26px var(--pad-x) 22px;
+}
+
+.header__top { display: contents; }
+
+.header__wordmark {
+  order: 1;
+  font-size: var(--fs-wordmark);
+  letter-spacing: var(--tr-wordmark);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.header__nav {
+  order: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 44px;
+  margin-left: auto;
+  font-size: 16px;
+}
+.header__nav a { border-bottom: 1px solid transparent; padding-bottom: 2px; }
+
+.header__cart {
+  order: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.34em;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  color: var(--muted);
+}
+.header__cart::before {
+  content: '';
+  width: 1px; height: 15px;
+  margin-right: calc(44px - 0.34em);
+  background: var(--support);
+}
+
+@media (hover: hover) {
+  .header__nav a:hover { border-bottom-color: var(--can); }
+}
+
+/* --- 1. hero ------------------------------------------------------------- */
+
+/* The photograph owns the right half of the fold outright: flush to the top,
+   right and bottom edges, full height. The text column is inset by the gutter
+   on the left and stops half a gap short of the photograph, which lands it at
+   the 600px the design specifies on a 1440 canvas. */
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: calc(100vh - var(--header-h));
+  min-height: calc(100svh - var(--header-h));
+  padding: var(--pad-y-lg) calc(50% + var(--gap-hero) / 2)
+           clamp(72px, 8.333vw, 120px) var(--pad-x);
+}
+
+.hero__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.hero__title { display: contents; }
+
+.hero__wordmark {
+  margin-top: 52px;
+  margin-right: calc(-1 * var(--tr-wordmark));   /* discount the trailing letter-space */
+  font-size: var(--fs-wordmark-hero);
+  letter-spacing: var(--tr-wordmark);
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.hero__descriptor {
+  margin-top: 26px;
+  font-size: var(--fs-descriptor);
+  color: var(--muted);
+}
+
+.hero__spec {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px clamp(20px, 2.5vw, 36px);
+  width: 100%;
+  margin-top: 56px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: 0.03em;
+  color: var(--muted);
+}
+
+.hero__media { position: absolute; inset: 0 0 0 50%; }
+
+.letterbox { overflow: hidden; background: var(--letterbox); }
+.letterbox--soft { background: var(--letterbox-soft); }
+.letterbox picture, .letterbox img { width: 100%; height: 100%; }
+.letterbox img { object-fit: cover; }
+
+.hero__media img { object-position: 26% 58%; }
+
+/* --- 2. øllen ------------------------------------------------------------ */
+
+.product {
+  display: grid;
+  grid-template-columns: 1fr 1.15fr;
+  gap: var(--gap-col);
+  align-items: start;
+  padding: var(--pad-y) var(--pad-x);
+}
+
+.cans {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(20px, 2.778vw, 40px);
+  justify-content: center;
+  justify-items: center;
+}
+
+/* The can renders are illustrations of print artwork, so every internal
+   metric is a fraction of the can's own width — the whole thing scales
+   without any of the proportions drifting. */
+.can-slot {
+  --cw: 220px;
+  container-type: inline-size;
+  width: 100%;
+  max-width: 220px;
+}
+@supports (container-type: inline-size) {
+  .can-slot { --cw: 100cqw; }
+}
+
+.can {
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 11 / 28;
+  border-radius: calc(var(--cw) * 0.1);
+  /* fakes the cylinder — the only gradient in the system, and it is artwork */
+  background: linear-gradient(90deg, #EFEDE6 0%, var(--can) 18%, var(--can) 76%, #E9E7DF 100%);
+  box-shadow: 0 24px 48px -28px rgba(38, 35, 31, 0.35);
+  color: var(--ink);
+}
+
+.can__spacer { flex: 1; }
+.can__rule { height: 1px; background: var(--muted); }
+.can .mark { width: 100%; }
+
+.can--front {
+  align-items: center;
+  text-align: center;
+  padding: calc(var(--cw) * 0.20909) calc(var(--cw) * 0.12727) calc(var(--cw) * 0.15455);
+}
+.can--front .mark {
+  width: calc(var(--cw) * 0.56364);
+  margin-top: calc(var(--cw) * 0.12727);
+}
+.can__wordmark {
+  margin-top: calc(var(--cw) * 0.13636);
+  font-size: calc(var(--cw) * 0.16818);
+  letter-spacing: var(--tr-wordmark);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.can__descriptor {
+  margin-top: calc(var(--cw) * 0.06818);
+  font-size: calc(var(--cw) * 0.05909);
+  color: var(--support);
+}
+.can__batch {
+  font-size: calc(var(--cw) * 0.05);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  color: var(--support);
+}
+.can--front .can__rule {
+  width: 100%;
+  margin: calc(var(--cw) * 0.07273) 0 calc(var(--cw) * 0.08182);
+}
+.can__abv {
+  font-size: calc(var(--cw) * 0.1);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  line-height: 1;
+}
+.can__duty {
+  margin-top: calc(var(--cw) * 0.05455);
+  font-size: calc(var(--cw) * 0.04545);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  color: var(--support);
+}
+
+.can--back {
+  padding: calc(var(--cw) * 0.18182) calc(var(--cw) * 0.11818) calc(var(--cw) * 0.13636);
+  color: var(--support);
+}
+.can--back .mark { width: calc(var(--cw) * 0.28182); }
+.can__headline {
+  margin-top: calc(var(--cw) * 0.13636);
+  font-size: calc(var(--cw) * 0.06818);
+  letter-spacing: var(--tr-panel);
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.can__heritage {
+  margin-top: calc(var(--cw) * 0.1);
+  font-size: calc(var(--cw) * 0.04545);
+  line-height: 1.45;
+}
+.can__wink {
+  margin-top: calc(var(--cw) * 0.13636);
+  font-size: calc(var(--cw) * 0.05682);
+  line-height: 1.45;
+  color: var(--ink);
+}
+.can__rule--back { margin-top: calc(var(--cw) * 0.13636); }
+.can__provenance {
+  margin-top: calc(var(--cw) * 0.09091);
+  font-size: calc(var(--cw) * 0.04091);
+  font-weight: 400;
+  line-height: 1.8;
+  letter-spacing: 0.03em;
+}
+.can__legal {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--cw) * 0.01818);
+  font-size: calc(var(--cw) * 0.03409);
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+}
+
+.product__copy { display: flex; flex-direction: column; gap: 36px; }
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px 48px;
+}
+.facts__item { display: flex; flex-direction: column; gap: 9px; }
+.facts__item dt { font-size: var(--fs-label); font-weight: 400; letter-spacing: var(--tr-label); }
+.facts__value { font-size: var(--fs-mid); }
+.facts__note { font-size: var(--fs-label); font-weight: 400; color: var(--support-on-paper); }
+
+/* --- 3. wink band -------------------------------------------------------- */
+
+.wink {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--gap-col);
+  padding: var(--pad-y-band) var(--pad-x);
+}
+.wink__statement {
+  max-width: 760px;
+  font-size: var(--fs-wink);
+  line-height: 1.2;
+  text-wrap: pretty;
+}
+.wink__gloss {
+  max-width: 320px;
+  font-size: var(--fs-lede);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* --- 4. abonnement ------------------------------------------------------- */
+
+.shop { padding: var(--pad-y) var(--pad-x); }
+
+.shop__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--gap-col);
+  padding-bottom: 44px;
+}
+.shop__intro { display: flex; flex-direction: column; gap: 20px; }
+.shop__intro .lede { max-width: 560px; }
+.shop__service-line {
+  flex: none;
+  font-size: var(--fs-lede);
+  color: var(--support-on-paper);
+}
+
+.shop__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 400px;
+  gap: var(--gap-col);
+  align-items: start;
+  padding-top: 56px;
+}
+
+.steps { display: flex; flex-direction: column; gap: 52px; }
+.step { display: flex; flex-direction: column; gap: 22px; }
+.step__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.step__hint {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--support-on-paper);
+}
+
+/* selection cards --------------------------------------------------------- */
+
+/* Reflow on available space rather than at fixed breakpoints: three across
+   while they fit, then two, then one. At the 1440 canvas this resolves to the
+   248px the design specifies. */
+.opts { display: grid; gap: var(--gap-opt); }
+.opts--3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.opts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.opt { position: relative; display: block; cursor: pointer; }
+
+/* The real radio does the work — keyboard, arrow keys, grouping, state —
+   and is kept focusable rather than display:none. */
+.opt__input {
+  position: absolute;
+  width: 1px; height: 1px;
+  opacity: 0;
+  margin: 0;
+  pointer-events: none;
+}
+
+.opt__body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 100%;
+  padding: 26px 28px;
+  background: var(--can);
+  /* three states that must stay distinct: 1px edge / 1px ink / 2px ink */
+  box-shadow: inset 0 0 0 1px var(--panel-edge);
+  transition: box-shadow 120ms linear;
+}
+.opt__body--tall { gap: 20px; padding: 32px; }
+.opt__body--row {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+}
+
+.opt__lead { font-size: var(--fs-lead); }
+.opt__mid { font-size: var(--fs-mid); }
+.opt__rule { height: 1px; background: var(--divider); }
+.opt__price {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+}
+.opt__note {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--support-on-paper);
+}
+
+/* order matters: hover must not read as selected, selected must win over
+   hover, focus must be visible on top of both */
+@media (hover: hover) {
+  .opt:hover .opt__body { box-shadow: inset 0 0 0 1px var(--ink); }
+}
+.opt__input:checked + .opt__body { box-shadow: inset 0 0 0 2px var(--ink); }
+.opt__input:focus-visible + .opt__body {
+  box-shadow: inset 0 0 0 2px var(--ink), 0 0 0 3px var(--panel-edge);
+}
+
+/* postcode --------------------------------------------------------------- */
+
+.zip { display: flex; gap: 20px; align-items: stretch; }
+.zip__input {
+  flex: 1;
+  min-width: 0;
+  padding: 26px 28px;
+  border: 0;
+  border-radius: 0;
+  background: var(--can);
+  box-shadow: inset 0 0 0 1px var(--muted);
+  font-size: var(--fs-mid);
+  letter-spacing: var(--tr-label);
+}
+.zip__input::placeholder { color: var(--support-on-paper); opacity: 1; }
+.zip__input:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--ink);
+}
+.zip .btn { flex: none; padding: 26px 34px; }
+
+.zip__answer {
+  font-size: var(--fs-lede);
+  line-height: 1.5;
+  color: var(--support-on-paper);
+  text-wrap: pretty;
+}
+/* the affirmative is an answer, not a footnote */
+.zip__answer[data-serviceable="true"] { color: var(--ink); }
+.zip__answer:empty { display: none; }
+
+/* summary panel ---------------------------------------------------------- */
+
+.summary {
+  position: sticky;
+  top: calc(var(--header-h) + 44px);
+  padding: 44px 40px;
+  background: var(--can);
+  box-shadow: inset 0 0 0 1px var(--panel-edge);
+}
+
+.summary__rows { display: flex; flex-direction: column; gap: 16px; }
+.summary__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+}
+.summary__row dt {
+  flex: none;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--support-on-paper);
+}
+.summary__row dd { margin: 0; text-align: right; }
+
+.summary__total {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+}
+.summary__total-label { font-size: var(--fs-lede); }
+.summary__total-value {
+  font-size: var(--fs-total);
+  letter-spacing: 0.01em;
+  line-height: 1;
+}
+
+.summary__fineprint {
+  margin-top: 10px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--support-on-paper);
+}
+
+.summary__cta { margin-top: 32px; padding: 22px; font-size: var(--fs-lede); }
+
+.summary__confirm {
+  margin-top: 22px;
+  font-size: var(--fs-body);
+  line-height: 1.55;
+  color: var(--support-on-paper);
+  animation: klar-fade 400ms ease-out both;
+}
+.summary__confirm:empty { display: none; }
+
+.summary__reassure {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--support-on-paper);
+}
+
+/* trial box -------------------------------------------------------------- */
+
+.trial {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: clamp(24px, 3.333vw, 48px);
+  margin-top: 56px;
+  padding: 36px 40px;
+  background: var(--can);
+  box-shadow: inset 0 0 0 1px var(--panel-edge);
+}
+.trial__copy { display: flex; flex-direction: column; gap: 8px; }
+.trial__title { font-size: var(--fs-mid); }
+.trial__detail { font-size: var(--fs-body); color: var(--support-on-paper); text-wrap: pretty; }
+.trial .btn { flex: none; padding: 19px 32px; }
+
+/* mobile checkout bar — desktop keeps the sticky summary instead */
+.checkout-bar { display: none; }
+
+/* --- 5. levering --------------------------------------------------------- */
+
+.delivery {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+  padding: var(--pad-y) var(--pad-x);
+}
+.delivery__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--gap-col);
+}
+.delivery__head .heading { max-width: 620px; }
+.delivery__head .lede { max-width: 400px; }
+
+.delivery__cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--gap-card);
+}
+.dcard { display: flex; flex-direction: column; }
+.dcard__media { height: 280px; }
+.dcard__media img { object-position: 50% 42%; }
+.dcard:nth-child(2) .dcard__media img { object-position: 52% 62%; }
+.dcard__media--pending {
+  display: flex;
+  align-items: flex-end;
+  padding: 28px;
+  background: repeating-linear-gradient(135deg, var(--letterbox-soft) 0 7px, var(--ink) 7px 14px);
+}
+.dcard__title { margin-top: 32px; font-size: var(--fs-mid); color: var(--can); }
+.dcard__body {
+  margin-top: 12px;
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* --- 6. hverdagsøl ------------------------------------------------------- */
+
+.heritage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap-col);
+  align-items: center;
+  padding: var(--pad-y-lg) var(--pad-x);
+}
+.heritage__copy { display: flex; flex-direction: column; gap: 32px; }
+.heritage__statement {
+  font-size: var(--fs-heading);
+  line-height: 1.25;
+  text-wrap: pretty;
+}
+.heritage__body {
+  max-width: 520px;
+  font-size: var(--fs-lede);
+  line-height: 1.7;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+.heritage__line { font-size: var(--fs-lede); color: var(--can); }
+.heritage__media { height: 560px; }
+.heritage__media img { object-position: 38% 74%; }
+
+/* --- 7. footer ----------------------------------------------------------- */
+
+.footer { padding-top: var(--pad-y-band); }
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 48px;
+  padding: 0 var(--pad-x) 64px;
+}
+.footer__brand { display: flex; flex-direction: column; gap: 20px; }
+.footer__wordmark {
+  font-size: var(--fs-wordmark);
+  letter-spacing: var(--tr-wordmark);
+  text-transform: uppercase;
+  line-height: 1;
+}
+.footer__address {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--muted);
+}
+.footer__links, .footer__duty {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+}
+.footer__duty { color: var(--muted); }
+
+@media (hover: hover) {
+  .footer__links a:hover, .footer__address a:hover { color: var(--muted); }
+}
+
+.footer__base {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+  flex-wrap: wrap;
+  padding: 32px var(--pad-x) 72px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--muted);
+}
+
+/* ==========================================================================
+   Responsive. The 1440 canvas is the design; below it the rule is to keep the
+   gutter and the white space and drop to fewer columns rather than squeeze.
+   ========================================================================== */
+
+/* two-column grids stop earning their keep -------------------------------- */
+@media (max-width: 900px) {
+  :root { --header-h: 112px; }
+
+  .header__bar { gap: 18px; }
+  .header__top {
+    display: flex;
+    flex-basis: 100%;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  /* wraps to a second line rather than hiding a link — the licensed brand
+     face will not have Helvetica's metrics */
+  .header__nav {
+    flex-basis: 100%;
+    gap: 12px 22px;
+    margin-left: 0;
+    font-size: 15px;
+  }
+  .header__cart::before { display: none; }
+
+  .product,
+  .heritage { grid-template-columns: minmax(0, 1fr); }
+
+  /* the photograph moves below the text and goes full-bleed instead */
+  .hero {
+    display: block;
+    min-height: 0;
+    padding: var(--pad-y-lg) var(--pad-x) 0;
+  }
+  .hero__media {
+    position: static;
+    aspect-ratio: 4 / 5;
+    margin: clamp(56px, 9vw, 80px) calc(-1 * var(--pad-x)) 0;
+  }
+  .heritage__media { height: auto; aspect-ratio: 4 / 3; }
+
+  /* the cans read better above the argument they illustrate.
+     width:100% is load-bearing: margin-inline:auto cancels the grid item's
+     stretch, and the cans have no intrinsic width to fall back on (their size
+     comes from aspect-ratio plus cqw children), so the tracks would collapse
+     to zero without a definite basis. */
+  .cans {
+    order: -1;
+    width: 100%;
+    max-width: 480px;
+    margin-inline: auto;
+  }
+
+  .wink { flex-direction: column; align-items: flex-start; gap: 32px; }
+  .wink__gloss { max-width: 560px; }
+
+  .shop__head { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .shop__grid { grid-template-columns: minmax(0, 1fr); }
+  .summary { position: static; }
+
+  .delivery__head { flex-direction: column; align-items: flex-start; gap: 24px; }
+
+  .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+  .footer__brand, .footer__duty { grid-column: 1 / -1; }
+}
+
+/* the mobile checkout bar takes over from the sticky summary --------------- */
+@media (max-width: 900px) {
+  .summary__cta, .summary__confirm { display: none; }
+
+  .shop { padding-bottom: 0; }
+
+  .checkout-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 15;
+    display: block;
+    /* full-bleed out of the section's gutter */
+    margin: 56px calc(-1 * var(--pad-x)) 0;
+    padding: 18px var(--pad-x);
+    background: var(--ink);
+    color: var(--can);
+    box-shadow: 0 -1px 0 var(--ink-hover);
+  }
+  .checkout-bar__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .checkout-bar__confirm {
+    margin-top: 14px;
+    font-size: var(--fs-label);
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .checkout-bar__confirm:empty { display: none; }
+  .checkout-bar__price { display: flex; flex-direction: column; gap: 2px; }
+  .checkout-bar__label {
+    font-size: var(--fs-label);
+    font-weight: 400;
+    letter-spacing: var(--tr-label);
+    color: var(--muted);
+  }
+  .checkout-bar__value { font-size: var(--fs-mid); line-height: 1.1; }
+  .checkout-bar .btn { flex: none; padding: 17px 26px; }
+}
+
+/* single column throughout ------------------------------------------------ */
+@media (max-width: 760px) {
+  .delivery__cards { gap: 48px; }
+  .dcard__media { height: auto; aspect-ratio: 3 / 2; }
+
+  .opt__body--tall { gap: 16px; padding: 26px 28px; }
+
+  .facts { gap: 28px 32px; }
+  .steps { gap: 44px; }
+
+  .zip { flex-direction: column; }
+  .zip .btn { padding: 22px 34px; }
+
+  .summary { padding: 36px 28px; }
+  .trial { flex-direction: column; align-items: flex-start; gap: 24px; }
+  .trial .btn { width: 100%; }
+}
+
+@media (max-width: 520px) {
+  .header__nav { font-size: 14px; }
+  /* the window cards stay two-up, so their contents stack instead */
+  .opt__body--row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  .footer__cols { grid-template-columns: minmax(0, 1fr); }
+  .footer__base { flex-direction: column; gap: 12px; }
+  .trial { padding: 28px 24px; }
+  .summary { padding: 32px 24px; }
+}
+
+/* --- motion policy ------------------------------------------------------- */
+
+/* One animation exists, and it renders as its final state when the reader
+   has asked for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  .mark--hero .mark__circle,
+  .mark--hero .mark__horizon,
+  .summary__confirm { animation: none; }
+  * { transition-duration: 1ms !important; }
+  html { scroll-behavior: auto; }
+}
+
+/* --- print -------------------------------------------------------------- */
+
+@media print {
+  .header, .checkout-bar, .skip-link, .shop__grid, .trial { display: none; }
+  .zone-ink { background: #fff; color: #000; }
+}
