@@ -29,13 +29,38 @@ const CONFIG = {
       id: '08.26', hop: 'riwaka', origin: 'new zealand',
       closes: '11.08', brews: '18.08', delivers: 'tirsdag 25.08',
     },
+    /* The hop must have actually landed by brew day — see hopArrivals. This was
+       citra, which is american, and usa hops do not arrive until
+       november–december: two months after this batch is brewed. Not merely
+       off-message, impossible. A September brew can only use australien
+       (juni–juli); tjekkiet/tyskland do not land until oktober–november.
+
+       Note the copy claims more than the check enforces: "vi brygger med den,
+       der senest er landet" promises the *freshest* arrival, and the current
+       batch's riwaka (new zealand, maj–juni) is not — australien landed after
+       it. Changing that one is blocked on the photography, which has riwaka
+       composited into the cans. See site/README.md. */
     next: {
-      id: '09.26', hop: 'citra', origin: 'usa',
+      id: '09.26', hop: 'galaxy', origin: 'australien',
       closes: '08.09', brews: '15.09', delivers: 'tirsdag 22.09',
     },
   },
 
   shelfLifeMonths: 2,
+
+  /* When each growing region's hops actually land in Denmark — arrival, not
+     harvest, because arrival is what determines what can be brewed. `lands` is
+     the month the window closes. This is the same table the årstid section
+     renders, and tools/check-dates.mjs asserts the two agree and that no batch
+     is brewed with a hop that has not arrived yet. Named `arrives`, not
+     `window`, so the purity guard in that script does not mistake a property
+     name for the DOM global. */
+  hopArrivals: [
+    { region: 'new zealand',        arrives: 'maj — juni',          lands: 6 },
+    { region: 'australien',         arrives: 'juni — juli',         lands: 7 },
+    { region: 'tjekkiet, tyskland', arrives: 'oktober — november', lands: 11 },
+    { region: 'usa, england',       arrives: 'november — december', lands: 12 },
+  ],
 
   /* A brew is 150 litres — 296 cans. We do not brew over, so this is the whole
      commercial constraint of the business in two numbers. */
@@ -55,12 +80,18 @@ const CONFIG = {
 
   cansVolume: '440 ml',
 
-  /* Base price per box. The per-can figure is printed on the option cards, so
-     unit x cans must equal total — asserted in tools/check-dates.mjs. */
+  /* Base price per box, at a flat 39 kr per can. The per-can figure is printed
+     on the option cards, so unit x cans must equal total — asserted in
+     tools/check-dates.mjs.
+
+     Flat, not tiered: there is no volume discount any more, so all three size
+     cards show the same per-can price and the only price lever is the standing
+     order below. That matches this handoff, which — unlike the previous one —
+     carries no "pris pr. dåse falder med størrelsen" copy to justify a tier. */
   prices: {
-    4:  { total: 88,  unit: 22 },
-    8:  { total: 160, unit: 20 },
-    12: { total: 216, unit: 18 },
+    4:  { total: 156, unit: 39 },
+    8:  { total: 312, unit: 39 },
+    12: { total: 468, unit: 39 },
   },
 
   // a standing order takes this much off every can

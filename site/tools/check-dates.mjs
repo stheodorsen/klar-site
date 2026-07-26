@@ -119,7 +119,60 @@ if (!(CONFIG.batches.next.id > CONFIG.batches.current.id)) {
   );
 }
 
-/* 3. the meter has to describe a real batch */
+/* 3. no batch may be brewed with a hop that has not landed in Denmark yet.
+      This is the constraint behind the whole årstid section, and it is easy to
+      break silently: a variety is picked for its flavour without checking the
+      calendar, and the page ends up claiming a beer brewed with hops that were
+      still on a ship. (It caught citra in a September batch — american hops do
+      not arrive until november.) */
+const arrivals = CONFIG.hopArrivals;
+for (const key of ['current', 'next']) {
+  const batch = CONFIG.batches[key];
+  const brewMonth = Number(batch.brews.split('.')[1]);
+  const arrival = arrivals.find((a) => a.region === batch.origin);
+
+  if (!arrival) {
+    failures.push(
+      `${key} (${batch.id}): origin "${batch.origin}" is not in the arrival `
+      + `calendar (${arrivals.map((a) => a.region).join('; ')}).`,
+    );
+    continue;
+  }
+  if (arrival.lands > brewMonth) {
+    failures.push(
+      `${key} (${batch.id}): ${batch.hop} is from ${batch.origin}, which does not `
+      + `land in Denmark until month ${arrival.lands} (${arrival.arrives}), but the `
+      + `batch is brewed in month ${brewMonth}. Pick a hop that has arrived.`,
+    );
+  }
+  const freshest = arrivals
+    .filter((a) => a.lands <= brewMonth)
+    .sort((a, b) => b.lands - a.lands)[0];
+  notes.push(
+    `hop      ${batch.id} ${batch.hop.padEnd(7)} ${batch.origin.padEnd(18)} `
+    + `lands ${arrival.arrives}`
+    + (freshest && freshest.region !== batch.origin
+      ? `   (note: ${freshest.region} landed more recently)` : ''),
+  );
+}
+
+/* the årstid table is static markup, so confirm it still says what the data says */
+const html = readFileSync(join(siteDir, 'index.html'), 'utf8');
+for (const a of arrivals) {
+  const row = new RegExp(
+    `<dt>\\s*${a.region.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*</dt>\\s*<dd>\\s*`
+    + `${a.arrives.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*</dd>`,
+  );
+  if (!row.test(html)) {
+    failures.push(
+      `the årstid table in index.html has no row matching "${a.region} / `
+      + `${a.arrives}" from CONFIG.hopArrivals — the rendered calendar and the `
+      + 'data have drifted apart.',
+    );
+  }
+}
+
+/* 4. the meter has to describe a real batch */
 const { capacity, taken } = CONFIG;
 notes.push(`meter    ${taken} / ${capacity} taken (${capacity - taken} left)`);
 if (!(taken >= 0 && taken <= capacity)) {
@@ -132,7 +185,7 @@ if (CONFIG.batchFull !== (taken >= capacity)) {
   );
 }
 
-/* 4. the option cards print a per-can price next to a total, so the base table
+/* 5. the option cards print a per-can price next to a total, so the base table
       has to multiply out exactly. */
 for (const [cans, plan] of Object.entries(CONFIG.prices)) {
   if (plan.unit * Number(cans) !== plan.total) {
@@ -153,7 +206,7 @@ notes.push(
     .join('  ')}   (once/standing)`,
 );
 
-/* 5. The can artwork in the photography is composited pixel work, not live
+/* 6. The can artwork in the photography is composited pixel work, not live
       text — it has the batch and best-before printed in. If CONFIG moves off
       the batch the photos were made for, the cans on the page contradict the
       page. Nothing in code can fix that, so it has to be loud. */

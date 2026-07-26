@@ -9,9 +9,8 @@
 
 <!-- PREVIEW DEPLOY ONLY — remove these two lines, robots.txt, and point the
      canonical/og:url/og:image below at klar.dk before going live. The site
-     still carries placeholder AI photography, an unsourced 80% figure and
-     øko/pant claims that are not yet certified, so it must not be indexed as a
-     live brewery. -->
+     still carries placeholder AI photography and an "økologisk" claim with no
+     certification behind it, so it must not be indexed as a live brewery. -->
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="canonical" href="https://stheodorsen.github.io/klar-site/">
@@ -49,10 +48,11 @@
   <div class="header__bar">
     <a class="header__wordmark" href="#let">Klar</a>
     <nav class="header__nav" aria-label="sektioner">
-      <!-- The handoff flags that these labels no longer match the section
-           headlines (hverdagsøl / humle drikkes friskt / vi følger høsten).
-           That is an open question for the client, so the labels are left as
-           designed rather than quietly reworded. -->
+      <!-- The handoff flags that these labels do not match the section
+           headlines. "let" now does, since HVERDAGSØL became LET MED VILJE;
+           "frisk" and "årstid" still do not (HUMLE DRIKKES FRISKT / VI FØLGER
+           HØSTEN). Still an open question for the client, so left as designed
+           rather than quietly reworded. -->
       <a href="#let">let</a>
       <a href="#frisk">frisk</a>
       <a href="#aarstid">årstid</a>
@@ -102,10 +102,10 @@
 
   <div class="zone-ink"><hr class="rule rule--on-ink"></div>
 
-  <!-- 1b. hverdagsøl ---------------------------------------------------- -->
+  <!-- 1b. let med vilje -------------------------------------------------- -->
   <!-- Mirror of the hero — image left, text right — so the two dark panels
        read as a spread with the photograph flipping sides. -->
-  <section class="pillar pillar--mirror zone-ink" aria-labelledby="hverdagsoel-title">
+  <section class="pillar pillar--mirror zone-ink" aria-labelledby="letvilje-title">
     <div class="pillar__media">
       <picture>
         <source type="image/webp"
@@ -119,7 +119,7 @@
       </picture>
     </div>
     <div class="pillar__text">
-      <h2 class="headline" id="hverdagsoel-title">hverdagsøl</h2>
+      <h2 class="headline" id="letvilje-title">let med vilje</h2>
       <p class="body-lg body-lg--on-ink">i århundreder var hverdagens øl let og frisk — den stærke var til fest. vi laver den igen, med humle fra i år.</p>
     </div>
   </section>
@@ -131,12 +131,15 @@
         <h2 class="headline" id="frisk-title">humle drikkes friskt</h2>
         <p class="body-lg">humle er en blomst. den falmer. tid og varme tager det bedste først. derfor sælger vi kun øl, der er frisk. og kold hele vejen. fra tank til dør.</p>
       </div>
-      <!-- The citation was removed from the page at the client's request, so
-           this number stands unsourced in public. The reference is on file in
-           site/README.md — do not lose it. -->
+      <!-- The handoff recorded that the client had this citation taken off the
+           page, which left the figure unsourced in public. It is back, verified:
+           Kemp et al. report an 80% drop in myrcene, humulene and caryophyllene
+           after three months at 20 C. Full reference in site/README.md. If it
+           comes off again, the claim goes with it. -->
       <aside class="fact" aria-labelledby="fact-title">
         <h3 class="eyebrow" id="fact-title">fakta</h3>
         <p class="fact__claim">de flygtige humleolier falder omkring 80% på tre måneder ved 20 grader.</p>
+        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021</p>
       </aside>
     </div>
 
@@ -229,7 +232,7 @@
       </div>
 
       <div class="can can--upcoming" role="img" data-bind-label="canNextLabel"
-           aria-label="Den kommende dåse: 09.26 · citra, 2,8%, 440 ml · øko · drik før 11.26.">
+           aria-label="Den kommende dåse: 09.26 · galaxy, 2,8%, 440 ml · øko · drik før 11.26.">
         <svg class="mark mark--can" viewBox="13 7 74 26" fill="none" aria-hidden="true">
           <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.84"/>
           <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.8" stroke-linecap="round"/>
@@ -237,7 +240,7 @@
         <span class="can__wordmark">Klar</span>
         <span class="can__descriptor">humlet hverdagsøl</span>
         <span class="can__spacer"></span>
-        <span class="can__batch" data-bind="canNextBatch">09.26 · citra</span>
+        <span class="can__batch" data-bind="canNextBatch">09.26 · galaxy</span>
         <span class="can__rule"></span>
         <span class="can__abv" data-bind="abv">2,8%</span>
         <span class="can__duty" data-bind="canNextDuty">440 ml · øko · drik før 11.26</span>
@@ -291,7 +294,7 @@
               <input class="opt__input" type="radio" name="batch" value="next">
               <span class="opt__body opt__body--card">
                 <span class="opt__row">
-                  <span class="opt__lead" data-bind="nextBatchLabel">09.26 · citra</span>
+                  <span class="opt__lead" data-bind="nextBatchLabel">09.26 · galaxy</span>
                   <span class="opt__chip" data-bind="nextChip">åbner 11.08</span>
                 </span>
                 <span class="opt__rule"></span>
@@ -310,7 +313,7 @@
               <span class="opt__body opt__body--card">
                 <span class="opt__size">4 dåser</span>
                 <span class="opt__rule"></span>
-                <span class="opt__price"><span>22 kr / dåse</span><span>88 kr</span></span>
+                <span class="opt__price"><span>39 kr / dåse</span><span>156 kr</span></span>
               </span>
             </label>
             <label class="opt">
@@ -318,7 +321,7 @@
               <span class="opt__body opt__body--card">
                 <span class="opt__size">8 dåser</span>
                 <span class="opt__rule"></span>
-                <span class="opt__price"><span>20 kr / dåse</span><span>160 kr</span></span>
+                <span class="opt__price"><span>39 kr / dåse</span><span>312 kr</span></span>
               </span>
             </label>
             <label class="opt">
@@ -326,7 +329,7 @@
               <span class="opt__body opt__body--card">
                 <span class="opt__size">12 dåser</span>
                 <span class="opt__rule"></span>
-                <span class="opt__price"><span>18 kr / dåse</span><span>216 kr</span></span>
+                <span class="opt__price"><span>39 kr / dåse</span><span>468 kr</span></span>
               </span>
             </label>
           </div>
@@ -430,9 +433,9 @@
         <hr class="rule rule--panel">
         <p class="summary__total">
           <span class="summary__cadence" data-bind="cadenceLabel">hver brygning</span>
-          <span class="summary__total-value" data-bind="priceLabel">144 kr</span>
+          <span class="summary__total-value" data-bind="priceLabel">296 kr</span>
         </p>
-        <p class="summary__fineprint" data-bind="unitPantLabel">18 kr pr. dåse · pant 8 kr</p>
+        <p class="summary__fineprint" data-bind="unitPantLabel">37 kr pr. dåse · pant 8 kr</p>
         <button class="btn btn--fill-ink btn--block summary__cta" type="button" data-action="order" data-bind="ctaLabel">bestil 08.26</button>
         <p class="summary__confirm" data-bind="confirmLabel" role="status"></p>
         <hr class="rule rule--panel">
@@ -461,7 +464,7 @@
   <div class="footer__cols">
     <div class="footer__brand">
       <span class="footer__wordmark">Klar</span>
-      <p class="footer__address">klar bryghus aps<br>københavn n<br><a href="mailto:hej@klar.dk">hej@klar.dk</a></p>
+      <p class="footer__address">københavn n<br><a href="mailto:hej@klar.dk">hej@klar.dk</a></p>
     </div>
     <nav class="footer__links" aria-label="sektioner, gentaget">
       <a href="#let">let</a>
@@ -475,10 +478,11 @@
       <a href="#bestil">pant og retur</a>
       <a href="#bestil">handelsbetingelser</a>
     </nav>
+    <!-- The øko-certification and pant-registration lines were removed: both
+         named a certifying body Klar is not registered with yet. Do not restore
+         either until the paperwork exists. -->
     <ul class="footer__duty">
       <li>salg kun til personer over 18 år</li>
-      <li>øko-certificering: fødevarestyrelsen</li>
-      <li>pant registreret hos dansk retursystem</li>
     </ul>
   </div>
   <hr class="rule rule--on-ink">
@@ -499,8 +503,8 @@
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "DKK",
-    "lowPrice": "88",
-    "highPrice": "216",
+    "lowPrice": "156",
+    "highPrice": "468",
     "offerCount": "3",
     "availability": "https://schema.org/PreOrder",
     "areaServed": { "@type": "City", "name": "København" }

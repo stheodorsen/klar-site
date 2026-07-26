@@ -12,7 +12,7 @@ option is the next batch.
 One page, three brand pillars in sequence, ending in an order configurator:
 
 ```
-header (live batch status) → hero #let → HVERDAGSØL → HUMLE DRIKKES FRISKT #frisk
+header (live batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
   → VI FØLGER HØSTEN #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 
@@ -58,8 +58,15 @@ node site/tools/check-dates.mjs
 
 It asserts that orders close before brew day and brewing before delivery, that
 each batch still has at least 14 days of shelf life left after it is delivered,
-that the next batch really is next, that the sold-out flag agrees with
-`taken / capacity`, and that every per-can price multiplies out to its total.
+that the next batch really is next, that the named delivery weekday matches the
+date, that the sold-out flag agrees with `taken / capacity`, and that every
+per-can price multiplies out to its total.
+
+It also checks the hop against the arrival calendar — **no batch may be brewed
+with a hop that has not landed in Denmark yet** — and that the calendar rendered
+in the årstid section still matches the data behind it. That check exists because
+the failure is invisible: a variety gets picked for its flavour, and the page ends
+up describing a beer brewed with hops that were still on a ship.
 
 It also checks the batch against the **photography**, which is the one thing code
 cannot fix: the can labels in the four photos are composited pixel work, not live
@@ -74,14 +81,15 @@ so there is one source of truth for the dates and no second copy to drift.
 ## This is a preview deploy
 
 The site is a prototype and is deliberately **not indexable** — it carries
-placeholder AI photography, an unsourced hop-degradation figure, and *øko* / pant
-claims that are not yet certified. Before it goes live on the real domain:
+placeholder AI photography and an *økologisk* claim with no certification behind
+it. Before it goes live on the real domain:
 
 1. delete `site/robots.txt`
 2. remove the `noindex` meta tag in `site/index.html`
 3. point `canonical`, `og:url` and `og:image` at the real domain
 4. replace the placeholder photography, and resolve the open items in
-   [site/README.md](site/README.md) — the unsourced 80% figure most of all
+   [site/README.md](site/README.md) — above all the `økologisk` claim, which no
+   longer has any certification stated behind it
 
 ## Design handoff is not in this repo
 

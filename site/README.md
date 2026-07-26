@@ -28,18 +28,22 @@ root README.
 ## Page structure
 
 ```
-header (batch status) → hero #let → HVERDAGSØL → HUMLE DRIKKES FRISKT #frisk
+header (batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
   → VI FØLGER HØSTEN #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 
-Zones alternate ink and paper. The hero and HVERDAGSØL are both ink and read as
-a spread with the photograph flipping sides, divided by the inset hairline the
+Zones alternate ink and paper. The hero and LET MED VILJE are both ink and read
+as a spread with the photograph flipping sides, divided by the inset hairline the
 design specifies for that adjacency; the closing line and footer are divided the
 same way.
 
+The pillar headline was `HVERDAGSØL`; it is now `LET MED VILJE`, requested after
+handoff. `hverdagsøl` remains the product descriptor under the wordmark and in
+the metadata — it is what the beer is, not what that panel argues.
+
 ## Fidelity
 
-Measured against the 1440 composition and matching: hero and HVERDAGSØL columns
+Measured against the 1440 composition and matching: hero and LET MED VILJE columns
 720 + 720 at `min-height: 820px`, order grid 784 + 400, freshness photo cards
 624 × 380, option cards 248, fact box 380, can renders 220 × 560. Colour,
 tracking and spacing come from the token block at the top of `klar.css`; the font
@@ -126,6 +130,34 @@ unchanged, then written as WebP + JPEG at the widths the layout requests.
 call the offer `PreOrder` rather than `InStock` — brew-to-order is literally
 pre-ordering, and claiming stock would be wrong.
 
+**9. Pricing is flat, not tiered.** A can is 39 kr at every box size, so the
+three size cards show the same per-can price and the only price lever is the
+standing order (2 kr off per can). Requested after handoff. It is consistent with
+this handoff, which — unlike the previous one — carries no "pris pr. dåse falder
+med størrelsen" copy to justify a volume discount, but it does mean step 02 is
+now purely a quantity choice with no incentive to size up. **Worth a second look
+if the tiering was doing commercial work.**
+
+**10. The 80% figure carries its source on the page.** The handoff records that
+the client had the citation removed. It is back, because a measured quantitative
+claim in public with nothing behind it is a liability — and because the figure
+turned out to be accurate. Verified against the paper rather than taken on
+trust:
+
+> Kemp, O., Hofmann, S., Braumann, I., Jensen, S., Fenton, A., & Oladokun, O.
+> (2021). Changes in key hop-derived compounds and their impact on perceived
+> dry-hop flavour in beers after storage at cold and ambient temperature.
+> *Journal of the Institute of Brewing*, **127**(4), 367–384.
+> doi:[10.1002/jib.667](https://doi.org/10.1002/jib.667)
+
+The paper stores beers at 3 °C and 20 °C for 10 months and reports a **drop of
+80% in myrcene, humulene and caryophyllene after three months at 20 °C** — which
+is the claim almost verbatim. Two notes for whoever owns the copy: the
+measurement is those three terpenes specifically, so *"de flygtige humleolier"*
+is a fair but slightly broader paraphrase; and the same paper independently
+supports the can-over-bottle argument (hop aroma compounds accumulate in crown
+cap liners, while cans retain them), which the page does not currently make.
+
 ## Known gaps
 
 - **The photography is placeholder-grade and hard-codes the batch.** The label
@@ -136,14 +168,31 @@ pre-ordering, and claiming stock would be wrong.
   `check-dates.mjs` fails the build if that happens. Replace all four with real
   photography before launch. A third delivery photo (empty cans in a crate) was
   specified but never produced.
-- **The 80% hop-oil figure is unsourced on the page.** The handoff's substantiation
-  is **Kemp et al., *J. Inst. Brewing* 2021** (volatile hop oil loss, 3 °C vs
-  20 °C storage). The citation was removed at the client's request, so the number
-  now stands unsourced in public. Recorded here so it is not lost.
-- **The nav labels do not match the section headlines** — `let / frisk / årstid`
-  against `HVERDAGSØL / HUMLE DRIKKES FRISKT / VI FØLGER HØSTEN`. The handoff
-  raises this as an open question for the client, so the labels are left as
-  designed rather than quietly reworded.
+- **The hop calendar and the current batch disagree.** The årstid copy promises
+  *"vi brygger med den, der senest er landet"* — the most recently landed hop.
+  The current batch is riwaka, from new zealand, which lands maj–juni; australien
+  lands juni–juli, so for an August brew it is not the freshest arrival. The next
+  batch was citra, which was worse than off-message: usa hops do not land until
+  november–december, two months after a September brew, so it was impossible.
+  That one is fixed (galaxy, australien). The current batch is **blocked on the
+  photography**, which has `08.26 · riwaka` composited into the cans — so either
+  re-shoot, or soften the copy from "senest landet" to something the batch can
+  keep. `check-dates.mjs` enforces the hard constraint (the hop must have landed
+  by brew day) and prints a note when a fresher arrival existed.
+- **`økologisk` now has nothing behind it.** The øko-certification and
+  pant-registration lines were removed from the footer, along with the `klar
+  bryghus aps` company name. But `økologisk malt` remains in the hero spec and
+  the meta description, and `øko` is composited into the can artwork in all four
+  photographs. In the EU *økologisk* is a legally protected term that requires
+  certification. The hero line is arguably defensible as an ingredient-sourcing
+  claim if the maltster is certified; the `øko` on the can is a product claim
+  about Klar and is not. The can text cannot be changed by code — it is pixels.
+  **Resolve before launch: either get certified, or drop the word.**
+- **The nav labels only partly match the section headlines.** `let` now matches
+  `LET MED VILJE`, but `frisk` and `årstid` still do not match
+  `HUMLE DRIKKES FRISKT` / `VI FØLGER HØSTEN`. The handoff raises this as an open
+  question for the client, so the rest are left as designed rather than quietly
+  reworded.
 - **The Feb–April gap** in the harvest-arrival table is real and unexplained on
   the page. Also open: the tension between air-freighted New Zealand hops and
   cargo-bike delivery, and the fact that the "2 to 5 °C all the way" promise has
