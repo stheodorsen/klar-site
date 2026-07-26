@@ -394,7 +394,22 @@ input {
    lets the lockup push the panel taller instead of clipping it. */
 .hero {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Two equal columns whenever the photograph can fill half the width at full
+     panel height — which is the designed case and everything up to roughly a
+     16:10 window. Past that the panel gets wider relative to its height than the
+     photograph's 0.878, and object-fit: cover starts eating the bottom of the
+     frame: on a 2560x1105 window it took about 250 source pixels off, which is
+     the can's base and the last line of its label.
+
+     So the photograph's column is capped at the width it can actually fill —
+     panel height x the image's aspect — and the text column absorbs whatever is
+     left. The photograph is then never cropped vertically and never letterboxed,
+     and it still runs flush to the right edge. The cost is that the 50/50 spread
+     stops being 50/50 on very wide windows; keeping it would mean either
+     cropping the can or growing the panel past the viewport. */
+  grid-template-columns:
+    1fr
+    minmax(0, min(50%, calc((100svh - var(--header-h)) * 0.878)));
   align-items: stretch;
   min-height: calc(100svh - var(--header-h));
 }
@@ -424,12 +439,10 @@ input {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* The hero photograph is a balanced two-subject shot — can left, glass right —
-     already framed at this container's aspect, so nothing is cropped at the
-     designed size. Centred horizontally so neither subject is clipped when a
-     narrow viewport trims the sides, and biased slightly low so the expendable
-     headroom goes first when a wide one trims top and bottom. */
-  object-position: 50% 55%;
+  /* Centred: the column cap above means a wide window no longer crops top or
+     bottom, so the only crop left is horizontal, on a tall narrow window — and
+     the two subjects sit either side of centre, so 50% keeps both. */
+  object-position: 50% 50%;
 }
 
 /* --- 1b. hverdagsøl ----------------------------------------------------- */

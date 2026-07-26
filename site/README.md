@@ -222,6 +222,25 @@ Verified exact at 1440×900, 1680×1200 and 375×812. At 320×640 the panel runs
 over, because the photograph hits its 120px floor and the panel grows rather than
 squeezing the image away — a deliberate floor, not a miss.
 
+**The photograph's column is capped, which is the other half of this.** Tying the
+panel to the viewport means its aspect now varies with the window, and past roughly
+16:10 the panel gets wider relative to its height than the photograph's 0.878 — so
+`object-fit: cover` began trimming the bottom of the frame. On a 2560×1105 window
+that was about 250 source pixels: the can's base and the last line of its label.
+
+So the photograph's column is `min(50%, calc((100svh - var(--header-h)) * 0.878))`
+— the width the image can actually fill at full panel height — and the text column
+absorbs the rest. Nothing is cropped vertically, nothing is letterboxed, and the
+photograph still runs flush to the right edge. At 1440×900 the columns are still
+exactly 720/720; at 2560×1105 they are 1658/902. **The cost is that the 50/50
+spread stops being 50/50 on very wide windows** — worth a designer's eye, though
+the alternatives were cropping the can or growing the panel past the fold.
+
+One place this does not reach: stacked on a phone, the photograph is a full-width
+band of whatever height the text leaves (about 230px at 375×812), so it is a
+horizontal slice of a portrait frame rather than the whole thing. Showing the full
+image there and keeping the fold to one viewport are mutually exclusive.
+
 **12. `440 ml` is gone from the hero spec row**, requested after handoff. The
 volume still appears on both can renders, in the summary's `kassen` row and in the
 footer legal strip.
