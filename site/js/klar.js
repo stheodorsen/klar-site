@@ -479,6 +479,16 @@ if (heroMark && heroCircle) {
   heroMark.addEventListener('pointerenter', () => {
     // checked per event, not once, so a mid-session preference change is honoured
     if (reducedMotion.matches) return;
+
+    /* A rise in progress is left alone. The mark's hover box is the svg's 230x81
+       frame, so sweeping the pointer across it — or letting it jitter on the
+       edge — fires pointerenter repeatedly, and at 2.2s each of those used to
+       restart the animation from the bottom. The sun stuttered instead of
+       rising. One rise finishes before another can begin; the load animation
+       counts, so an early hover cannot cut that off either. */
+    const rising = heroCircle.getAnimations().some((a) => a.playState === 'running');
+    if (rising) return;
+
     heroCircle.style.animation = 'none';
     void heroCircle.getBoundingClientRect().width;
     heroCircle.style.animation = MARK_REPLAY;
