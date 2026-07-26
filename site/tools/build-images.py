@@ -19,14 +19,18 @@ SRC = ROOT / "design_handoff_klar_site" / "assets"
 OUT = ROOT / "site" / "assets" / "img"
 
 # name, source, display aspect (w/h), object-position (x%, y%), output widths
+#
+# Aspects come from the handoff's 1440 composition. The hero and HVERDAGSØL
+# panels are each half of the page (720) by min-height 820; the freshness photo
+# cards are half the 1280 content width less the 32 gap (624) by 380.
 JOBS = [
-    # hero: 600x700 box on desktop, full-bleed on mobile
-    ("haze", "haze-klar.png", 6 / 7, (0.26, 0.58), [480, 720, 960, 1280]),
-    # heritage panel: 592x560 box
-    ("kitchen", "hero-kitchen-klar.png", 592 / 560, (0.38, 0.74), [480, 720, 960, 1280]),
-    # delivery cards: 405x280 box
-    ("bike", "bike-klar.png", 405 / 280, (0.50, 0.42), [420, 640, 860]),
-    ("doorstep", "doorstep-klar.png", 405 / 280, (0.52, 0.62), [420, 640, 860]),
+    # hero, right half of the fold
+    ("haze", "haze-klar.png", 720 / 820, (0.26, 0.58), [480, 720, 960, 1280]),
+    # HVERDAGSØL, mirrored to the left half
+    ("kitchen", "hero-kitchen-klar.png", 720 / 820, (0.38, 0.74), [480, 720, 960, 1280]),
+    # the two freshness cards
+    ("bike", "bike-klar.png", 624 / 380, (0.50, 0.42), [420, 640, 880, 1248]),
+    ("doorstep", "doorstep-klar.png", 624 / 380, (0.52, 0.62), [420, 640, 880, 1248]),
 ]
 
 

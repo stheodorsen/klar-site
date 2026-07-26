@@ -1,56 +1,77 @@
 /* ==========================================================================
-   Klar — subscription configurator
+   Klar — brew-to-order configurator
    ==========================================================================
+
+   Nothing is stocked. A batch is a fixed number of cans, orders close before
+   brew day, and the batch is brewed to the number ordered — so "how many are
+   left" is the page's central fact, not a decoration.
 
    Everything the business changes lives in CONFIG. In production these come
    from the server, not from here — see site/README.md "What still needs a
-   backend": current batch, prices, the real route calendar per postcode, and
-   the serviceable-area lookup.
+   backend": the batch record, capacity and quantity ordered, prices, and the
+   serviceable-area lookup.
 
    Everything above the "state" marker is pure — no DOM, no side effects.
    tools/check-dates.mjs evaluates exactly that prelude to assert the batch
-   dates still cohere, so keep document/window out of it.
+   record still coheres, so keep document/window out of it.
    ========================================================================== */
 
 const CONFIG = {
-  /* One brew month drives all three dates: the brygmåned on the can, the
-     bedst før two months after it, and the freshness argument that the gap
-     between them is deliberately short. Bump this and nothing else. */
-  batch: {
-    brewMonth: '2026-07',
-    shelfLifeMonths: 2,
-    hop: 'nectaron',
-    hopOrigin: 'new zealand, høst 26',
-    hopNote: 'saftig, citrus, tør afslutning',
+  /* The batch record. Dates are DD.MM, batch ids are MM.YY, delivery is a
+     Danish weekday plus date. `closes` must precede `brews`, which must precede
+     `delivers` — asserted in tools/check-dates.mjs.
+
+     bestBefore is derived as the batch month + shelfLifeMonths, and the can
+     artwork in the photography has it printed in: replacing a batch here
+     without re-compositing the photos leaves the cans contradicting the page. */
+  batches: {
+    current: {
+      id: '08.26', hop: 'riwaka', origin: 'new zealand',
+      closes: '11.08', brews: '18.08', delivers: 'tirsdag 25.08',
+    },
+    next: {
+      id: '09.26', hop: 'citra', origin: 'usa',
+      closes: '08.09', brews: '15.09', delivers: 'tirsdag 22.09',
+    },
   },
 
-  // the brew after this one, announced at the foot of brygbogen
-  nextBrewMonth: '2026-09',
+  shelfLifeMonths: 2,
 
-  /* Declared strength. Bound into every labelled instance — hero spec, spec
-     strip, both can faces, footer — because a declared ABV that disagrees with
-     itself is a labelling problem, not a copy slip. Prose that argues about the
-     number ("2,8% er altså ikke et moderne kompromis") is written out in the
-     HTML; grep for it if this changes. */
+  /* A brew is 150 litres — 296 cans. We do not brew over, so this is the whole
+     commercial constraint of the business in two numbers. */
+  capacity: 296,
+  taken: 212,
+
+  /* Flip when the current batch is fully ordered. This rewrites the page's
+     commercial state in one derived move — header, meter, the disabled current
+     batch card, and forced selection of the next batch. In production it is a
+     server fact (taken >= capacity), not a hand-set flag. */
+  batchFull: false,
+
+  /* Declared strength. Bound into every labelled instance — hero spec, both can
+     renders, footer — because a declared ABV that disagrees with itself is a
+     labelling problem, not a copy slip. */
   abv: '2,8%',
 
   cansVolume: '440 ml',
 
-  plans: {
-    6:  { total: 132, unit: 22 },
-    12: { total: 240, unit: 20 },
-    24: { total: 432, unit: 18 },
+  /* Base price per box. The per-can figure is printed on the option cards, so
+     unit x cans must equal total — asserted in tools/check-dates.mjs. */
+  prices: {
+    4:  { total: 88,  unit: 22 },
+    8:  { total: 160, unit: 20 },
+    12: { total: 216, unit: 18 },
   },
+
+  // a standing order takes this much off every can
+  standingOrderDiscountPerCan: 2,
 
   pantPerCan: 1, // kr, paid on delivery and refunded on return
 
-  // one-off box, no subscription — deliberately priced above the 6-can plan
-  trial: { cans: 6, price: 145 },
-
-  frequency: {
-    week:  'hver uge',
-    two:   'hver 14. dag',
-    month: 'hver måned',
+  cadence: {
+    once:  'kun denne brygning',
+    every: 'hver brygning',
+    other: 'hver anden brygning',
   },
 
   slots: {
@@ -58,11 +79,8 @@ const CONFIG = {
     late:  '18 — 20',
   },
 
-  // cargo bikes run one route day a week; order before noon the day before
-  route: { weekday: 2, cutoffHour: 12 },
-
-  // placeholder for a real serviceable-area lookup. The out-of-area branch
-  // should become a waitlist capture rather than a dead end.
+  /* Placeholder for a real serviceable-area lookup. The out-of-area branch
+     should become a waitlist capture rather than a dead end. */
   serviceable: {
     ranges: [[1050, 1799]],
     postcodes: [2100, 2200, 2300, 2400, 2450],
@@ -71,13 +89,18 @@ const CONFIG = {
 
 /* --- batch dates ---------------------------------------------------------- */
 
-/* '2026-07' -> { year: 2026, month: 6 } (month is 0-based, as Date wants it) */
-function parseBrewMonth(value) {
-  const [year, month] = value.split('-').map(Number);
-  return { year, month: month - 1 };
+/* '08.26' -> { year: 2026, month: 7 } (month 0-based, as Date wants it) */
+function parseBatchId(id) {
+  const [month, year] = id.split('.').map(Number);
+  return { year: 2000 + year, month: month - 1 };
 }
 
-/* { 2026, 6 } -> '07.26', the form printed on the can */
+/* 'DD.MM' plus the year it belongs to -> a Date */
+function parseDayMonth(value, year) {
+  const [day, month] = value.split('.').map(Number);
+  return new Date(year, month - 1, day);
+}
+
 function monthLabel({ year, month }) {
   return `${String(month + 1).padStart(2, '0')}.${String(year % 100).padStart(2, '0')}`;
 }
@@ -87,43 +110,24 @@ function addMonths({ year, month }, count) {
   return { year: Math.floor(total / 12), month: total % 12 };
 }
 
-/* "drik før 09.26" is a deadline, not a window: the beer should be drunk
-   before that month starts, so the effective last day is the 1st. Read the
-   conservative way round on purpose — it is the number the freshness claim
-   is measured against in tools/check-dates.mjs. */
-function monthStartDate({ year, month }) {
+function bestBeforeLabel(batchId, months = CONFIG.shelfLifeMonths) {
+  return monthLabel(addMonths(parseBatchId(batchId), months));
+}
+
+/* "drik før 10.26" is a deadline, not a window: the beer should be drunk before
+   that month starts, so the effective last day is the 1st. Read the
+   conservative way round on purpose. */
+function bestBeforeDate(batchId, months = CONFIG.shelfLifeMonths) {
+  const { year, month } = addMonths(parseBatchId(batchId), months);
   return new Date(year, month, 1);
 }
 
-function batchDates(batch = CONFIG.batch) {
-  const brewed = parseBrewMonth(batch.brewMonth);
-  const bestBefore = addMonths(brewed, batch.shelfLifeMonths);
-  return {
-    brewed,
-    bestBefore,
-    brewedLabel: monthLabel(brewed),
-    bestBeforeLabel: monthLabel(bestBefore),
-    bestBeforeDate: monthStartDate(bestBefore),
-  };
+function canDutyLine(batchId) {
+  return `${CONFIG.cansVolume} · øko · drik før ${bestBeforeLabel(batchId)}`;
 }
 
-/* --- delivery calendar ---------------------------------------------------- */
-
-function nextDeliveryDate(now = new Date()) {
-  const day = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  let delta = (CONFIG.route.weekday - day.getDay() + 7) % 7 || 7;
-  // missed today's cut-off for tomorrow's route
-  if (delta === 1 && now.getHours() >= CONFIG.route.cutoffHour) delta += 7;
-  day.setDate(day.getDate() + delta);
-  return day;
-}
-
-const weekdayFormat = new Intl.DateTimeFormat('da-DK', { weekday: 'long' });
-
-function formatDeliveryDate(date) {
-  const pad = (n) => String(n).padStart(2, '0');
-  const weekday = weekdayFormat.format(date).toLowerCase();
-  return `${weekday} ${pad(date.getDate())}.${pad(date.getMonth() + 1)}`;
+function batchLine(batch) {
+  return `${batch.id} · ${batch.hop}`;
 }
 
 function isServiceable(zip) {
@@ -133,41 +137,62 @@ function isServiceable(zip) {
     || CONFIG.serviceable.ranges.some(([lo, hi]) => n >= lo && n <= hi);
 }
 
-/* --- the freshness invariant ---------------------------------------------- */
+/* --- pricing -------------------------------------------------------------- */
 
-/* The site promises month-fresh beer and prints a short bedst før to prove it.
-   That only holds if a new subscriber's first delivery leaves them real time
-   with the beer: bedst før must be at least MIN_DAYS_OF_LIFE after the first
-   delivery date. A stale brewMonth silently turns the freshness pillar into a
-   lie, so this is asserted rather than trusted — at runtime below, and in CI
-   by tools/check-dates.mjs, which fails the deploy. */
+function priceFor(plan, cadence) {
+  const base = CONFIG.prices[plan];
+  const discount = cadence === 'once' ? 0 : plan * CONFIG.standingOrderDiscountPerCan;
+  const total = base.total - discount;
+  return { total, unit: Math.round(total / plan), pant: plan * CONFIG.pantPerCan };
+}
+
+/* --- the batch invariants ------------------------------------------------- */
+
+/* The page promises fresh beer and prints a short bedst før to prove it. That
+   only holds while the batch record is current: order-close before brew day,
+   brew before delivery, and enough shelf life left after delivery to be worth
+   drinking. A stale record turns the freshness argument into a false claim
+   while the page still looks perfectly fine, so it is asserted rather than
+   trusted — in CI by tools/check-dates.mjs, which fails the deploy. */
 const MIN_DAYS_OF_LIFE = 14;
 const MS_PER_DAY = 86400000;
 
-function freshnessWindow(now = new Date()) {
-  const { bestBeforeLabel, bestBeforeDate } = batchDates();
-  const firstDelivery = nextDeliveryDate(now);
-  const days = Math.round((bestBeforeDate - firstDelivery) / MS_PER_DAY);
+function batchTimeline(key = 'current') {
+  const batch = CONFIG.batches[key];
+  const { year } = parseBatchId(batch.id);
+  const closes = parseDayMonth(batch.closes, year);
+  const brews = parseDayMonth(batch.brews, year);
+  const delivers = parseDayMonth(batch.delivers.split(' ').pop(), year);
+  const bestBefore = bestBeforeDate(batch.id);
   return {
-    days,
-    ok: days >= MIN_DAYS_OF_LIFE,
-    bestBeforeLabel,
-    firstDelivery,
+    batch,
+    closes,
+    brews,
+    delivers,
+    bestBefore,
+    bestBeforeLabel: bestBeforeLabel(batch.id),
+    daysOfLife: Math.round((bestBefore - delivers) / MS_PER_DAY),
     required: MIN_DAYS_OF_LIFE,
+    ordered: closes <= brews && brews <= delivers,
   };
+}
+
+function batchOk(key = 'current') {
+  const t = batchTimeline(key);
+  return t.ordered && t.daysOfLife >= t.required;
 }
 
 /* --- state ---------------------------------------------------------------- */
 
 const state = {
-  plan: 12,
-  freq: 'two',
+  batch: 'current',
+  plan: 8,
+  cadence: 'every',
   slot: 'early',
   zip: '',
-  // null until a check has run; then { zip, serviceable }
+  // null until a check has run; then { zip, serviceable } or { tooShort: true }
   zipCheck: null,
-  subscribed: false,
-  trial: false,
+  ordered: false,
 };
 
 /* --- data binding --------------------------------------------------------- */
@@ -180,7 +205,7 @@ for (const el of document.querySelectorAll('[data-bind]')) {
 }
 
 /* The can renders are role="img", so their aria-label carries the whole face as
-   one string — including the batch dates and the ABV that CONFIG owns. Binding
+   one string — including the batch line and the ABV that CONFIG owns. Binding
    the attribute keeps the spoken can and the printed can from drifting apart. */
 const labelBindings = new Map();
 for (const el of document.querySelectorAll('[data-bind-label]')) {
@@ -190,81 +215,102 @@ for (const el of document.querySelectorAll('[data-bind-label]')) {
 }
 
 const zipAnswerEl = document.getElementById('zip-answer');
-const trialButtons = document.querySelectorAll('[data-action="trial"]');
+const meterFillEl = document.getElementById('meter-fill');
+const currentBatchInput = document.querySelector('input[name="batch"][value="current"]');
+const nextBatchInput = document.querySelector('input[name="batch"][value="next"]');
 
+/* --- derived state -------------------------------------------------------- */
+
+/* batchFull is resolved once, here, and everything downstream reads the result.
+   The handoff is explicit that this must be one derived state rather than
+   scattered conditionals — otherwise the page can end up half sold out. */
 function derive() {
-  const price = CONFIG.plans[state.plan];
-  const { batch } = CONFIG;
-  const { brewedLabel, bestBeforeLabel } = batchDates();
+  const full = CONFIG.batchFull === true;
+  const effectiveBatch = full ? 'next' : state.batch;
+  const batch = CONFIG.batches[effectiveBatch];
+  const current = CONFIG.batches.current;
+  const next = CONFIG.batches.next;
+
+  const left = full ? 0 : CONFIG.capacity - CONFIG.taken;
+  const price = priceFor(state.plan, state.cadence);
   const slotLabel = CONFIG.slots[state.slot];
-  const freqLabel = CONFIG.frequency[state.freq];
-  const firstDelivery = formatDeliveryDate(nextDeliveryDate());
-  const pant = state.plan * CONFIG.pantPerCan;
+  const cadenceLabel = CONFIG.cadence[state.cadence];
 
   return {
-    // øllen
+    full,
+
+    // header
+    headStatus: full
+      ? `${current.id} · udsolgt`
+      : `${current.id} · bestilling lukker ${current.closes}`,
+
+    // hero + cans + footer
     abv: CONFIG.abv,
     abvVol: `${CONFIG.abv} vol.`,
-    canBatch: `brygget ${brewedLabel} · ${batch.hop}`,
-    canBestBefore: `${CONFIG.cansVolume} · øko · drik før ${bestBeforeLabel}`,
-    canVolumeAbv: `${CONFIG.cansVolume} · ${CONFIG.abv} vol.`,
-    canLegal: `brygget af klar bryghus aps, københavn n · bedst før: ${bestBeforeLabel}`,
-    hop: batch.hop,
-    hopOrigin: batch.hopOrigin,
-    hopNote: batch.hopNote,
-    brewed: brewedLabel,
-    brewedNote: `drik før ${bestBeforeLabel} — dateret som mælk, ikke som spiritus`,
-    nextBrewLabel: monthLabel(parseBrewMonth(CONFIG.nextBrewMonth)),
+    canCurrentBatch: batchLine(current),
+    canCurrentDuty: canDutyLine(current.id),
+    canNextBatch: batchLine(next),
+    canNextDuty: canDutyLine(next.id),
+    canCurrentLabel: `Dåsen: mærket, KLAR, humlet hverdagsøl, ${batchLine(current)}, `
+      + `${CONFIG.abv}, ${canDutyLine(current.id)}.`,
+    canNextLabel: `Den kommende dåse: ${batchLine(next)}, ${CONFIG.abv}, `
+      + `${canDutyLine(next.id)}.`,
 
-    // the two can faces, spoken as one string each for role="img"
-    canFrontLabel: 'Dåsens forside: mærket, KLAR, humlet hverdagsøl, '
-      + `brygget ${brewedLabel} · ${batch.hop}, ${CONFIG.abv}, `
-      + `${CONFIG.cansVolume} · øko · drik før ${bestBeforeLabel}.`,
-    canBackLabel: 'Dåsens bagside: HVERDAGSØL. Stærk øl til fest, let øl til '
-      + 'maden — sådan drak vi i århundreder, det her er til tirsdag. '
-      + 'Uklar i glasset, klar i hovedet. '
-      + `${CONFIG.cansVolume} · ${CONFIG.abv} vol. `
-      + `Bedst før ${bestBeforeLabel}.`,
+    // the batch meter
+    openStateLabel: full ? 'fuld' : 'åben',
+    leftLabel: full ? 'venteliste' : `${left} dåser tilbage`,
+    leftSub: full
+      ? `brygningen er bestilt op. vi brygger ikke over — så du kommer med i ${next.id}.`
+      : `en brygning er 150 liter. det er taget, og vi brygger ikke over.`,
+    meterWidth: full ? '100%' : `${Math.round((CONFIG.taken / CONFIG.capacity) * 100)}%`,
+
+    // 01 — which batch
+    currentBatchLabel: batchLine(current),
+    nextBatchLabel: batchLine(next),
+    currentChip: full ? 'fuld' : `${left} tilbage`,
+    currentBody: full
+      ? `bestilt op. næste chance er ${next.id}.`
+      : `lukker ${current.closes} · brygges ${current.brews} · kører ${current.delivers.split(' ').pop()}`,
+    nextChip: full ? 'åben' : `åbner ${current.closes}`,
+    nextBody: `lukker ${next.closes} · brygges ${next.brews} · kører ${next.delivers.split(' ').pop()}`,
 
     // summary
+    summaryState: full || effectiveBatch === 'next' ? 'næste brygning' : 'åben',
+    batchLabel: batch.id,
+    hopLabel: batch.hop,
+    closeLabel: batch.closes,
     planLabel: `${state.plan} dåser · ${CONFIG.cansVolume}`,
-    freqLabel,
-    slotLabel,
-    batchLabel: `${brewedLabel} · ${batch.hop}`,
-    firstDeliveryLabel: `${firstDelivery}, ${slotLabel}`,
-    totalLabel: `${price.total} kr`,
-    unitPantLabel: `${price.unit} kr pr. dåse · pant ${pant} kr betales ved levering og retur`,
+    deliveryLabel: `${batch.delivers}, ${slotLabel}`,
+    cadenceLabel,
+    priceLabel: `${price.total} kr`,
+    unitPantLabel: `${price.unit} kr pr. dåse · pant ${price.pant} kr`,
 
-    ctaLabel: state.subscribed ? 'abonnement oprettet' : 'start abonnement',
-    confirmLabel: state.subscribed
-      ? `tak. vi sender en bekræftelse og kommer ${firstDelivery} i vinduet ${slotLabel}. `
-        + 'sæt kassen ud, hvis du har tomme.'
+    termLine: state.cadence === 'once'
+      ? 'ingen binding · engangskøb'
+      : 'ingen binding · stop inden bestillingen lukker',
+
+    ctaLabel: state.ordered ? `du er med i ${batch.id}` : `bestil ${batch.id}`,
+    confirmLabel: state.ordered
+      ? `tak. vi brygger ${batch.id} til det antal, der er bestilt, og kommer `
+        + `${batch.delivers} i vinduet ${slotLabel}.`
       : '',
 
-    trialLabel: state.trial
-      ? `i kassen — ${CONFIG.trial.price} kr`
-      : 'læg prøvekasse i kurv',
-
-    trialDetail: `prøvekasse · ${CONFIG.trial.cans} dåser, én gang, ${CONFIG.trial.price} kr `
-      + '· leveres kold på ladcykel som alt andet',
-
-    cartCount: String(state.trial ? 1 : 0),
-
     // recomputed rather than frozen at check time, so it cannot go stale when
-    // the customer changes frequency or window afterwards
-    zipAnswer: zipAnswerText(freqLabel, slotLabel, firstDelivery),
+    // the customer changes batch or window afterwards
+    zipAnswer: zipAnswerText(batch, slotLabel),
   };
 }
 
-function zipAnswerText(freqLabel, slotLabel, firstDelivery) {
+function zipAnswerText(batch, slotLabel) {
   if (!state.zipCheck) return '';
   if (state.zipCheck.tooShort) return 'skriv fire cifre, så tjekker vi ruten.';
   if (state.zipCheck.serviceable) {
-    return `ja — vi kører hos dig. ${freqLabel}, ${slotLabel}. `
-      + `første levering ${firstDelivery}.`;
+    return `ja — vi kører hos dig. ${batch.id} kommer ${batch.delivers}, ${slotLabel}.`;
   }
   return 'ikke endnu. skriv dig op, og vi siger til når cyklen når frem.';
 }
+
+/* --- render --------------------------------------------------------------- */
 
 function render() {
   const values = derive();
@@ -290,26 +336,46 @@ function render() {
   }
   zipAnswerEl.dataset.serviceable = String(Boolean(state.zipCheck?.serviceable));
 
-  for (const btn of trialButtons) btn.setAttribute('aria-pressed', String(state.trial));
+  meterFillEl.style.width = values.meterWidth;
+
+  /* Sold out: the current batch stops being an option at all. `disabled` also
+     removes it from the tab order, so there is no focusable dead end.
+
+     The forced selection is written back to `state`, not just to the DOM.
+     Otherwise state.batch stays 'current' behind a checked 'next' radio, and if
+     the flag ever cleared mid-session the summary would describe one batch while
+     the selected card showed the other. Safe to do here: derive() already
+     resolves to 'next' either way, so this needs no second pass. */
+  if (currentBatchInput.disabled !== values.full) {
+    currentBatchInput.disabled = values.full;
+  }
+  if (values.full) {
+    state.batch = 'next';
+    if (!nextBatchInput.checked) nextBatchInput.checked = true;
+  }
 }
 
 /* --- events --------------------------------------------------------------- */
 
-// Any selection change invalidates a placed subscription.
+// Any selection change invalidates a placed order, so a confirmation can never
+// linger over an order that has since changed.
 function select(patch) {
-  Object.assign(state, patch, { subscribed: false });
+  Object.assign(state, patch, { ordered: false });
   render();
 }
 
-document.querySelectorAll('input[name="plan"]').forEach((input) => {
-  input.addEventListener('change', () => select({ plan: Number(input.value) }));
-});
-document.querySelectorAll('input[name="freq"]').forEach((input) => {
-  input.addEventListener('change', () => select({ freq: input.value }));
-});
-document.querySelectorAll('input[name="slot"]').forEach((input) => {
-  input.addEventListener('change', () => select({ slot: input.value }));
-});
+const radioHandlers = {
+  batch: (value) => select({ batch: value }),
+  plan: (value) => select({ plan: Number(value) }),
+  cadence: (value) => select({ cadence: value }),
+  slot: (value) => select({ slot: value }),
+};
+
+for (const [name, handler] of Object.entries(radioHandlers)) {
+  for (const input of document.querySelectorAll(`input[name="${name}"]`)) {
+    input.addEventListener('change', () => handler(input.value));
+  }
+}
 
 const zipForm = document.getElementById('zip-form');
 const zipInput = document.getElementById('zip-input');
@@ -330,50 +396,47 @@ zipForm.addEventListener('submit', (event) => {
   render();
 });
 
-document.querySelectorAll('[data-action="subscribe"]').forEach((btn) => {
+for (const btn of document.querySelectorAll('[data-action="order"]')) {
   btn.addEventListener('click', () => {
     // Prototype boundary: in production this opens real checkout — age gate
-    // (18+), address, payment and a recurring-order schedule.
-    state.subscribed = true;
+    // (18+), address, payment, and a place in the batch that decrements it.
+    state.ordered = true;
     render();
   });
-});
-
-trialButtons.forEach((btn) => {
-  btn.addEventListener('click', () => {
-    state.trial = !state.trial;
-    render();
-  });
-});
+}
 
 /* --- replaying the mark --------------------------------------------------- */
 
 /* The circle rising through the horizon is the only animation in the brand and
-   it runs once, on load. Hovering the mark plays it again.
+   it runs once, on load. Hovering the mark sends the sun up again.
 
-   It restarts the animations already declared in the stylesheet rather than
-   redefining them, so the timing stays in one place: drop the animation, force
-   a reflow so the removal actually lands, then hand it back. Decorative only —
-   the mark is aria-hidden, so there is nothing to expose to the keyboard. */
+   Only the circle is touched, and only its transform: klar-rise-again carries no
+   opacity and the horizon is left alone entirely. Replaying the load animation
+   instead — which is what this used to do — blinked the circle and re-faded the
+   line, and the combination read as the whole mark jumping.
+
+   Restarting an animation needs the old one genuinely gone before the new one
+   is set, hence the forced reflow between. Decorative only: the mark is
+   aria-hidden, so there is nothing to expose to the keyboard. */
 const heroMark = document.querySelector('.mark--hero');
+const heroCircle = document.querySelector('.mark--hero .mark__circle');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+const MARK_REPLAY = 'klar-rise-again var(--rise-duration) var(--rise-ease) both';
 
-if (heroMark) {
-  const parts = heroMark.querySelectorAll('.mark__circle, .mark__horizon');
-
+if (heroMark && heroCircle) {
   heroMark.addEventListener('pointerenter', () => {
     // checked per event, not once, so a mid-session preference change is honoured
     if (reducedMotion.matches) return;
-    for (const part of parts) part.style.animation = 'none';
-    void heroMark.getBoundingClientRect().width;
-    for (const part of parts) part.style.animation = '';
+    heroCircle.style.animation = 'none';
+    void heroCircle.getBoundingClientRect().width;
+    heroCircle.style.animation = MARK_REPLAY;
   });
 }
 
 /* --- header height -------------------------------------------------------- */
 
-/* Anchor offsets and the sticky summary both key off the header, which
-   changes height when the nav wraps. Measured rather than guessed. */
+/* Anchor offsets and the sticky summary both key off the header, which changes
+   height when the nav wraps. Measured rather than guessed. */
 const header = document.querySelector('.header');
 
 function syncHeaderHeight() {
@@ -388,7 +451,7 @@ syncHeaderHeight();
    lands behind the sticky header the moment the nav wraps to two lines. That is
    worth two belts: the observer catches the nav rewrapping at a fixed viewport
    width, and the resize listener is attached unconditionally rather than only
-   as an ResizeObserver fallback — some embedded webviews expose the constructor
+   as a ResizeObserver fallback — some embedded webviews expose the constructor
    but never deliver its callbacks, and there the listener is all there is. The
    observer is kept in a variable rather than left anonymous. */
 const headerObserver = 'ResizeObserver' in window
@@ -400,26 +463,24 @@ window.addEventListener('resize', syncHeaderHeight);
 /* --- init ----------------------------------------------------------------- */
 
 // Take the defaults from the markup so the HTML stays the source of truth.
-const checkedPlan = document.querySelector('input[name="plan"]:checked');
-const checkedFreq = document.querySelector('input[name="freq"]:checked');
-const checkedSlot = document.querySelector('input[name="slot"]:checked');
-if (checkedPlan) state.plan = Number(checkedPlan.value);
-if (checkedFreq) state.freq = checkedFreq.value;
-if (checkedSlot) state.slot = checkedSlot.value;
+for (const name of Object.keys(radioHandlers)) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  if (!checked) continue;
+  state[name] = name === 'plan' ? Number(checked.value) : checked.value;
+}
 
 render();
 
-/* CI catches a stale brewMonth before it ships (tools/check-dates.mjs), but a
+/* CI catches a stale batch record before it ships (tools/check-dates.mjs), but a
    site left running past its own bedst før would still be making the claim, so
    it says so loudly in the console rather than failing quietly. */
-{
-  const window_ = freshnessWindow();
-  if (!window_.ok) {
-    console.error(
-      `[klar] batch ${CONFIG.batch.brewMonth} is stale: bedst før `
-      + `${window_.bestBeforeLabel} is ${window_.days} days after the first `
-      + `delivery, and the freshness copy needs at least ${window_.required}. `
-      + 'Bump CONFIG.batch.brewMonth.',
-    );
-  }
+for (const key of ['current', 'next']) {
+  if (batchOk(key)) continue;
+  const t = batchTimeline(key);
+  console.error(
+    `[klar] batch ${t.batch.id} (${key}) does not cohere: closes ${t.batch.closes}, `
+    + `brews ${t.batch.brews}, delivers ${t.batch.delivers}, bedst før `
+    + `${t.bestBeforeLabel} — ${t.daysOfLife} days of life after delivery, `
+    + `minimum ${t.required}. Update CONFIG.batches.`,
+  );
 }

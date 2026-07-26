@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Klar — subscription site
+   Klar — brew-to-order beer site
    Built from design_handoff_klar_site/. Design tokens below are the single
    source of truth; see site/README.md for the deviations from the handoff
    and why each one was made.
@@ -8,57 +8,58 @@
 /* --- tokens --------------------------------------------------------------- */
 
 :root {
-  /* colour — monochrome, no accent, ever */
+  /* colour — warm monochrome, no accent, ever */
   --ink: #26231F;
-  --ink-hover: #3A362F;
+  --ink-hover: #3A362F;         /* button hover; hairlines and table rules on ink */
   --paper: #EBE9E3;
-  --can: #FDFCF7;
-  --support: #7C7365;       /* hairlines on ink; text on the can-body substrate */
-  --muted: #948C7F;         /* secondary text on ink; hairlines on paper */
-  --panel-edge: #DEDBD4;
-  --divider: #EBE9E3;       /* hairlines inside can-body panels */
-  --letterbox: #1E1B18;
-  --letterbox-soft: #302C27;
+  --card: #FDFCF7;              /* cards, inputs, text on ink */
+  --card-edge: #DEDBD4;         /* 1px card rings, meter track, dividers on paper */
+  --grey-paper: #7C7365;        /* secondary text on paper */
+  --grey-strong: #5F5850;       /* small labels on paper, contrast-safe */
+  --grey-ink: #948C7F;          /* secondary text on ink */
+  --deep: #1E1B18;              /* image wells behind photography */
 
-  /* Secondary text on paper. The handoff sets this at --support (#7C7365),
-     but that is 3.85:1 on paper, which the brief itself restricts to >=24px.
-     The design uses it at 15px/400 and 19px/300 throughout, so it is darkened
-     here to clear 4.5:1 while staying inside the monochrome ramp. */
-  --support-on-paper: #71685C;
+  /* The handoff uses --grey-paper (#7C7365) for secondary text on paper. That is
+     3.85:1 — it fails AA at every size the design actually applies it at,
+     including the 22px/300 body copy, because the brief's own floor for it is
+     >=24px (or >=19px at weight 400+). So all secondary *text* on paper uses
+     --grey-strong (#5F5850, 5.77:1), which the handoff already defines as its
+     contrast-safe grey. --grey-paper is kept where it passes or isn't text: the
+     can renders (4.55:1 on the can body) and hairlines on ink.
+     See README deviation 1. */
 
   /* type — one stack, so the licensed grotesque swaps in here and nowhere else */
   --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, 'SF Mono', Menlo, monospace;
 
-  --fs-wordmark-hero: clamp(52px, 5.833vw, 84px);
-  --fs-wordmark: 22px;
-  --fs-panel-headline: clamp(17px, 1.319vw, 19px);
-  --fs-heading: clamp(30px, 3.056vw, 44px);
-  --fs-wink: clamp(30px, 3.611vw, 52px);
-  --fs-descriptor: clamp(18px, 1.528vw, 22px);
-  --fs-lede: clamp(17px, 1.319vw, 19px);
-  --fs-body: 17px;
-  --fs-label: 15px;
-  --fs-mid: clamp(21px, 1.667vw, 24px);
-  --fs-lead: clamp(28px, 2.361vw, 34px);
-  --fs-total: clamp(32px, 2.778vw, 40px);
-  --fs-mono: 11.5px;
+  /* The hero lockup is width-locked to the mark, so one variable drives the
+     mark, the wordmark and the descriptor together — see "the vertical lockup"
+     below. 230px is the handoff's desktop size. */
+  --mark-w: 230px;
+
+  --fs-headline: clamp(30px, 3.611vw, 52px);   /* section headlines, closing line */
+  --fs-total: clamp(30px, 2.778vw, 40px);      /* summary total, meter count */
+  --fs-size: clamp(26px, 2.222vw, 32px);       /* size options */
+  --fs-lead: clamp(22px, 1.806vw, 26px);       /* batch options */
+  --fs-body-lg: clamp(19px, 1.528vw, 22px);    /* body copy, card titles, captions */
+  --fs-body: clamp(17px, 1.319vw, 19px);       /* fact box, table rows, CTA */
+  --fs-sm: 17px;                               /* summary values, explainers */
+  --fs-label: 15px;                            /* labels, metadata, footer */
+  /* the can render's 13/11/10px sizes are fractions of --can-w, not tokens —
+     see "the can renders" */
 
   --tr-wordmark: 0.1em;
-  --tr-panel: 0.12em;
-  --tr-copy: 0.02em;
-  --tr-label: 0.04em;
-  --tr-step: 0.05em;
+  --tr-label: 0.05em;                          /* caps labels */
+  --tr-meta: 0.04em;
+  --tr-headline: 0.02em;
 
   /* layout — 1440 canvas, 80px gutter, content capped at 1280 */
   --gutter: clamp(20px, 5.5556vw, 80px);
   --pad-x: max(var(--gutter), (100% - 1280px) / 2);
-  --pad-y: clamp(64px, 7.222vw, 104px);
-  --pad-y-lg: clamp(68px, 7.778vw, 112px);
-  --pad-y-band: clamp(60px, 6.667vw, 96px);
+  --pad-y: clamp(64px, 7.778vw, 112px);
+  --pad-y-panel: clamp(64px, 8.333vw, 120px);  /* the two dark spread panels */
+  --pad-y-band: clamp(60px, 6.667vw, 96px);    /* closing line, footer */
 
-  --gap-hero: clamp(40px, 5.5556vw, 80px);
-  --gap-col: clamp(44px, 6.667vw, 96px);
+  --gap-col: clamp(44px, 6.667vw, 96px);       /* inter-column gap */
   --gap-card: clamp(24px, 2.222vw, 32px);
   --gap-opt: clamp(16px, 1.3889vw, 20px);
 
@@ -82,23 +83,21 @@ body {
   margin: 0;
   background: var(--paper);
   color: var(--ink);
-  font: 300 var(--fs-body)/1.6 var(--font);
-  letter-spacing: var(--tr-copy);
+  font: 300 var(--fs-sm)/1.6 var(--font);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
-h1, h2, h3, p, dl, dd, figure, ul, fieldset { margin: 0; padding: 0; }
+h1, h2, h3, p, dl, dd, figure, figcaption, ul, fieldset { margin: 0; padding: 0; }
 ul { list-style: none; }
 h1, h2, h3 { font-size: inherit; font-weight: 300; }
 img, svg, picture { display: block; }
 img { max-width: 100%; }
 button { font: inherit; letter-spacing: inherit; }
-
 a { color: inherit; text-decoration: none; }
 
 input {
-  font: 300 var(--fs-body) var(--font);
+  font: 300 var(--fs-sm) var(--font);
   color: var(--ink);
 }
 
@@ -122,17 +121,17 @@ input {
   transform: translate(-50%, -110%);
   z-index: 40;
   padding: 14px 24px;
-  background: var(--can);
+  background: var(--card);
   color: var(--ink);
   font-size: var(--fs-label);
   font-weight: 400;
-  letter-spacing: var(--tr-label);
+  letter-spacing: var(--tr-meta);
 }
 .skip-link:focus { transform: translate(-50%, 0); }
 
 /* --- zones --------------------------------------------------------------- */
 
-.zone-ink { background: var(--ink); color: var(--can); }
+.zone-ink { background: var(--ink); color: var(--card); }
 .zone-paper { background: var(--paper); color: var(--ink); }
 
 /* --- the mark ------------------------------------------------------------ */
@@ -146,9 +145,10 @@ input {
   height: auto;
 }
 .mark__circle, .mark__horizon { stroke: var(--ink); fill: none; }
-.zone-ink .mark__circle, .zone-ink .mark__horizon { stroke: var(--can); }
+.zone-ink .mark__circle, .zone-ink .mark__horizon { stroke: var(--card); }
 
-.mark--hero { width: 230px; max-width: 100%; }
+.mark--hero { width: var(--mark-w); max-width: 100%; }
+.mark--can { width: 124px; }
 
 /* The one animation in the brand: the circle rises through the horizon into
    its 2:1 position, once, on load. The horizon fades and does not move. */
@@ -165,51 +165,111 @@ input {
   animation: klar-fade 500ms ease-out both;
 }
 
+/* The hover replay (js/klar.js) is movement only: the sun travels, and nothing
+   else about the mark changes. No opacity — re-running the load animation made
+   the circle blink and re-faded the horizon, which read as the whole mark
+   jumping. The horizon is never touched on replay. Same duration and easing
+   tokens as the load rise, so the timing still lives in one place. */
+@keyframes klar-rise-again {
+  from { transform: translateY(var(--rise-distance)); }
+  to   { transform: translateY(0); }
+}
+
+/* --- the vertical lockup ------------------------------------------------- */
+
+/* In a vertical lockup the horizon line's ink extent, the wordmark's glyph ink
+   and the descriptor's glyph ink must all start and end on the same two
+   vertical edges. CSS boxes include trailing letter-space and side bearings,
+   which is why naive alignment looks 8-12px wrong — so the trailing track and
+   the side bearings are cancelled with negative margins.
+
+   The handoff gives measured px for a 230px mark. They are expressed here as
+   fractions of --mark-w (sizes) and em (tracking, margins) so the lock survives
+   the responsive layer: at --mark-w 230px these resolve to exactly the
+   handoff's 90.37px / -5.46px / -12.02px and 22px / 4.084px / -1px / -5.52px.
+
+   This is tuned to Helvetica Neue's metrics. Swapping in the licensed grotesque
+   means re-measuring every number in this block. */
+.lockup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.lockup__wordmark {
+  margin-top: 56px;
+  font-size: calc(0.3929 * var(--mark-w));   /* 0.393 x mark width */
+  letter-spacing: var(--tr-wordmark);
+  line-height: 1;
+  text-transform: uppercase;
+  margin-left: -0.0604em;                    /* left side bearing */
+  margin-right: -0.13299em;                  /* trailing track + right bearing */
+}
+.lockup__descriptor {
+  margin-top: 16px;
+  font-size: calc(0.09565 * var(--mark-w));  /* 22px at a 230px mark */
+  letter-spacing: 0.18564em;                 /* tracked out to match the ink */
+  color: var(--grey-ink);
+  margin-left: -0.04545em;
+  margin-right: -0.25091em;
+}
+
 /* --- shared type --------------------------------------------------------- */
 
-.heading {
-  font-size: var(--fs-heading);
-  line-height: 1.15;
-  text-wrap: pretty;
-}
-
-/* Part of the handoff's type scale with no consumer on the page right now:
-   .panel-headline lost its only user when the heritage eyebrow became a full
-   heading, and .mono lost the "asset pending" caption. Both are kept because
-   the can's legal small print and panel headings are specified in them — but
-   nothing on the page exercises them, so treat them as untested. */
-.panel-headline {
-  font-size: var(--fs-panel-headline);
-  letter-spacing: var(--tr-panel);
+/* Headlines are the one exception to the lowercase rule. The source stays
+   lowercase and CSS raises it, so copy, search and clipboard keep the brand's
+   casing while the page shows caps. */
+.headline {
+  font-size: var(--fs-headline);
+  line-height: 1.2;
+  letter-spacing: var(--tr-headline);
   text-transform: uppercase;
-}
-
-.lede {
-  font-size: var(--fs-lede);
-  line-height: 1.65;
-  color: var(--support-on-paper);
   text-wrap: pretty;
 }
-.lede--on-ink { color: var(--muted); }
+/* the order section's headline is a sentence, not a pillar name */
+.headline--lower { text-transform: none; }
+
+.body-lg {
+  font-size: var(--fs-body-lg);
+  line-height: 1.6;
+  color: var(--grey-strong);
+  text-wrap: pretty;
+}
+.body-lg--on-ink { color: var(--grey-ink); }
+
+.eyebrow {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--grey-strong);
+}
+.eyebrow--on-ink { color: var(--grey-ink); }
 
 .label {
   font-size: var(--fs-label);
   font-weight: 400;
-  letter-spacing: var(--tr-step);
-}
-
-.mono {
-  font-family: var(--font-mono);
-  font-size: var(--fs-mono);
-  letter-spacing: 0.06em;
-  line-height: 1.7;
-  color: var(--muted);
+  letter-spacing: var(--tr-label);
 }
 
 .rule { height: 1px; border: 0; margin: 0; background: var(--ink); }
-.rule--hair { background: var(--muted); }
-.rule--panel { background: var(--divider); margin: 26px 0; }
-.rule--on-ink { background: var(--support); margin-inline: var(--pad-x); }
+.rule--panel { background: var(--paper); margin: 26px 0; }
+.rule--on-ink { background: var(--grey-paper); margin-inline: var(--pad-x); }
+
+/* The two-column editorial split used by frisk, årstid and the order head:
+   lead copy left, a 380px aside right, bottom-aligned. */
+.split {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--gap-col);
+}
+.split__lead {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+  max-width: 640px;
+}
+.split > :last-child:not(.split__lead) { flex: 0 1 380px; }
 
 /* --- buttons ------------------------------------------------------------- */
 
@@ -219,29 +279,25 @@ input {
   justify-content: center;
   border: 0;
   border-radius: 0;                 /* square everywhere, by rule */
-  padding: 19px 34px;
+  padding: 22px 32px;
   font-family: var(--font);
   font-weight: 300;
   font-size: var(--fs-body);
-  letter-spacing: var(--tr-copy);
   text-align: center;
   cursor: pointer;
   transition: background-color 120ms linear, color 120ms linear;
 }
-
-.btn--fill-paper { background: var(--can); color: var(--ink); }
-.btn--fill-ink   { background: var(--ink); color: var(--can); }
-.btn--outline    { background: transparent; color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
-
+.btn--fill-ink { background: var(--ink); color: var(--card); }
 .btn--block { display: flex; width: 100%; }
 
 @media (hover: hover) {
-  .btn--fill-paper:hover { background: var(--paper); }
-  .btn--fill-ink:hover   { background: var(--ink-hover); }
-  .btn--outline:hover    { background: var(--ink); color: var(--can); }
+  .btn--fill-ink:hover { background: var(--ink-hover); }
 }
-
-.btn[aria-pressed="true"] { background: var(--ink); color: var(--can); }
+.btn--fill-ink:focus-visible {
+  outline: 0;
+  background: var(--ink-hover);
+  box-shadow: 0 0 0 3px var(--card-edge);
+}
 
 /* --- header -------------------------------------------------------------- */
 
@@ -250,592 +306,480 @@ input {
   top: 0;
   z-index: 20;
   background: var(--ink);
-  color: var(--can);
+  color: var(--card);
   box-shadow: 0 1px 0 var(--ink-hover);
 }
-
 .header__bar {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 44px;
+  justify-content: space-between;
+  gap: 22px 44px;
   padding: 26px var(--pad-x) 22px;
 }
-
-.header__top { display: contents; }
-
 .header__wordmark {
-  order: 1;
-  font-size: var(--fs-wordmark);
+  font-size: 22px;
   letter-spacing: var(--tr-wordmark);
   text-transform: uppercase;
   line-height: 1;
 }
-
 .header__nav {
-  order: 2;
   display: flex;
   flex-wrap: wrap;
   gap: 12px 44px;
   margin-left: auto;
   font-size: 16px;
 }
+/* the border is always there, transparent when idle, so text never shifts */
 .header__nav a { border-bottom: 1px solid transparent; padding-bottom: 2px; }
+@media (hover: hover) {
+  .header__nav a:hover { border-bottom-color: var(--card); }
+}
 
-.header__cart {
-  order: 3;
+.header__status {
   display: flex;
   align-items: center;
   gap: 0.34em;
   font-size: var(--fs-label);
   font-weight: 400;
-  letter-spacing: var(--tr-label);
-  color: var(--muted);
+  letter-spacing: var(--tr-meta);
+  color: var(--grey-ink);
 }
-.header__cart::before {
+.header__status::before {
   content: '';
   width: 1px; height: 15px;
   margin-right: calc(44px - 0.34em);
-  background: var(--support);
+  background: var(--grey-paper);
 }
 
-@media (hover: hover) {
-  .header__nav a:hover { border-bottom-color: var(--can); }
-}
+/* --- 1a. hero ------------------------------------------------------------ */
 
-/* --- 1. hero --------------------------------------------------------------- */
-
-/* The photograph owns the right half of the fold outright: flush to the top,
-   right and bottom edges, full height. The text column is inset by the gutter
-   on the left and stops half a gap short of the photograph, which lands it at
-   the 600px the design specifies on a 1440 canvas. */
 .hero {
-  position: relative;
-  display: flex;
-  align-items: center;
-  min-height: calc(100vh - var(--header-h));
-  min-height: calc(100svh - var(--header-h));
-  padding: var(--pad-y-lg) calc(50% + var(--gap-hero) / 2)
-           clamp(72px, 8.333vw, 120px) var(--pad-x);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  min-height: 820px;
 }
-
 .hero__text {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  width: 100%;
+  justify-content: center;
+  padding: var(--pad-y-panel) var(--gap-col) var(--pad-y-panel) var(--pad-x);
 }
-
-.hero__title { display: contents; }
-
-.hero__wordmark {
-  margin-top: 52px;
-  margin-right: calc(-1 * var(--tr-wordmark));   /* discount the trailing letter-space */
-  font-size: var(--fs-wordmark-hero);
-  letter-spacing: var(--tr-wordmark);
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-.hero__descriptor {
-  margin-top: 26px;
-  font-size: var(--fs-descriptor);
-  color: var(--muted);
-}
-
 .hero__spec {
   display: flex;
   flex-wrap: wrap;
-  gap: 14px clamp(20px, 2.5vw, 36px);
-  width: 100%;
-  margin-top: 56px;
+  gap: 12px 36px;
+  margin-top: 64px;
   font-size: var(--fs-label);
   font-weight: 400;
   letter-spacing: 0.03em;
-  color: var(--muted);
+  color: var(--grey-ink);
+}
+.hero__media { overflow: hidden; background: var(--deep); }
+.hero__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 26% 58%;
 }
 
-.hero__media { position: absolute; inset: 0 0 0 50%; }
+/* --- 1b. hverdagsøl ----------------------------------------------------- */
 
-.letterbox { overflow: hidden; background: var(--letterbox); }
-.letterbox--soft { background: var(--letterbox-soft); }
-.letterbox picture, .letterbox img { width: 100%; height: 100%; }
-.letterbox img { object-fit: cover; }
-
-.hero__media img { object-position: 26% 58%; }
-
-/* --- 2. øllen -------------------------------------------------------------- */
-
-.product {
+.pillar {
   display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: var(--gap-col);
-  align-items: start;
-  padding: var(--pad-y) var(--pad-x);
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  min-height: 820px;
 }
-
-.cans {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(20px, 2.778vw, 40px);
+.pillar__media { overflow: hidden; background: var(--deep); }
+.pillar__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 38% 74%;
+}
+.pillar__text {
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  justify-items: center;
+  gap: 34px;
+  padding: var(--pad-y-panel) var(--pad-x) var(--pad-y-panel) var(--gap-col);
 }
+.pillar__text .body-lg { max-width: 520px; }
 
-/* The can renders are illustrations of print artwork, so every internal
-   metric is a fraction of the can's own width — the whole thing scales
-   without any of the proportions drifting. */
-.can-slot {
-  --cw: 220px;
-  container-type: inline-size;
-  width: 100%;
-  max-width: 220px;
-}
-@supports (container-type: inline-size) {
-  .can-slot { --cw: 100cqw; }
-}
-
-.can {
-  display: flex;
-  flex-direction: column;
-  aspect-ratio: 11 / 28;
-  border-radius: calc(var(--cw) * 0.1);
-  /* fakes the cylinder — the only gradient in the system, and it is artwork */
-  background: linear-gradient(90deg, #EFEDE6 0%, var(--can) 18%, var(--can) 76%, #E9E7DF 100%);
-  box-shadow: 0 24px 48px -28px rgba(38, 35, 31, 0.35);
-  color: var(--ink);
-}
-
-.can__spacer { flex: 1; }
-.can__rule { height: 1px; background: var(--muted); }
-.can .mark { width: 100%; }
-
-.can--front {
-  align-items: center;
-  text-align: center;
-  padding: calc(var(--cw) * 0.20909) calc(var(--cw) * 0.12727) calc(var(--cw) * 0.15455);
-}
-.can--front .mark {
-  width: calc(var(--cw) * 0.56364);
-  margin-top: calc(var(--cw) * 0.12727);
-}
-.can__wordmark {
-  margin-top: calc(var(--cw) * 0.13636);
-  font-size: calc(var(--cw) * 0.16818);
-  letter-spacing: var(--tr-wordmark);
-  text-transform: uppercase;
-  line-height: 1;
-}
-.can__descriptor {
-  margin-top: calc(var(--cw) * 0.06818);
-  font-size: calc(var(--cw) * 0.05909);
-  color: var(--support);
-}
-.can__batch {
-  font-size: calc(var(--cw) * 0.05);
-  font-weight: 400;
-  letter-spacing: var(--tr-label);
-  color: var(--support);
-}
-.can--front .can__rule {
-  width: 100%;
-  margin: calc(var(--cw) * 0.07273) 0 calc(var(--cw) * 0.08182);
-}
-.can__abv {
-  font-size: calc(var(--cw) * 0.1);
-  font-weight: 400;
-  letter-spacing: var(--tr-label);
-  line-height: 1;
-}
-.can__duty {
-  margin-top: calc(var(--cw) * 0.05455);
-  font-size: calc(var(--cw) * 0.04545);
-  font-weight: 400;
-  letter-spacing: var(--tr-label);
-  color: var(--support);
-}
-
-.can--back {
-  padding: calc(var(--cw) * 0.18182) calc(var(--cw) * 0.11818) calc(var(--cw) * 0.13636);
-  color: var(--support);
-}
-.can--back .mark { width: calc(var(--cw) * 0.28182); }
-.can__headline {
-  margin-top: calc(var(--cw) * 0.13636);
-  font-size: calc(var(--cw) * 0.06818);
-  letter-spacing: var(--tr-panel);
-  text-transform: uppercase;
-  color: var(--ink);
-}
-.can__heritage {
-  margin-top: calc(var(--cw) * 0.1);
-  font-size: calc(var(--cw) * 0.04545);
-  line-height: 1.45;
-}
-.can__wink {
-  margin-top: calc(var(--cw) * 0.13636);
-  font-size: calc(var(--cw) * 0.05682);
-  line-height: 1.45;
-  color: var(--ink);
-}
-.can__rule--back { margin-top: calc(var(--cw) * 0.13636); }
-.can__provenance {
-  margin-top: calc(var(--cw) * 0.09091);
-  font-size: calc(var(--cw) * 0.04091);
-  font-weight: 400;
-  line-height: 1.8;
-  letter-spacing: 0.03em;
-}
-.can__legal {
-  display: flex;
-  flex-direction: column;
-  gap: calc(var(--cw) * 0.01818);
-  font-size: calc(var(--cw) * 0.03409);
-  font-weight: 400;
-  line-height: 1.7;
-  letter-spacing: 0.03em;
-}
-
-.product__copy { display: flex; flex-direction: column; gap: 36px; }
-
-.facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 32px 48px;
-}
-.facts__item { display: flex; flex-direction: column; gap: 9px; }
-.facts__item dt { font-size: var(--fs-label); font-weight: 400; letter-spacing: var(--tr-label); }
-.facts__value { font-size: var(--fs-mid); }
-.facts__note { font-size: var(--fs-label); font-weight: 400; color: var(--support-on-paper); }
-
-/* --- 3. wink band ---------------------------------------------------------- */
-
-.wink {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--gap-col);
-  padding: var(--pad-y-band) var(--pad-x);
-}
-.wink__statement {
-  max-width: 760px;
-  font-size: var(--fs-wink);
-  line-height: 1.2;
-  text-wrap: pretty;
-}
-
-/* --- 4. frisk -------------------------------------------------------------- */
+/* --- 2. frisk ----------------------------------------------------------- */
 
 .fresh {
   display: flex;
   flex-direction: column;
-  gap: 56px;
+  gap: 64px;
   padding: var(--pad-y) var(--pad-x);
 }
-.fresh__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--gap-col);
-}
-.fresh__head .heading { max-width: 620px; }
-.fresh__head .lede { max-width: 480px; }
-
-/* The two figures are the pillar's evidence, so they are set at heading scale
-   and read as a pair. "omkring" stays in the figure, not the note — the number
-   is an approximation and should not be able to lose its qualifier. */
-.loss {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: var(--gap-col);
-  max-width: 1000px;
-}
-.loss__item { display: flex; flex-direction: column; gap: 12px; }
-.loss__figure {
-  font-size: var(--fs-lead);
-  line-height: 1.1;
-  text-wrap: balance;
-}
-.loss__note {
-  max-width: 300px;
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  color: var(--support-on-paper);
-  text-wrap: pretty;
-}
-
-.fresh__payoff {
-  max-width: 760px;
-  font-size: var(--fs-mid);
-  line-height: 1.45;
-  text-wrap: pretty;
-}
-
-.fresh__cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--gap-col);
-}
-.fcard__title { font-size: var(--fs-mid); }
-.fcard__body {
-  margin-top: 12px;
-  max-width: 520px;
-  font-size: var(--fs-body);
-  line-height: 1.6;
-  color: var(--support-on-paper);
-  text-wrap: pretty;
-}
-
-/* --- 5. levering ----------------------------------------------------------- */
-
-.delivery {
+.fact {
   display: flex;
   flex-direction: column;
-  gap: 56px;
-  padding: var(--pad-y) var(--pad-x);
+  gap: 14px;
+  padding: 32px 34px;
+  background: var(--card);
+  box-shadow: inset 0 0 0 1px var(--card-edge);
 }
-.delivery__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--gap-col);
-}
-.delivery__head .heading { max-width: 620px; }
-.delivery__head .lede { max-width: 400px; }
-
-.delivery__cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--gap-card);
-}
-.dcard { display: flex; flex-direction: column; }
-/* The design drew these 405x280 in a 3-up. Dropping the third card widens each
-   to ~624, so the proportion is held as a ratio rather than the literal height
-   — a fixed 280 at that width would crop the photographs much harder than the
-   framing in the handoff. */
-.dcard__media { aspect-ratio: 405 / 280; }
-.dcard__media img { object-position: 50% 42%; }
-.dcard:nth-child(2) .dcard__media img { object-position: 52% 62%; }
-.dcard__title { margin-top: 32px; font-size: var(--fs-mid); color: var(--can); }
-.dcard__body {
-  margin-top: 12px;
+.fact__claim {
   font-size: var(--fs-body);
-  line-height: 1.6;
-  color: var(--muted);
+  line-height: 1.5;
   text-wrap: pretty;
 }
 
-/* --- 6. sæson -------------------------------------------------------------- */
-
-/* Same 1:1.15 split as the product section, so the two editorial arguments on
-   paper share a measure rather than each inventing one. */
-.season {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: var(--gap-col);
-  padding: var(--pad-y) var(--pad-x);
-}
-.season__title { max-width: 520px; }
-.season__prose { display: flex; flex-direction: column; gap: 22px; }
-.season__prose .lede { max-width: 620px; }
-
-/* --- 7. hverdagsstyrke ----------------------------------------------------- */
-
-.heritage {
+.photos {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--gap-col);
-  align-items: center;
-  padding: var(--pad-y-lg) var(--pad-x);
+  gap: var(--gap-card);
 }
-.heritage__copy { display: flex; flex-direction: column; gap: 32px; }
-/* the three paragraphs are one argument, so they sit closer to each other than
-   to the statement they build up to */
-.heritage__prose { display: flex; flex-direction: column; gap: 20px; }
-.heritage__statement {
-  font-size: var(--fs-mid);
-  line-height: 1.45;
+.photo__well {
+  aspect-ratio: 624 / 380;
+  overflow: hidden;
+  background: var(--card-edge);
+}
+.photo__well img { width: 100%; height: 100%; object-fit: cover; }
+.photo:first-child .photo__well img { object-position: 50% 42%; }
+.photo:last-child .photo__well img { object-position: 52% 62%; }
+.photo__caption {
+  padding-top: 28px;
+  font-size: var(--fs-body-lg);
   text-wrap: pretty;
 }
-.heritage__body {
-  max-width: 520px;
-  font-size: var(--fs-lede);
-  line-height: 1.7;
-  color: var(--muted);
-  text-wrap: pretty;
+
+/* --- 3. årstid ---------------------------------------------------------- */
+
+.season {
+  display: flex;
+  flex-direction: column;
+  gap: 72px;
+  padding: var(--pad-y) var(--pad-x);
 }
-.heritage__body span { color: var(--can); }
-.heritage__line { font-size: var(--fs-lede); color: var(--can); }
-.heritage__media { height: 560px; }
-.heritage__media img { object-position: 38% 74%; }
 
-/* --- 8. abonnement --------------------------------------------------------- */
+/* The handoff bottom-aligns this split, the same as frisk and the order head.
+   That works there because the right-hand element is a filled panel — a visible
+   edge to align to. Here the right side is a list of hairline rows with no box,
+   so bottom-aligning left "LANDER I DANMARK" stranded above the headline with
+   nothing to relate to, and the centred cans below aligned to neither column.
 
-.shop { padding: var(--pad-y) var(--pad-x); }
+   So this section is a grid instead, and the alignments are structural: row 1
+   is headline + eyebrow sharing a baseline, row 2 is body + table sharing one.
+   Both columns start on the content edge and the table ends on the right gutter,
+   giving the section four real edges instead of none. */
+.season__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 640px) 380px;
+  grid-template-areas:
+    'headline eyebrow'
+    'body     table';
+  justify-content: space-between;
+  column-gap: var(--gap-col);
+  row-gap: 34px;
+  align-items: baseline;
+}
+.season__headline { grid-area: headline; }
+.season__eyebrow { grid-area: eyebrow; }
+.season__body { grid-area: body; }
+.season__table { grid-area: table; }
 
-.shop__head {
+.arrivals__list { display: flex; flex-direction: column; gap: 14px; }
+.arrivals__row {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--gap-col);
-  padding-bottom: 44px;
+  align-items: baseline;
+  gap: 20px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ink-hover);
+  font-size: var(--fs-body);
 }
-.shop__intro { display: flex; flex-direction: column; gap: 18px; }
-.shop__intro .lede { max-width: 560px; }
-/* the one promise worth lifting out of the support grey — weight 400 and full
-   ink, not the browser's bold, which is far too heavy for this face */
-.lede__strong { font-weight: 400; color: var(--ink); }
-.shop__service-line {
+.arrivals__row dd { color: var(--grey-ink); }
+
+/* the can renders ---------------------------------------------------------
+   The only rounded and the only shadowed objects in the design.
+
+   Every internal metric is a fraction of --can-w, so the whole render scales
+   from one number and the proportions hold at any size. Container query units
+   were the obvious tool and are the wrong one here: cqw inside .can's own
+   padding resolves against the nearest *ancestor* container, not the element
+   declaring it, so the can inflates instead of scaling. A plain variable has no
+   such trap. 15.28vw is 220px on the 1440 canvas. */
+/* Flush left, not centred. Centred, the pair floated in the middle of the
+   section aligned to nothing; on the content edge they start where the headline
+   starts and the whole pair (476px) sits inside the lead column's 640px measure,
+   so they read as belonging to the argument above them. */
+.cans {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 36px;
+}
+.can {
+  /* Sized so two cans plus the gap always fit inside the gutters, which keeps
+     flex-shrink from ever engaging: if the box were shrunk below --can-w, every
+     internal metric would still be computed against the variable and the
+     proportions would quietly drift. `flex: none` guarantees rendered width
+     equals the variable. 38vw is the widest that still fits at 320px. */
+  --can-w: min(220px, 38vw);
+
   flex: none;
-  font-size: var(--fs-lede);
-  color: var(--support-on-paper);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--can-w);
+  aspect-ratio: 220 / 560;
+  padding: calc(0.209 * var(--can-w))
+           calc(0.127 * var(--can-w))
+           calc(0.155 * var(--can-w));         /* 46 28 34 at 220 */
+  border-radius: calc(0.1 * var(--can-w));     /* 22 at 220 */
+  background: linear-gradient(90deg, #EFEDE6 0%, var(--card) 18%, var(--card) 76%, #E9E7DF 100%);
+  box-shadow: 0 24px 48px -28px rgba(0, 0, 0, 0.55);
+  color: var(--ink);
+  text-align: center;
+}
+/* the upcoming batch, stepped back */
+.can--upcoming { opacity: 0.55; }
+
+.can .mark--can {
+  width: calc(0.564 * var(--can-w));           /* 124 at 220 */
+  margin-top: calc(0.127 * var(--can-w));
+}
+.can .mark__circle, .can .mark__horizon { stroke: var(--ink); }
+.can__wordmark {
+  margin-top: calc(0.136 * var(--can-w));
+  font-size: calc(0.168 * var(--can-w));       /* 37 at 220 */
+  letter-spacing: var(--tr-wordmark);
+  line-height: 1;
+  text-transform: uppercase;
+}
+.can__descriptor {
+  margin-top: calc(0.068 * var(--can-w));
+  font-size: calc(0.059 * var(--can-w));       /* 13 */
+  letter-spacing: var(--tr-headline);
+  color: var(--grey-paper);
+}
+.can__spacer { flex: 1; }
+.can__batch {
+  font-size: calc(0.05 * var(--can-w));        /* 11 */
+  font-weight: 400;
+  letter-spacing: var(--tr-meta);
+  color: var(--grey-paper);
+}
+.can__rule {
+  width: 100%;
+  height: 1px;
+  margin: calc(0.073 * var(--can-w)) 0 calc(0.082 * var(--can-w));
+  background: var(--grey-ink);
+}
+.can__abv {
+  font-size: calc(0.1 * var(--can-w));         /* 22 */
+  font-weight: 400;
+  letter-spacing: var(--tr-meta);
+}
+.can__duty {
+  margin-top: calc(0.055 * var(--can-w));
+  font-size: calc(0.0455 * var(--can-w));      /* 10 */
+  font-weight: 400;
+  letter-spacing: var(--tr-meta);
+  color: var(--grey-paper);
 }
 
-.shop__grid {
+/* --- 4. bestil ---------------------------------------------------------- */
+
+.order { padding: var(--pad-y) var(--pad-x); }
+.order__head { padding-bottom: 48px; }
+
+/* the batch meter --------------------------------------------------------- */
+
+.meter { display: flex; flex-direction: column; gap: 18px; }
+.meter__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  color: var(--grey-strong);
+}
+.meter__top span:last-child { color: var(--ink); }
+.meter__count { font-size: var(--fs-total); line-height: 1; }
+.meter__track { height: 6px; background: var(--card-edge); }
+.meter__fill { height: 6px; width: 0; background: var(--ink); }
+.meter__note {
+  font-size: var(--fs-sm);
+  line-height: 1.6;
+  color: var(--grey-strong);
+  text-wrap: pretty;
+}
+
+/* the form --------------------------------------------------------------- */
+
+.order__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 400px;
   gap: var(--gap-col);
   align-items: start;
   padding-top: 56px;
 }
-
-.steps { display: flex; flex-direction: column; gap: 52px; }
-.step { display: flex; flex-direction: column; gap: 22px; }
+.steps { display: flex; flex-direction: column; gap: 48px; }
+.step { display: flex; flex-direction: column; gap: 20px; }
 .step__head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 20px;
-  flex-wrap: wrap;
 }
 .step__hint {
   font-size: var(--fs-label);
   font-weight: 400;
-  color: var(--support-on-paper);
+  color: var(--grey-strong);
 }
 
-/* selection cards --------------------------------------------------------- */
+/* option cards ----------------------------------------------------------- */
 
-/* Reflow on available space rather than at fixed breakpoints: three across
-   while they fit, then two, then one. At the 1440 canvas this resolves to the
-   248px the design specifies. */
 .opts { display: grid; gap: var(--gap-opt); }
-.opts--3 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-.opts--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.opts--2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.opts--3 { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
 
-.opt { position: relative; display: block; cursor: pointer; }
-
-/* The real radio does the work — keyboard, arrow keys, grouping, state —
-   and is kept focusable rather than display:none. */
+.opt { display: block; cursor: pointer; }
+/* a real radio, visually hidden — native grouping, arrow keys and :checked,
+   rather than a hand-built role="radio" with a keydown handler */
 .opt__input {
   position: absolute;
   width: 1px; height: 1px;
-  opacity: 0;
-  margin: 0;
-  pointer-events: none;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
 }
-
 .opt__body {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   height: 100%;
-  padding: 26px 28px;
-  background: var(--can);
-  /* three states that must stay distinct: 1px edge / 1px ink / 2px ink */
-  box-shadow: inset 0 0 0 1px var(--panel-edge);
+  background: var(--card);
+  /* the ring is an inset shadow, not a border, so selection never shifts
+     layout. 1px unselected, 2px selected — and hover stays 1px so hovering
+     can never read as selected. */
+  box-shadow: inset 0 0 0 1px var(--card-edge);
   transition: box-shadow 120ms linear;
 }
-.opt__body--tall { gap: 20px; padding: 32px; }
+.opt__body--card { gap: 16px; padding: 30px; }
+.opt__body--row-stack { gap: 10px; padding: 26px 28px; }
 .opt__body--row {
   flex-direction: row;
   justify-content: space-between;
   align-items: baseline;
   gap: 20px;
+  padding: 26px 28px;
 }
 
-.opt__lead { font-size: var(--fs-lead); }
-.opt__mid { font-size: var(--fs-mid); }
-.opt__rule { height: 1px; background: var(--divider); }
-.opt__price {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  font-size: var(--fs-label);
-  font-weight: 400;
-}
-.opt__note {
-  font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--support-on-paper);
-}
-
-/* order matters: hover must not read as selected, selected must win over
-   hover, focus must be visible on top of both */
 @media (hover: hover) {
   .opt:hover .opt__body { box-shadow: inset 0 0 0 1px var(--ink); }
 }
 .opt__input:checked + .opt__body { box-shadow: inset 0 0 0 2px var(--ink); }
 .opt__input:focus-visible + .opt__body {
-  box-shadow: inset 0 0 0 2px var(--ink), 0 0 0 3px var(--panel-edge);
+  box-shadow: inset 0 0 0 2px var(--ink), 0 0 0 3px var(--card-edge);
+}
+
+/* sold out: the current batch is not selectable, and `disabled` takes it out
+   of the tab order natively */
+.opt__input:disabled + .opt__body { opacity: 0.45; box-shadow: inset 0 0 0 1px var(--card-edge); }
+.opt:has(.opt__input:disabled) { cursor: default; }
+@media (hover: hover) {
+  .opt:has(.opt__input:disabled):hover .opt__body { box-shadow: inset 0 0 0 1px var(--card-edge); }
+}
+
+.opt__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.opt__lead { font-size: var(--fs-lead); }
+.opt__size { font-size: var(--fs-size); }
+.opt__mid { font-size: var(--fs-body-lg); }
+.opt__chip { font-size: var(--fs-label); font-weight: 400; color: var(--grey-strong); }
+.opt__rule { height: 1px; background: var(--paper); }
+.opt__note {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  line-height: 1.6;
+  color: var(--grey-strong);
+  text-wrap: pretty;
+}
+.opt__price {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  font-size: var(--fs-label);
+  font-weight: 400;
 }
 
 /* postcode --------------------------------------------------------------- */
 
-.zip { display: flex; gap: 20px; align-items: stretch; }
+.zip { display: flex; gap: var(--gap-opt); align-items: stretch; }
 .zip__input {
   flex: 1;
   min-width: 0;
-  padding: 26px 28px;
+  background: var(--card);
   border: 0;
-  border-radius: 0;
-  background: var(--can);
-  box-shadow: inset 0 0 0 1px var(--muted);
-  font-size: var(--fs-mid);
-  letter-spacing: var(--tr-label);
+  box-shadow: inset 0 0 0 1px var(--grey-ink);
+  padding: 24px 28px;
+  font-size: var(--fs-body-lg);
+  letter-spacing: var(--tr-meta);
 }
-.zip__input::placeholder { color: var(--support-on-paper); opacity: 1; }
-.zip__input:focus {
-  outline: none;
+.zip__input::placeholder { color: var(--grey-strong); opacity: 1; }
+.zip__input:focus-visible {
+  outline: 0;
   box-shadow: inset 0 0 0 2px var(--ink);
 }
-.zip .btn { flex: none; padding: 26px 34px; }
-
 .zip__answer {
-  font-size: var(--fs-lede);
-  line-height: 1.5;
-  color: var(--support-on-paper);
+  font-size: var(--fs-body);
+  line-height: 1.6;
+  color: var(--grey-strong);
   text-wrap: pretty;
 }
-/* the affirmative is an answer, not a footnote */
-.zip__answer[data-serviceable="true"] { color: var(--ink); }
 .zip__answer:empty { display: none; }
+.zip__answer[data-serviceable="true"] { color: var(--ink); }
 
-/* summary panel ---------------------------------------------------------- */
+/* order summary ---------------------------------------------------------- */
 
 .summary {
   position: sticky;
   top: calc(var(--header-h) + 44px);
+  background: var(--card);
   padding: 44px 40px;
-  background: var(--can);
-  box-shadow: inset 0 0 0 1px var(--panel-edge);
+  box-shadow: inset 0 0 0 1px var(--card-edge);
 }
-
+.summary__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+}
+.summary__state {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  letter-spacing: var(--tr-label);
+  color: var(--grey-strong);
+}
 .summary__rows { display: flex; flex-direction: column; gap: 16px; }
 .summary__row {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
   gap: 20px;
+  font-size: var(--fs-sm);
 }
 .summary__row dt {
   flex: none;
   font-size: var(--fs-label);
   font-weight: 400;
-  color: var(--support-on-paper);
+  color: var(--grey-strong);
 }
-.summary__row dd { margin: 0; text-align: right; }
+.summary__row dd { text-align: right; }
 
 .summary__total {
   display: flex;
@@ -843,125 +787,43 @@ input {
   align-items: baseline;
   gap: 20px;
 }
-.summary__total-label { font-size: var(--fs-lede); }
-.summary__total-value {
-  font-size: var(--fs-total);
-  letter-spacing: 0.01em;
-  line-height: 1;
-}
-
+.summary__cadence { font-size: var(--fs-body); }
+.summary__total-value { font-size: var(--fs-total); letter-spacing: 0.01em; }
 .summary__fineprint {
   margin-top: 10px;
   font-size: var(--fs-label);
   font-weight: 400;
-  color: var(--support-on-paper);
+  color: var(--grey-strong);
 }
-
-.summary__cta { margin-top: 32px; padding: 22px; font-size: var(--fs-lede); }
-
+.summary__cta { margin-top: 32px; }
 .summary__confirm {
   margin-top: 22px;
-  font-size: var(--fs-body);
+  font-size: var(--fs-sm);
   line-height: 1.55;
-  color: var(--support-on-paper);
+  color: var(--grey-strong);
   animation: klar-fade 400ms ease-out both;
 }
 .summary__confirm:empty { display: none; }
-
-.summary__reassure {
+.summary__terms {
   display: flex;
   flex-direction: column;
   gap: 12px;
   font-size: var(--fs-label);
   font-weight: 400;
-  color: var(--support-on-paper);
+  color: var(--grey-strong);
 }
 
-/* trial box -------------------------------------------------------------- */
+/* --- closing line ------------------------------------------------------- */
 
-.trial {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: clamp(24px, 3.333vw, 48px);
-  margin-top: 56px;
-  padding: 36px 40px;
-  background: var(--can);
-  box-shadow: inset 0 0 0 1px var(--panel-edge);
-}
-.trial__copy { display: flex; flex-direction: column; gap: 8px; }
-.trial__title { font-size: var(--fs-mid); }
-.trial__detail { font-size: var(--fs-body); color: var(--support-on-paper); text-wrap: pretty; }
-.trial .btn { flex: none; padding: 19px 32px; }
-
-/* mobile checkout bar — desktop keeps the sticky summary instead */
-.checkout-bar { display: none; }
-
-/* --- 9. brygbogen ---------------------------------------------------------- */
-
-.brewlog {
-  display: flex;
-  flex-direction: column;
-  gap: 48px;
-  padding: var(--pad-y) var(--pad-x);
-}
-.brewlog__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--gap-col);
-}
-.brewlog__head .heading { max-width: 420px; }
-.brewlog__intro { display: flex; flex-direction: column; gap: 14px; }
-.brewlog__intro .lede { max-width: 480px; }
-
-/* The table scrolls inside its own box on narrow screens; the page itself must
-   never scroll sideways. tabindex on the wrapper makes that reachable by
-   keyboard, and the global focus ring covers it. */
-.brewlog__scroll { overflow-x: auto; }
-
-.brewlog__table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--fs-body);
-  text-align: left;
-  /* it is a record of months: the figures line up column to column */
-  font-variant-numeric: tabular-nums;
-}
-.brewlog__table th,
-.brewlog__table td {
-  padding: 17px 28px 17px 0;
-  font-weight: 300;
-  vertical-align: baseline;
-  border-bottom: 1px solid var(--support);
-  white-space: nowrap;
-}
-.brewlog__table thead th {
-  padding-bottom: 13px;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--tr-step);
-  color: var(--muted);
-}
-/* the notes are prose, so they wrap where the record columns do not */
-.brewlog__table td:last-child { white-space: normal; min-width: 230px; }
-.brewlog__table tbody tr:last-child th,
-.brewlog__table tbody tr:last-child td { border-bottom: 0; }
-
-/* the live brew reads at full contrast, the history steps back — no extra copy
-   needed to say which one is in the can right now */
-.brewlog__row { color: var(--muted); }
-.brewlog__row--current { color: var(--can); }
-
-.brewlog__next {
-  font-size: var(--fs-lede);
-  line-height: 1.6;
-  color: var(--muted);
+.closing { padding: var(--pad-y-band) var(--pad-x); }
+.closing__line {
+  max-width: 760px;
+  font-size: var(--fs-headline);
+  line-height: 1.2;
   text-wrap: pretty;
 }
-.brewlog__next span { color: var(--can); font-variant-numeric: tabular-nums; }
 
-/* --- 10. footer ------------------------------------------------------------ */
+/* --- footer ------------------------------------------------------------- */
 
 .footer { padding-top: var(--pad-y-band); }
 .footer__cols {
@@ -972,206 +834,133 @@ input {
 }
 .footer__brand { display: flex; flex-direction: column; gap: 20px; }
 .footer__wordmark {
-  font-size: var(--fs-wordmark);
+  font-size: 22px;
   letter-spacing: var(--tr-wordmark);
   text-transform: uppercase;
-  line-height: 1;
 }
 .footer__address {
   font-size: var(--fs-label);
   font-weight: 400;
   line-height: 1.7;
-  color: var(--muted);
+  color: var(--grey-ink);
 }
-.footer__links, .footer__duty {
+.footer__links {
   display: flex;
   flex-direction: column;
   gap: 14px;
   font-size: var(--fs-label);
   font-weight: 400;
 }
-.footer__duty { color: var(--muted); }
-
 @media (hover: hover) {
-  .footer__links a:hover, .footer__address a:hover { color: var(--muted); }
+  .footer__links a:hover, .footer__address a:hover { color: var(--grey-ink); }
 }
-
+.footer__duty {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  font-size: var(--fs-label);
+  font-weight: 400;
+  color: var(--grey-ink);
+}
 .footer__base {
   display: flex;
   justify-content: space-between;
-  gap: 32px;
-  flex-wrap: wrap;
+  gap: 24px;
   padding: 32px var(--pad-x) 72px;
   font-size: var(--fs-label);
   font-weight: 400;
-  color: var(--muted);
+  color: var(--grey-ink);
 }
 
 /* ==========================================================================
-   Responsive. The 1440 canvas is the design; below it the rule is to keep the
-   gutter and the white space and drop to fewer columns rather than squeeze.
+   Responsive.
+
+   The handoff is a 1440px desktop composition and states that no mobile design
+   exists. This layer is therefore undesigned and needs a design pass — it is
+   here because the page is deployed and must not scroll sideways on a phone,
+   not because it is resolved. The rule followed is the handoff's own: keep the
+   gutter and the white space, drop to fewer columns rather than squeeze.
    ========================================================================== */
 
-/* two-column grids stop earning their keep -------------------------------- */
+@media (max-width: 1100px) {
+  /* the 400px summary stops leaving the form a usable measure first */
+  .order__grid { grid-template-columns: minmax(0, 1fr) 340px; }
+}
+
 @media (max-width: 900px) {
-  :root { --header-h: 112px; }
+  :root { --header-h: 112px; --mark-w: 200px; }
 
-  .header__bar { gap: 18px; }
-  .header__top {
-    display: flex;
-    flex-basis: 100%;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 20px;
+  /* the two dark spread panels stack, photograph below the text, full-bleed */
+  .hero,
+  .pillar { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .hero__text { padding: var(--pad-y-panel) var(--pad-x) 0; }
+  .pillar__text { padding: var(--pad-y-panel) var(--pad-x) 0; }
+  .hero__media,
+  .pillar__media { aspect-ratio: 4 / 5; margin-top: clamp(56px, 9vw, 80px); }
+  /* the mirror loses its meaning in one column, so both read text-first */
+  .pillar--mirror .pillar__media { order: 2; }
+
+  .split { flex-direction: column; align-items: flex-start; gap: 34px; }
+  .split > :last-child:not(.split__lead) { flex: 0 0 auto; align-self: stretch; max-width: 520px; }
+
+  /* the season grid collapses to one column, keeping the reading order:
+     headline, argument, then the arrival table it is evidence for */
+  .season__grid {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: 'headline' 'body' 'eyebrow' 'table';
+    row-gap: 28px;
   }
-  /* wraps to a second line rather than hiding a link — the licensed brand
-     face will not have Helvetica's metrics */
-  .header__nav {
-    flex-basis: 100%;
-    gap: 12px 22px;
-    margin-left: 0;
-    font-size: 15px;
-  }
-  .header__cart::before { display: none; }
+  .season__eyebrow { margin-top: 20px; }
+  .season__table { max-width: 520px; }
 
-  .product,
-  .heritage { grid-template-columns: minmax(0, 1fr); }
-
-  /* the photograph moves below the text and goes full-bleed instead */
-  .hero {
-    display: block;
-    min-height: 0;
-    padding: var(--pad-y-lg) var(--pad-x) 0;
-  }
-  .hero__media {
-    position: static;
-    aspect-ratio: 4 / 5;
-    margin: clamp(56px, 9vw, 80px) calc(-1 * var(--pad-x)) 0;
-  }
-  .heritage__media { height: auto; aspect-ratio: 4 / 3; }
-
-  /* the cans read better above the argument they illustrate.
-     width:100% is load-bearing: margin-inline:auto cancels the grid item's
-     stretch, and the cans have no intrinsic width to fall back on (their size
-     comes from aspect-ratio plus cqw children), so the tracks would collapse
-     to zero without a definite basis. */
-  .cans {
-    order: -1;
-    width: 100%;
-    max-width: 480px;
-    margin-inline: auto;
-  }
-
-  .wink { flex-direction: column; align-items: flex-start; gap: 32px; }
-
-  .shop__head { flex-direction: column; align-items: flex-start; gap: 24px; }
-  .shop__grid { grid-template-columns: minmax(0, 1fr); }
+  .order__grid { grid-template-columns: minmax(0, 1fr); }
   .summary { position: static; }
-
-  /* the heading-beside-prose splits collapse; .loss, .fresh__cards and the
-     delivery cards are auto-fit and reflow on their own */
-  .season { grid-template-columns: minmax(0, 1fr); }
-
-  .delivery__head,
-  .fresh__head,
-  .brewlog__head { flex-direction: column; align-items: flex-start; gap: 24px; }
 
   .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
   .footer__brand, .footer__duty { grid-column: 1 / -1; }
 }
 
-/* the mobile checkout bar takes over from the sticky summary --------------- */
-@media (max-width: 900px) {
-  .summary__cta, .summary__confirm { display: none; }
-
-  .shop { padding-bottom: 0; }
-
-  .checkout-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 15;
-    display: block;
-    /* full-bleed out of the section's gutter */
-    margin: 56px calc(-1 * var(--pad-x)) 0;
-    padding: 18px var(--pad-x);
-    background: var(--ink);
-    color: var(--can);
-    box-shadow: 0 -1px 0 var(--ink-hover);
-  }
-  .checkout-bar__row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 20px;
-  }
-  .checkout-bar__confirm {
-    margin-top: 14px;
-    font-size: var(--fs-label);
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--muted);
-    text-wrap: pretty;
-  }
-  .checkout-bar__confirm:empty { display: none; }
-  .checkout-bar__price { display: flex; flex-direction: column; gap: 2px; }
-  .checkout-bar__label {
-    font-size: var(--fs-label);
-    font-weight: 400;
-    letter-spacing: var(--tr-label);
-    color: var(--muted);
-  }
-  .checkout-bar__value { font-size: var(--fs-mid); line-height: 1.1; }
-  .checkout-bar .btn { flex: none; padding: 17px 26px; }
-}
-
-/* single column throughout ------------------------------------------------ */
 @media (max-width: 760px) {
-  .delivery__cards { gap: 48px; }
-  .dcard__media { height: auto; aspect-ratio: 3 / 2; }
-
-  .fresh { gap: 44px; }
-  .loss, .fresh__cards { gap: 36px; }
-  .brewlog__table th, .brewlog__table td { padding-right: 22px; }
-
-  .opt__body--tall { gap: 16px; padding: 26px 28px; }
-
-  .facts { gap: 28px 32px; }
+  .photos { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+  .fresh, .season { gap: 48px; }
   .steps { gap: 44px; }
 
   .zip { flex-direction: column; }
-  .zip .btn { padding: 22px 34px; }
 
   .summary { padding: 36px 28px; }
-  .trial { flex-direction: column; align-items: flex-start; gap: 24px; }
-  .trial .btn { width: 100%; }
+  .opt__body--card { padding: 26px 28px; }
+
+  /* the two cans stay side by side so the same-beer comparison survives */
+  .cans { gap: 20px; }
 }
 
 @media (max-width: 520px) {
+  :root { --mark-w: 168px; }
   .header__nav { font-size: 14px; }
   /* the window cards stay two-up, so their contents stack instead */
   .opt__body--row { flex-direction: column; align-items: flex-start; gap: 10px; }
-  .facts { grid-template-columns: minmax(0, 1fr); }
   .footer__cols { grid-template-columns: minmax(0, 1fr); }
   .footer__base { flex-direction: column; gap: 12px; }
-  .trial { padding: 28px 24px; }
-  .summary { padding: 32px 24px; }
+  .arrivals__row { flex-direction: column; gap: 4px; }
 }
 
 /* --- motion policy ------------------------------------------------------- */
 
-/* One animation exists, and it renders as its final state when the reader
-   has asked for less motion. */
+/* One animation exists. When the reader has asked for less motion it is
+   collapsed to a single millisecond rather than removed, which is what the
+   handoff specifies. */
 @media (prefers-reduced-motion: reduce) {
-  .mark--hero .mark__circle,
-  .mark--hero .mark__horizon,
-  .summary__confirm { animation: none; }
-  * { transition-duration: 1ms !important; }
+  *, *::before, *::after {
+    animation-duration: 1ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 1ms !important;
+  }
   html { scroll-behavior: auto; }
 }
 
 /* --- print -------------------------------------------------------------- */
 
 @media print {
-  .header, .checkout-bar, .skip-link, .shop__grid, .trial { display: none; }
+  .header, .skip-link, .order__grid { display: none; }
   .zone-ink { background: #fff; color: #000; }
 }

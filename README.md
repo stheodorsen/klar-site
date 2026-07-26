@@ -1,15 +1,19 @@
 # Klar
 
-Marketing and subscription site for **Klar** — a 2,8% hopped Danish everyday
-beer (*hverdagsøl*) delivered cold by cargo bike to subscribers in inner
-Copenhagen. All UI copy is Danish.
+Marketing and ordering site for **Klar** — a Copenhagen brewery selling one
+hoppy everyday beer (*hverdagsøl*, 2,8% vol., 440 ml) by the batch. All UI copy
+is Danish.
 
-One page, ordered so freshness leads and the strength reframe lands last,
-immediately before the buy:
+The commercial model is the unusual part, and the page is built around it:
+**nothing is stocked**. A batch is 150 litres — 296 cans. Orders close before
+brew day, the batch is brewed to the number ordered, and if it fills up the only
+option is the next batch.
+
+One page, three brand pillars in sequence, ending in an order configurator:
 
 ```
-hero → én øl, altid → frisk → levering → sæson → hverdagsstyrke
-     → abonnement → brygbogen → footer
+header (live batch status) → hero #let → HVERDAGSØL → HUMLE DRIKKES FRISKT #frisk
+  → VI FØLGER HØSTEN #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 
 **Live preview:** https://stheodorsen.github.io/klar-site/
@@ -29,45 +33,55 @@ design handoff, the deviations and why, and what still needs a backend.
 site/                 the deployable site — this is what Pages publishes
   index.html
   css/klar.css        design tokens, then sections, then responsive
-  js/klar.js          CONFIG (batch, ABV, prices, route, area) + configurator
+  js/klar.js          CONFIG (batches, ABV, prices, area) + order configurator
   assets/img          responsive WebP + JPEG photography
   assets/icon         favicon set built from the micro-mark construction
   tools/              asset generators + check-dates.mjs
-.github/workflows/    checks batch dates, then deploys site/ on push to main
+.github/workflows/    checks the batch record, then deploys site/ on push to main
 ```
 
-## The batch config is load-bearing
+## The batch record is load-bearing
 
-One variable drives the dates: `CONFIG.batch.brewMonth` in
-[site/js/klar.js](site/js/klar.js) produces the brygmåned on the can, the bedst
-før two months after it, and the freshness argument that the gap between them is
-short on purpose. `CONFIG.abv` does the same for every labelled instance of the
-strength.
+`CONFIG.batches` in [site/js/klar.js](site/js/klar.js) is the commercial state of
+the business: batch id, hop, order-close date, brew date, delivery date, plus
+capacity and quantity ordered. The best-before is derived from the batch month.
 
-The site claims month-fresh beer, so a stale brew month turns the whole
-freshness pillar into a false claim while the page still looks perfectly fine.
-That is asserted rather than trusted — bedst før must be at least 14 days after
-a new subscriber's first delivery, and the deploy workflow runs the check, so a
+A stale record does not break the page — it keeps looking perfectly fine while
+making claims that are no longer true: a best-before in the past, a delivery
+before the brew, a meter counting down to a batch that already shipped. So it is
+asserted rather than trusted, and the deploy workflow runs the check, meaning a
 stale batch fails the build instead of shipping:
 
 ```bash
 node site/tools/check-dates.mjs
 ```
 
-It also checks that the next brew announced in brygbogen is later than the
-current one, and that each plan's per-can price multiplies out to its total.
+It asserts that orders close before brew day and brewing before delivery, that
+each batch still has at least 14 days of shelf life left after it is delivered,
+that the next batch really is next, that the sold-out flag agrees with
+`taken / capacity`, and that every per-can price multiplies out to its total.
+
+It also checks the batch against the **photography**, which is the one thing code
+cannot fix: the can labels in the four photos are composited pixel work, not live
+text, and they hard-code `08.26 · riwaka` / `drik før 10.26`. If `CONFIG` moves
+off that batch without the assets being re-composited, the cans in the pictures
+contradict the page — so the build fails and says so.
+
+Rather than reimplement the date maths, the check evaluates the pure prelude of
+`klar.js` (everything above its `state` marker, which is deliberately DOM-free),
+so there is one source of truth for the dates and no second copy to drift.
 
 ## This is a preview deploy
 
 The site is a prototype and is deliberately **not indexable** — it carries
-placeholder AI photography and *øko* / pant claims that are not yet certified.
-Before it goes live on the real domain:
+placeholder AI photography, an unsourced hop-degradation figure, and *øko* / pant
+claims that are not yet certified. Before it goes live on the real domain:
 
 1. delete `site/robots.txt`
 2. remove the `noindex` meta tag in `site/index.html`
 3. point `canonical`, `og:url` and `og:image` at the real domain
-4. replace the placeholder photography (see the known gaps in
-   [site/README.md](site/README.md))
+4. replace the placeholder photography, and resolve the open items in
+   [site/README.md](site/README.md) — the unsourced 80% figure most of all
 
 ## Design handoff is not in this repo
 
