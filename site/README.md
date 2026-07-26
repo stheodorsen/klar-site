@@ -115,12 +115,35 @@ inert text. It is a link to `#let` here, requested after handoff. Note the ancho
 is on the hero, not the header: the header is `position: sticky`, so it never
 leaves the viewport and a fragment link to it is a no-op in every browser.
 
-**6. Hovering the mark replays the rise.** Requested after handoff, and outside
-the handoff's "one animation" rule — but it re-uses that animation rather than
-adding a second idea. It is movement only: `klar-rise-again` carries no opacity
-and the horizon is never touched, because replaying the load animation blinked
-the circle and re-faded the line, which read as the whole mark jumping. Suppressed
-under `prefers-reduced-motion`.
+**6. The rise is slower and steadier than the handoff's, and hovering replays it.**
+Both requested after handoff.
+
+The handoff specifies 34px over 760ms on `cubic-bezier(0.16, 1, 0.3, 1)`. That
+curve is expo-out: it covers **83% of its travel in the first quarter of the
+duration**, so the sun arrived instantly and then coasted — which is why it read
+as a UI element snapping into place rather than a sunrise. Stretching the
+duration alone would not have fixed it; it would just have meant a longer coast.
+
+Now 48px over 2200ms on `cubic-bezier(0.25, 0.1, 0.75, 0.9)`, chosen by measuring
+travel distribution rather than by eye. Per eighth of the duration the sun travels
+9 · 12 · 14 · 15 · 15 · 15 · 11 · 9 percent — near-constant velocity, which is how
+a sun actually moves, with just enough taper at each end to avoid a mechanical
+start and stop. It is still visibly climbing at three quarters through.
+
+Two supporting details. Travel went up with the duration because slowing a 34px
+move to 2.2s makes it *less* legible, not more; at 48px the circle starts with its
+centre 29px below the horizon and **crosses the line 59% of the way through
+(≈1300ms)**, so the crossing is the visible moment rather than something over
+before you notice. And the opacity ramp finishes at 40% while the transform runs
+the full duration, so the sun brightens low and then keeps climbing — a real
+sunrise is visible while still near the horizon. The horizon line itself just
+fades (900ms) and never moves: it is the ground.
+
+The hover replay re-uses the same animation rather than adding a second idea, and
+inherits the timing tokens. It is movement only: `klar-rise-again` carries no
+opacity and the horizon is never touched, because replaying the load animation
+blinked the circle and re-faded the line, which read as the whole mark jumping.
+All of it collapses to 1ms under `prefers-reduced-motion`.
 
 **7. Photography is 26 MB → 1.6 MB.** Each PNG is pre-cropped to the aspect ratio
 it displays at, using the object-position from the design so the framing is

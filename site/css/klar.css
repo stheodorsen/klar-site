@@ -64,9 +64,27 @@
   --gap-opt: clamp(16px, 1.3889vw, 20px);
 
   --header-h: 76px;
-  --rise-distance: 34px;
-  --rise-duration: 760ms;
-  --rise-ease: cubic-bezier(0.16, 1, 0.3, 1);
+  /* The rising sun. The handoff specifies 34px over 760ms on an expo-out curve
+     (0.16, 1, 0.3, 1); this is slower, further and steadier so that it reads as
+     a sunrise rather than a UI element snapping into place — see README
+     deviation 6.
+
+     The curve is the substantive part. Expo-out covers 83% of its travel in the
+     first quarter of the duration, so stretching the duration alone would just
+     mean the sun arrives instantly and then sits there for two seconds. A sun
+     rises at constant speed, so this is deliberately near-linear: measured per
+     eighth of the duration it travels 9 · 12 · 14 · 15 · 15 · 14 · 12 · 9
+     percent — steady throughout, with only enough taper at each end to avoid a
+     mechanical start and stop. It is still visibly moving at three quarters
+     through, which the handoff's curve is not.
+
+     Travel rises with the duration for the same reason: slowing a 34px move to
+     2.2s makes it less legible, not more. At 48px the circle starts with its
+     centre 29px below the horizon, so the sun genuinely crosses the line. */
+  --rise-distance: 48px;
+  --rise-duration: 2200ms;
+  --rise-ease: cubic-bezier(0.25, 0.1, 0.75, 0.9);
+  --horizon-fade: 900ms;
 }
 
 /* --- reset --------------------------------------------------------------- */
@@ -152,8 +170,13 @@ input {
 
 /* The one animation in the brand: the circle rises through the horizon into
    its 2:1 position, once, on load. The horizon fades and does not move. */
+/* The sun brightens low and then keeps climbing: opacity finishes at 40% while
+   the transform runs the full duration. A sunrise is visible while it is still
+   near the horizon — fading in across the whole travel instead would read as the
+   mark simply appearing, which is the thing it is not. */
 @keyframes klar-rise {
   from { transform: translateY(var(--rise-distance)); opacity: 0; }
+  40%  { opacity: 1; }
   to   { transform: translateY(0); opacity: 1; }
 }
 @keyframes klar-fade { from { opacity: 0; } to { opacity: 1; } }
@@ -161,8 +184,10 @@ input {
 .mark--hero .mark__circle {
   animation: klar-rise var(--rise-duration) var(--rise-ease) both;
 }
+/* the horizon is the ground: it is simply there, so it settles early and never
+   moves, well before the sun finishes climbing */
 .mark--hero .mark__horizon {
-  animation: klar-fade 500ms ease-out both;
+  animation: klar-fade var(--horizon-fade) ease-out both;
 }
 
 /* The hover replay (js/klar.js) is movement only: the sun travels, and nothing
