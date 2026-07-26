@@ -241,16 +241,32 @@ diffable while every deploy busts the cache.
 
 ## Known gaps
 
-- **The photography is placeholder-grade and hard-codes the batch.** The label
-  text on the cans — mark, `KLAR`, batch line, ABV, best-before — is composited
-  pixel work, not live text. It reads `08.26 · riwaka`, `drik før 10.26` and
-  **`2,8%`** — and the declared strength is now 2,7%, so **the cans in all four
-  photographs already contradict the page.** `check-dates.mjs` reports this as a
-  warning on every deploy (a warning, not a failure: the photography is a
-  known-pending asset, and a check that blocked every deploy on it would just get
-  deleted). Nothing in code can fix it. Replace all four with real photography
-  before launch, then update `PHOTO_BATCH` in that script. A third delivery photo
-  (empty cans in a crate) was specified but never produced.
+- **The photography hard-codes the batch, and the four assets no longer agree with
+  each other.** The label text on the cans — mark, `KLAR`, batch line, ABV,
+  best-before — is composited pixel work, not live text, so none of it can be
+  changed by code. `check-dates.mjs` reports the state of all four on every
+  deploy, as warnings rather than failures (a failure would block every deploy on
+  a known-pending asset, and the check would just get deleted). Right now:
+
+  | asset | batch | abv | against config |
+  |---|---|---|---|
+  | `haze-klar.png` (hero) | `08.36` | `2,7%` | ABV right, **batch reads 08.36 — ten years out from 08.26** |
+  | `hero-kitchen-klar.png` | `08.26` | `2,8%` | batch right, ABV stale |
+  | `bike-klar.png` | `08.26` | `2,8%` | batch right, ABV stale |
+  | `doorstep-klar.png` | `08.26` | `2,8%` | batch right, ABV stale |
+
+  The hero was re-shot at 2,7%, which fixed the strength there and left the other
+  three behind — so the page now shows cans at two different strengths, and the
+  hero's own batch line is a decade off. **They have to agree with each other
+  before they agree with anything else.** Update `PHOTO_LABELS` in that script
+  whenever an asset is re-made.
+- **The hero photograph carries a generator watermark.** A four-pointed sparkle
+  sits on the table right of the glass — roughly 87% across, 90% down, beside the
+  barley grain. It is the image generator's mark, baked into the pixels, and
+  visible at every served width. It cannot be cropped out without losing either
+  the glass or the hop cone, so it needs retouching or a clean re-export before
+  launch. A third delivery photo (empty cans in a crate) was specified in the
+  handoff but never produced.
 - **The hop calendar and the current batch disagree.** The årstid copy promises
   *"vi brygger med den, der senest er landet"* — the most recently landed hop.
   The current batch is riwaka, from new zealand, which lands maj–juni; australien

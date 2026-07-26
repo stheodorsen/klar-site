@@ -291,22 +291,51 @@ for (const row of ladder) {
       whereas the data checks above are things that are wrong and fixable, and
       those do fail. Keep PHOTO_BATCH describing what is actually in the
       pictures, not what we wish were there. */
-const PHOTO_BATCH = { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' };
-const currentBatch = CONFIG.batches.current;
-const photoDrift = [];
-if (currentBatch.id !== PHOTO_BATCH.id) photoDrift.push(`batch ${PHOTO_BATCH.id} -> ${currentBatch.id}`);
-if (currentBatch.hop !== PHOTO_BATCH.hop) photoDrift.push(`hop ${PHOTO_BATCH.hop} -> ${currentBatch.hop}`);
-if (bestBeforeLabel(currentBatch.id) !== PHOTO_BATCH.bestBefore) {
-  photoDrift.push(`bedst før ${PHOTO_BATCH.bestBefore} -> ${bestBeforeLabel(currentBatch.id)}`);
-}
-if (CONFIG.abv !== PHOTO_BATCH.abv) photoDrift.push(`abv ${PHOTO_BATCH.abv} -> ${CONFIG.abv}`);
+/* Per asset, because the four no longer agree with each other: the hero was
+   re-shot at 2,7% while the other three still read 2,8%. Two cans on the same
+   page showing different strengths is its own problem, separate from either of
+   them disagreeing with CONFIG, so both are reported. */
+const PHOTO_LABELS = {
+  'haze-klar.png (hero)':          { id: '08.36', hop: 'riwaka', bestBefore: '10.26', abv: '2,7%' },
+  'hero-kitchen-klar.png (let)':   { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' },
+  'bike-klar.png (frisk)':         { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' },
+  'doorstep-klar.png (frisk)':     { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' },
+};
 
-if (photoDrift.length) {
+const currentBatch = CONFIG.batches.current;
+const wantLabel = {
+  id: currentBatch.id,
+  hop: currentBatch.hop,
+  bestBefore: bestBeforeLabel(currentBatch.id),
+  abv: CONFIG.abv,
+};
+
+for (const [asset, label] of Object.entries(PHOTO_LABELS)) {
+  const drift = Object.keys(wantLabel)
+    .filter((k) => label[k] !== wantLabel[k])
+    .map((k) => `${k} reads ${label[k]}, config says ${wantLabel[k]}`);
+  if (drift.length) {
+    warnings.push(`${asset}: ${drift.join('; ')}.`);
+  }
+}
+
+/* do the photographs at least agree with one another? */
+const distinct = (key) => [...new Set(Object.values(PHOTO_LABELS).map((l) => l[key]))];
+for (const key of Object.keys(wantLabel)) {
+  const values = distinct(key);
+  if (values.length > 1) {
+    warnings.push(
+      `the photographs disagree with each other on ${key}: ${values.join(' vs ')}. `
+      + 'The page shows several of these cans at once, so they have to match each '
+      + 'other before they match anything else.',
+    );
+  }
+}
+
+if (warnings.length) {
   warnings.push(
-    `the can label in assets/*-klar.png no longer matches CONFIG: `
-    + `${photoDrift.join(', ')}. The label is composited pixels, so the cans in `
-    + 'all four photographs now contradict the page. Re-shoot or re-composite, '
-    + 'then update PHOTO_BATCH in this script.',
+    'all of the above is composited pixel work, not live text — no code change '
+    + 'can fix it. Re-shoot or re-composite, then update PHOTO_LABELS here.',
   );
 }
 

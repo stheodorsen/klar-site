@@ -25,7 +25,10 @@ OUT = ROOT / "site" / "assets" / "img"
 # cards are half the 1280 content width less the 32 gap (624) by 380.
 JOBS = [
     # hero, right half of the fold
-    ("haze", "haze-klar.png", 720 / 820, (0.26, 0.58), [480, 720, 960, 1280]),
+    # the new hero source is already at the display aspect, so this crop is a
+    # no-op and the whole frame is used; the position matters only where the
+    # container aspect differs (mobile, very wide viewports)
+    ("haze", "haze-klar.png", 720 / 820, (0.50, 0.55), [480, 720, 960, 1280]),
     # HVERDAGSØL, mirrored to the left half
     ("kitchen", "hero-kitchen-klar.png", 720 / 820, (0.38, 0.74), [480, 720, 960, 1280]),
     # the two freshness cards
