@@ -124,11 +124,17 @@ duration**, so the sun arrived instantly and then coasted — which is why it re
 as a UI element snapping into place rather than a sunrise. Stretching the
 duration alone would not have fixed it; it would just have meant a longer coast.
 
-Now 48px over 2200ms on `cubic-bezier(0.25, 0.1, 0.75, 0.9)`, chosen by measuring
+Now 48px over 2200ms on `cubic-bezier(0.25, 0.1, 0.75, 1)`, chosen by measuring
 travel distribution rather than by eye. Per eighth of the duration the sun travels
-9 · 12 · 14 · 15 · 15 · 15 · 11 · 9 percent — near-constant velocity, which is how
-a sun actually moves, with just enough taper at each end to avoid a mechanical
-start and stop. It is still visibly climbing at three quarters through.
+9 · 13 · 15 · 16 · 15 · 14 · 11 · 5 percent — near-constant velocity through the
+middle, which is how a sun actually moves, and still visibly climbing at three
+quarters through.
+
+The second control point sits at `y=1`, so the sun decelerates to zero and settles
+into its locked 2:1 position instead of still travelling when it arrives. The final
+eighth of the travel is 5%, against 9% on the first pass at this curve
+(`…, 0.75, 0.9`), which reached the top at 40% of average speed and then stopped
+dead.
 
 Two supporting details. Travel went up with the duration because slowing a 34px
 move to 2.2s makes it *less* legible, not more; at 48px the circle starts with its

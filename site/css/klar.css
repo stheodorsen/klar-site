@@ -73,17 +73,22 @@
      first quarter of the duration, so stretching the duration alone would just
      mean the sun arrives instantly and then sits there for two seconds. A sun
      rises at constant speed, so this is deliberately near-linear: measured per
-     eighth of the duration it travels 9 · 12 · 14 · 15 · 15 · 14 · 12 · 9
-     percent — steady throughout, with only enough taper at each end to avoid a
-     mechanical start and stop. It is still visibly moving at three quarters
-     through, which the handoff's curve is not.
+     eighth of the duration it travels 9 · 13 · 15 · 16 · 15 · 14 · 11 · 5
+     percent — steady through the middle, and still visibly moving at three
+     quarters through, which the handoff's curve is not.
+
+     The second control point sits at y=1 so the sun arrives with zero velocity:
+     it settles into its locked 2:1 position rather than still travelling when it
+     gets there. That is the difference between this and (…, 0.75, 0.9), which
+     reached the top at 40% of average speed and then stopped dead — the final
+     eighth of the travel is now 5% rather than 9%.
 
      Travel rises with the duration for the same reason: slowing a 34px move to
      2.2s makes it less legible, not more. At 48px the circle starts with its
      centre 29px below the horizon, so the sun genuinely crosses the line. */
   --rise-distance: 48px;
   --rise-duration: 2200ms;
-  --rise-ease: cubic-bezier(0.25, 0.1, 0.75, 0.9);
+  --rise-ease: cubic-bezier(0.25, 0.1, 0.75, 1);
   --horizon-fade: 900ms;
 }
 
