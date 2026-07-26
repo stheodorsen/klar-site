@@ -99,6 +99,21 @@ const CONFIG = {
   sizeDiscountPerCanPerStep: 1,
   standingOrderDiscountPerCan: 2,
 
+  /* Delivery, charged per delivery — a cargo bike crossing inner Copenhagen
+     costs the same whether it carries four cans or twelve.
+
+     Itemised in the summary rather than folded into the per-can price, and
+     included in the headline total, because the total shown before an order is
+     placed has to be what the customer actually pays. The deposit is the
+     opposite case and stays out of the total: pant is collected at the door and
+     refunded when the cans go back, so it is not a cost.
+
+     Being flat, it lands hardest on the smallest box: 20% of a 4-can order
+     against 8% of a 12-can one. Whether it should be waived above a threshold is
+     a real pricing decision rather than a detail, so check-dates.mjs prints the
+     split on every run — and at 20% it now warns. See site/README.md. */
+  deliveryFee: 39,
+
   pantPerCan: 1, // kr, paid on delivery and refunded on return
 
   cadence: {
@@ -181,10 +196,20 @@ function unitPriceFor(plan) {
   return CONFIG.basePricePerCan - step * CONFIG.sizeDiscountPerCanPerStep;
 }
 
+/* `beer` is the box on its own — that is what the option cards print, and it is
+   the figure that has to equal unit x cans. `total` is what the customer pays:
+   the box plus the ride. `pant` is neither, being refundable. */
 function priceFor(plan, cadence) {
   const unit = unitPriceFor(plan)
     - (cadence === 'once' ? 0 : CONFIG.standingOrderDiscountPerCan);
-  return { unit, total: unit * plan, pant: plan * CONFIG.pantPerCan };
+  const beer = unit * plan;
+  return {
+    unit,
+    beer,
+    fee: CONFIG.deliveryFee,
+    total: beer + CONFIG.deliveryFee,
+    pant: plan * CONFIG.pantPerCan,
+  };
 }
 
 /* --- the batch invariants ------------------------------------------------- */
@@ -334,6 +359,7 @@ function derive() {
     planLabel: `${state.plan} dåser · ${CONFIG.cansVolume}`,
     deliveryLabel: `${batch.delivers}, ${slotLabel}`,
     cadenceLabel,
+    feeLabel: `${price.fee} kr`,
     priceLabel: `${price.total} kr`,
     unitPantLabel: `${price.unit} kr pr. dåse · pant ${price.pant} kr`,
 

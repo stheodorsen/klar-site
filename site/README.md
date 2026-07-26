@@ -203,6 +203,24 @@ is a fair but slightly broader paraphrase; and the same paper independently
 supports the can-over-bottle argument (hop aroma compounds accumulate in crown
 cap liners, while cans retain them), which the page does not currently make.
 
+**11. There is a delivery fee.** 39 kr per delivery, requested after handoff —
+the handoff's summary has no such line. It is itemised as `fragt` in the summary
+rather than folded into the per-can price, and it **is** included in the headline
+total, because the figure shown before an order is placed has to be what the
+customer actually pays.
+
+The deposit is the opposite case and deliberately stays out of the total: pant is
+collected at the door and refunded when the cans come back, so it is not a cost.
+It remains in the fineprint. Everything reconciles on the page — per-can × cans +
+fragt = total — and `check-dates.mjs` asserts exactly that, separately from the
+`unit × cans = box` assertion the option cards depend on.
+
+**One decision is still open.** Being flat, the fee lands hardest on the smallest
+box — **20% of a 4-can order** against 8% of a 12-can one — so whether it should
+be waived above a threshold is a real pricing question. The check prints the split
+on every run, and at 20% it now emits a warning rather than just a note. Note the
+fee equals the base per-can price, so a 4-can order pays for five cans' worth.
+
 **11. The footer is three columns, and the order section lost its eyebrow.**
 The handoff's fourth footer column held three compliance lines; two were removed
 as uncertified, which left a near-empty column making the four-column grid read

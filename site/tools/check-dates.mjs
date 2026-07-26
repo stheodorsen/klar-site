@@ -205,15 +205,43 @@ notes.push(
 
 for (const row of ladder) {
   for (const [label, p] of [['once', row.once], ['standing', row.standing]]) {
-    if (p.unit * row.size !== p.total) {
+    // the option cards print the per-can price beside the box price
+    if (p.unit * row.size !== p.beer) {
       failures.push(
         `price ${row.size} (${label}): ${p.unit} kr x ${row.size} = `
-        + `${p.unit * row.size}, but total is ${p.total} kr.`,
+        + `${p.unit * row.size}, but the box is ${p.beer} kr.`,
+      );
+    }
+    // and the headline total is the box plus the ride, nothing else folded in
+    if (p.beer + p.fee !== p.total) {
+      failures.push(
+        `price ${row.size} (${label}): ${p.beer} kr + ${p.fee} kr fragt = `
+        + `${p.beer + p.fee}, but total is ${p.total} kr.`,
       );
     }
     if (p.unit <= 0) {
       failures.push(`price ${row.size} (${label}): per-can price is ${p.unit} kr.`);
     }
+  }
+}
+
+/* The delivery fee is flat, so it lands hardest on the smallest box. Not a
+   failure — it is a pricing choice — but it is reported so the choice stays
+   visible rather than becoming an accident. */
+if (CONFIG.deliveryFee > 0) {
+  const share = (r) => Math.round((r.once.fee / r.once.total) * 100);
+  const smallest = ladder[0];
+  const largest = ladder[ladder.length - 1];
+  notes.push(
+    `fragt    ${CONFIG.deliveryFee} kr flat — ${share(smallest)}% of the `
+    + `${smallest.size}-can order, ${share(largest)}% of the ${largest.size}-can order`,
+  );
+  if (share(smallest) >= 20) {
+    warnings.push(
+      `the ${CONFIG.deliveryFee} kr delivery fee is ${share(smallest)}% of the `
+      + `smallest order (${smallest.size} cans at ${smallest.once.beer} kr). Worth `
+      + 'deciding whether it should be waived above a threshold.',
+    );
   }
 }
 
@@ -238,7 +266,7 @@ for (let i = 1; i < ladder.length; i++) {
 for (const row of ladder) {
   for (const [key, want] of [
     [`cardUnit${row.size}`, `${row.once.unit} kr / dåse`],
-    [`cardTotal${row.size}`, `${row.once.total} kr`],
+    [`cardTotal${row.size}`, `${row.once.beer} kr`],
   ]) {
     const m = html.match(new RegExp(`data-bind="${key}"[^>]*>([^<]*)<`));
     if (!m) {
