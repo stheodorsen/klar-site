@@ -296,6 +296,9 @@ for (const row of ladder) {
    page showing different strengths is its own problem, separate from either of
    them disagreeing with CONFIG, so both are reported. */
 const PHOTO_LABELS = {
+  /* Watermark trimmed off in build-images.py. The batch line reads 08.36 — a
+     ten-year typo — but the Danish typography is clean, which a later re-shoot's
+     was not ("eko", "dnk fer"), so this is the one that ships. */
   'haze-klar.png (hero)':          { id: '08.36', hop: 'riwaka', bestBefore: '10.26', abv: '2,7%' },
   'hero-kitchen-klar.png (let)':   { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' },
   'bike-klar.png (frisk)':         { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' },
@@ -329,6 +332,14 @@ for (const key of Object.keys(wantLabel)) {
       + 'The page shows several of these cans at once, so they have to match each '
       + 'other before they match anything else.',
     );
+  }
+}
+
+/* Some defects are not a value mismatch at all but broken typography, which no
+   comparison can catch — they have to be written down to be reported. */
+for (const [asset, label] of Object.entries(PHOTO_LABELS)) {
+  for (const g of label.garbled ?? []) {
+    warnings.push(`${asset}: label text is wrong — ${g}`);
   }
 }
 

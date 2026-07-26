@@ -203,6 +203,29 @@ is a fair but slightly broader paraphrase; and the same paper independently
 supports the can-over-bottle argument (hop aroma compounds accumulate in crown
 cap liners, while cans retain them), which the page does not currently make.
 
+**11. The fold is exactly one viewport.** `min-height: calc(100svh - var(--header-h))`
+on the hero, replacing the handoff's fixed 820px — which happened to fill a 900px
+window and nothing else. Requested after handoff, so that one scroll lands on the
+next section at any window height. `svh` rather than `vh`, because `vh` is the
+*largest* viewport on mobile: with the address bar showing, `100vh` overflows and
+the next section starts off-screen, which is the opposite of the point.
+
+Stacked, the hero is **flex, not grid**, and the reason is worth keeping. Its
+height comes from `min-height`, which leaves the container indefinite — and a grid
+`1fr` row then resolves against its own content rather than the free space, so the
+photograph's intrinsic height inflated the panel about 200px past the viewport.
+`minmax(0, 1fr)` does not fix it: the zero is the track's minimum, not how `fr`
+resolves. Flex measures free space from the used height, so `flex: 1 1 0` hands the
+photograph exactly what the text leaves.
+
+Verified exact at 1440×900, 1680×1200 and 375×812. At 320×640 the panel runs 62px
+over, because the photograph hits its 120px floor and the panel grows rather than
+squeezing the image away — a deliberate floor, not a miss.
+
+**12. `440 ml` is gone from the hero spec row**, requested after handoff. The
+volume still appears on both can renders, in the summary's `kassen` row and in the
+footer legal strip.
+
 **11. There is a delivery fee.** 39 kr per delivery, requested after handoff —
 the handoff's summary has no such line. It is itemised as `fragt` in the summary
 rather than folded into the per-can price, and it **is** included in the headline

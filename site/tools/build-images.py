@@ -23,17 +23,30 @@ OUT = ROOT / "site" / "assets" / "img"
 # Aspects come from the handoff's 1440 composition. The hero and HVERDAGSØL
 # panels are each half of the page (720) by min-height 820; the freshness photo
 # cards are half the 1280 content width less the 32 gap (624) by 380.
+# A `trim` entry removes something from the source before the aspect crop. Only
+# the hero needs one: its generator left a four-pointed watermark on the table at
+# x 1636-1731, y 1896-1990, baked into the pixels. Cutting the frame at y=1890
+# drops it, at the cost of the hop cone and some foreground.
+#
+# A later re-shoot put the watermark somewhere cheaper to crop, but its label
+# typography came out corrupt — "eko" for "øko", "dnk fer" for "drik før", and a
+# space for the middot in the batch line — so it was rejected. Clean Danish on the
+# can beats a cheaper crop.
+#
+# Painting it out would be preferable in principle, but nothing in PIL does
+# content-aware fill convincingly on textured wood: diffusion leaves a
+# featureless rectangle, donor patches break the table's specular streak, and
+# both read worse than the crop. The source file is left untouched, so a clean
+# re-export only needs this trim deleted.
 JOBS = [
     # hero, right half of the fold
-    # the new hero source is already at the display aspect, so this crop is a
-    # no-op and the whole frame is used; the position matters only where the
-    # container aspect differs (mobile, very wide viewports)
-    ("haze", "haze-klar.png", 720 / 820, (0.50, 0.55), [480, 720, 960, 1280]),
+    ("haze", "haze-klar.png", 720 / 820, (0.50, 0.50), [480, 720, 960, 1280],
+     (0, 0, 1920, 1890)),
     # HVERDAGSØL, mirrored to the left half
-    ("kitchen", "hero-kitchen-klar.png", 720 / 820, (0.38, 0.74), [480, 720, 960, 1280]),
+    ("kitchen", "hero-kitchen-klar.png", 720 / 820, (0.38, 0.74), [480, 720, 960, 1280], None),
     # the two freshness cards
-    ("bike", "bike-klar.png", 624 / 380, (0.50, 0.42), [420, 640, 880, 1248]),
-    ("doorstep", "doorstep-klar.png", 624 / 380, (0.52, 0.62), [420, 640, 880, 1248]),
+    ("bike", "bike-klar.png", 624 / 380, (0.50, 0.42), [420, 640, 880, 1248], None),
+    ("doorstep", "doorstep-klar.png", 624 / 380, (0.52, 0.62), [420, 640, 880, 1248], None),
 ]
 
 
@@ -57,10 +70,14 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
 
     total_src = total_out = 0
-    for name, filename, aspect, pos, widths in JOBS:
+    for name, filename, aspect, pos, widths, trim in JOBS:
         src = SRC / filename
         total_src += src.stat().st_size
-        base = crop_to_aspect(Image.open(src).convert("RGB"), aspect, pos)
+        im = Image.open(src).convert("RGB")
+        if trim:
+            im = im.crop(trim)
+            print(f"{name}: trimmed to {im.size[0]}x{im.size[1]} before cropping")
+        base = crop_to_aspect(im, aspect, pos)
 
         for width in widths:
             if width > base.width:
