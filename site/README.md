@@ -130,10 +130,15 @@ unchanged, then written as WebP + JPEG at the widths the layout requests.
 call the offer `PreOrder` rather than `InStock` — brew-to-order is literally
 pre-ordering, and claiming stock would be wrong.
 
-**9. Pricing is a derived ladder.** 39 kr per can at 4 cans, dropping 2 kr per
-size step (37 at 8, 35 at 12), with a further 2 kr off every can on a standing
-order — so 33 kr/can is the floor and 39 kr the ceiling. Requested after handoff,
+**9. Pricing is a derived ladder.** 39 kr per can at 4 cans, dropping 1 kr per
+size step (38 at 8, 37 at 12), with a further 2 kr off every can on a standing
+order — so 35 kr/can is the floor and 39 kr the ceiling. Requested after handoff,
 which specified a flat table.
+
+Note the standing-order discount (2 kr) is now larger than a size step (1 kr), so
+committing to every brew saves more than sizing up does. That is a pricing
+decision rather than a bug, but it is worth being deliberate about: it points
+customers at the subscription rather than the big box.
 
 It is computed from three numbers (`sizes`, `basePricePerCan`,
 `sizeDiscountPerCanPerStep`) rather than a hand-written price table, so the ladder

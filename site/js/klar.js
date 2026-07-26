@@ -86,8 +86,8 @@ const CONFIG = {
      standingOrderDiscountPerCan off on top of that.
 
        4 dåser   39 kr/can   156 kr     (standing: 37 -> 148 kr)
-       8 dåser   37 kr/can   296 kr     (standing: 35 -> 280 kr)
-      12 dåser   35 kr/can   420 kr     (standing: 33 -> 396 kr)
+       8 dåser   38 kr/can   304 kr     (standing: 36 -> 288 kr)
+      12 dåser   37 kr/can   444 kr     (standing: 35 -> 420 kr)
 
      Three numbers instead of a hand-written table, so the ladder cannot end up
      internally inconsistent and adding a size is a one-element change. Totals
@@ -96,7 +96,7 @@ const CONFIG = {
      Asserted in tools/check-dates.mjs. */
   sizes: [4, 8, 12],
   basePricePerCan: 39,
-  sizeDiscountPerCanPerStep: 2,
+  sizeDiscountPerCanPerStep: 1,
   standingOrderDiscountPerCan: 2,
 
   pantPerCan: 1, // kr, paid on delivery and refunded on return
