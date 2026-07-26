@@ -190,13 +190,15 @@ diffable while every deploy busts the cache.
 ## Known gaps
 
 - **The photography is placeholder-grade and hard-codes the batch.** The label
-  text on the cans — mark, `KLAR`, batch line, `2,8%`, best-before — is
-  composited pixel work, not live text. It reads `08.26 · riwaka` and
-  `drik før 10.26`, which currently matches `CONFIG`. Move the batch on without
-  re-compositing and the cans in the photographs will contradict the page;
-  `check-dates.mjs` fails the build if that happens. Replace all four with real
-  photography before launch. A third delivery photo (empty cans in a crate) was
-  specified but never produced.
+  text on the cans — mark, `KLAR`, batch line, ABV, best-before — is composited
+  pixel work, not live text. It reads `08.26 · riwaka`, `drik før 10.26` and
+  **`2,8%`** — and the declared strength is now 2,7%, so **the cans in all four
+  photographs already contradict the page.** `check-dates.mjs` reports this as a
+  warning on every deploy (a warning, not a failure: the photography is a
+  known-pending asset, and a check that blocked every deploy on it would just get
+  deleted). Nothing in code can fix it. Replace all four with real photography
+  before launch, then update `PHOTO_BATCH` in that script. A third delivery photo
+  (empty cans in a crate) was specified but never produced.
 - **The hop calendar and the current batch disagree.** The årstid copy promises
   *"vi brygger med den, der senest er landet"* — the most recently landed hop.
   The current batch is riwaka, from new zealand, which lands maj–juni; australien

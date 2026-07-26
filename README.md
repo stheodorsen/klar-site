@@ -1,7 +1,7 @@
 # Klar
 
 Marketing and ordering site for **Klar** — a Copenhagen brewery selling one
-hoppy everyday beer (*hverdagsøl*, 2,8% vol., 440 ml) by the batch. All UI copy
+hoppy everyday beer (*hverdagsøl*, 2,7% vol., 440 ml) by the batch. All UI copy
 is Danish.
 
 The commercial model is the unusual part, and the page is built around it:
@@ -70,9 +70,15 @@ up describing a beer brewed with hops that were still on a ship.
 
 It also checks the batch against the **photography**, which is the one thing code
 cannot fix: the can labels in the four photos are composited pixel work, not live
-text, and they hard-code `08.26 · riwaka` / `drik før 10.26`. If `CONFIG` moves
-off that batch without the assets being re-composited, the cans in the pictures
-contradict the page — so the build fails and says so.
+text, hard-coding `08.26 · riwaka`, `drik før 10.26` and `2,8%`. When `CONFIG`
+moves off that, the cans in the pictures contradict the page.
+
+That one **warns rather than fails**, and the distinction is deliberate: the
+failures above are things that are wrong and fixable in code, so they should stop
+a deploy. The photography is a known-pending asset already on the
+replace-before-launch list, and a check that blocks every deploy on it would just
+get deleted. It currently warns, because the ABV moved to 2,7% while the
+photographs still say 2,8%.
 
 Rather than reimplement the date maths, the check evaluates the pure prelude of
 `klar.js` (everything above its `state` marker, which is deliberately DOM-free),

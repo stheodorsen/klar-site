@@ -76,7 +76,7 @@ const CONFIG = {
   /* Declared strength. Bound into every labelled instance — hero spec, both can
      renders, footer — because a declared ABV that disagrees with itself is a
      labelling problem, not a copy slip. */
-  abv: '2,8%',
+  abv: '2,7%',
 
   cansVolume: '440 ml',
 

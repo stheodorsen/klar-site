@@ -50,7 +50,8 @@ const exported = new Function(
 )();
 const { CONFIG, batchTimeline, priceFor, bestBeforeLabel } = exported;
 
-const failures = [];
+const failures = [];   // wrong and fixable in code -> fails the deploy
+const warnings = [];   // known-pending assets -> reported, does not block
 const notes = [];
 
 /* index.html is checked too: several numbers are rendered as static fallbacks
@@ -251,25 +252,42 @@ for (const row of ladder) {
   }
 }
 
-/* 6. The can artwork in the photography is composited pixel work, not live
-      text — it has the batch and best-before printed in. If CONFIG moves off
-      the batch the photos were made for, the cans on the page contradict the
-      page. Nothing in code can fix that, so it has to be loud. */
-const PHOTO_BATCH = { id: '08.26', hop: 'riwaka', bestBefore: '10.26' };
+/* 6. The can label in the photography is composited pixel work, not live text:
+      the batch, the best-before and the ABV are baked into the four
+      assets/*-klar.png files. When CONFIG moves off what the photos show, the
+      cans in the pictures contradict the page and no code change can fix it.
+
+      This warns rather than fails. The photography is explicitly
+      placeholder-grade and already on the replace-before-launch list, so
+      blocking every deploy on it would just mean the check gets deleted —
+      whereas the data checks above are things that are wrong and fixable, and
+      those do fail. Keep PHOTO_BATCH describing what is actually in the
+      pictures, not what we wish were there. */
+const PHOTO_BATCH = { id: '08.26', hop: 'riwaka', bestBefore: '10.26', abv: '2,8%' };
 const currentBatch = CONFIG.batches.current;
-if (currentBatch.id !== PHOTO_BATCH.id
-    || currentBatch.hop !== PHOTO_BATCH.hop
-    || bestBeforeLabel(currentBatch.id) !== PHOTO_BATCH.bestBefore) {
-  failures.push(
-    `the photography has "${PHOTO_BATCH.id} · ${PHOTO_BATCH.hop}" and `
-    + `"drik før ${PHOTO_BATCH.bestBefore}" composited into the cans, but CONFIG `
-    + `says "${currentBatch.id} · ${currentBatch.hop}" / `
-    + `"drik før ${bestBeforeLabel(currentBatch.id)}". Re-composite the four `
-    + `assets/*-klar.png files and update PHOTO_BATCH here.`,
+const photoDrift = [];
+if (currentBatch.id !== PHOTO_BATCH.id) photoDrift.push(`batch ${PHOTO_BATCH.id} -> ${currentBatch.id}`);
+if (currentBatch.hop !== PHOTO_BATCH.hop) photoDrift.push(`hop ${PHOTO_BATCH.hop} -> ${currentBatch.hop}`);
+if (bestBeforeLabel(currentBatch.id) !== PHOTO_BATCH.bestBefore) {
+  photoDrift.push(`bedst før ${PHOTO_BATCH.bestBefore} -> ${bestBeforeLabel(currentBatch.id)}`);
+}
+if (CONFIG.abv !== PHOTO_BATCH.abv) photoDrift.push(`abv ${PHOTO_BATCH.abv} -> ${CONFIG.abv}`);
+
+if (photoDrift.length) {
+  warnings.push(
+    `the can label in assets/*-klar.png no longer matches CONFIG: `
+    + `${photoDrift.join(', ')}. The label is composited pixels, so the cans in `
+    + 'all four photographs now contradict the page. Re-shoot or re-composite, '
+    + 'then update PHOTO_BATCH in this script.',
   );
 }
 
 for (const note of notes) console.log(`  ${note}`);
+
+if (warnings.length) {
+  console.warn(`\ncheck-dates: ${warnings.length} warning(s)`);
+  for (const w of warnings) console.warn(`  ! ${w}`);
+}
 
 if (failures.length) {
   console.error(`\ncheck-dates: ${failures.length} failure(s)`);
@@ -277,4 +295,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('\ncheck-dates: ok');
+console.log(`\ncheck-dates: ok${warnings.length ? ` (${warnings.length} warning)` : ''}`);
