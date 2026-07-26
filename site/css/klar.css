@@ -451,7 +451,9 @@ input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   align-items: stretch;
-  min-height: 820px;
+  /* the same one viewport as the hero, so the two dark panels stay a matched
+     spread at any window height rather than only at 900px */
+  min-height: calc(100svh - var(--header-h));
 }
 .pillar__media { overflow: hidden; background: var(--deep); }
 .pillar__media img {
@@ -474,8 +476,13 @@ input {
 .fresh {
   display: flex;
   flex-direction: column;
-  gap: 64px;
-  padding: var(--pad-y) var(--pad-x);
+  /* Tighter than the handoff's 112px padding and 64px gap, which is what buys
+     this section its 106px of overshoot back so it lands on one viewport at
+     1440x900. The photo cards then take any slack on a taller window rather than
+     the section ending in dead space — see .photo__well. */
+  gap: 44px;
+  padding: 80px var(--pad-x);
+  min-height: calc(100svh - var(--header-h));
 }
 .fact {
   display: flex;
@@ -505,12 +512,24 @@ input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gap-card);
+  flex: 1 1 auto;      /* absorb whatever the copy above leaves */
+  min-height: 0;
 }
+.photo { display: flex; flex-direction: column; }
 .photo__well {
-  aspect-ratio: 624 / 380;
+  /* Flexible rather than a fixed 624/380: the cards stretch to fill the fold on
+     a tall window and compress on a short one, with a floor so they never become
+     a sliver. The handoff's 380px is what this resolves to at 1440x900. */
+  /* zero basis, not auto: with an auto basis the well is sized from the
+     photograph's own height and there is no free space left to distribute, so
+     the section overshot the fold by 22px. At zero basis the well takes exactly
+     what the copy above leaves, floored so it never becomes a letterbox slit. */
+  flex: 1 1 0;
+  min-height: 340px;
   overflow: hidden;
   background: var(--card-edge);
 }
+.photo__well picture { height: 100%; }
 .photo__well img { width: 100%; height: 100%; object-fit: cover; }
 .photo:first-child .photo__well img { object-position: 50% 42%; }
 .photo:last-child .photo__well img { object-position: 52% 62%; }
@@ -527,6 +546,7 @@ input {
   flex-direction: column;
   gap: 72px;
   padding: var(--pad-y) var(--pad-x);
+  min-height: calc(100svh - var(--header-h));
 }
 
 /* The handoff bottom-aligns this split, the same as frisk and the order head.
@@ -585,6 +605,8 @@ input {
   justify-content: flex-start;
   align-items: flex-start;
   gap: 36px;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 .can {
   /* Sized so two cans plus the gap always fit inside the gutters, which keeps
@@ -885,7 +907,14 @@ input {
 
 /* --- closing line ------------------------------------------------------- */
 
-.closing { padding: var(--pad-y-band) var(--pad-x); }
+.closing {
+  display: flex;
+  align-items: center;
+  padding: var(--pad-y-band) var(--pad-x);
+  /* One viewport, with the line centred in it. This is the one section where the
+     extra height is the point: the wink gets a screen to itself. */
+  min-height: calc(100svh - var(--header-h));
+}
 .closing__line {
   max-width: 760px;
   font-size: var(--fs-headline);

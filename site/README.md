@@ -241,6 +241,39 @@ band of whatever height the text leaves (about 230px at 375×812), so it is a
 horizontal slice of a portrait frame rather than the whole thing. Showing the full
 image there and keeping the fold to one viewport are mutually exclusive.
 
+**12. Every section is one viewport, except the order form.** Requested after
+handoff: `min-height: calc(100svh - var(--header-h))` on the hero, LET MED VILJE,
+HUMLE DRIKKES FRISKT, VI FØLGER HØSTEN and the closing line, so scrolling steps
+section to section. `04 BESTIL` is deliberately exempt — it is a form, and forcing
+it to a screen height would either strand it in dead space or clip it.
+
+Two of them needed more than a `min-height` to get there, because `min-height` is a
+floor: a section whose content is taller simply stays taller, and flex only
+distributes space that is actually free.
+
+- **HUMLE DRIKKES FRISKT overshot by 106px.** Its padding came down from 112 to
+  80 and its gap from 64 to 44, and the photo wells now take a **zero flex basis**
+  rather than `auto`. That last part is the subtle one: at an `auto` basis the well
+  is sized from the photograph's own height, so there was no free space left to
+  distribute and the section stayed 22px over. At a zero basis the well takes
+  exactly what the copy above leaves. The wells resolve to 624×358 at 1440×900 and
+  grow on a taller window; the handoff's 380 is what they land on around 1440×925.
+- **The closing line now gets a whole screen to itself**, with the wink centred in
+  it. That extra height is the point rather than a side effect.
+
+**VI FØLGER HØSTEN only matches on a window at least 1254px tall.** Below that it
+stays taller — 1176px against an 822px fold at 1440×900. The blocker is the can
+renders: 560px tall, plus a minimum 128px of section padding, a 48px gap and the
+320px copy-and-table row, is 1056px before anything else. Squeezing that into 822
+would leave the cans 206px tall and **81px wide**, which puts `KLAR` at 13.6px and
+the batch line at **4.1px** — illegible, so it was not done.
+
+The way to make that section fit at any height while keeping the cans full size is
+to move them **beside** the copy and the arrival table rather than below them
+(a two-column layout would come to 784px, inside the fold). That undoes the
+alignment arrangement in deviation 4, so it is left as a decision rather than
+taken unilaterally.
+
 **12. `440 ml` is gone from the hero spec row**, requested after handoff. The
 volume still appears on both can renders, in the summary's `kassen` row and in the
 footer legal strip.
