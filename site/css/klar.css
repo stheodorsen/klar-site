@@ -836,9 +836,12 @@ input {
 /* --- footer ------------------------------------------------------------- */
 
 .footer { padding-top: var(--pad-y-band); }
+/* Three columns, not the handoff's four. The fourth held three compliance
+   lines; two were removed as uncertified and the survivor moved to the legal
+   strip, which left a near-empty column making the whole grid read as broken. */
 .footer__cols {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 48px;
   padding: 0 var(--pad-x) 64px;
 }
@@ -864,23 +867,19 @@ input {
 @media (hover: hover) {
   .footer__links a:hover, .footer__address a:hover { color: var(--grey-ink); }
 }
-.footer__duty {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--grey-ink);
-}
 .footer__base {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
-  gap: 24px;
+  gap: 12px 24px;
   padding: 32px var(--pad-x) 72px;
   font-size: var(--fs-label);
   font-weight: 400;
   color: var(--grey-ink);
 }
+/* the middle item is the age restriction — centred so the strip reads as three
+   deliberate items rather than two with something wedged in */
+.footer__base span:nth-child(2) { text-align: center; }
 
 /* ==========================================================================
    Responsive.
@@ -927,7 +926,7 @@ input {
   .summary { position: static; }
 
   .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
-  .footer__brand, .footer__duty { grid-column: 1 / -1; }
+  .footer__brand { grid-column: 1 / -1; }
 }
 
 @media (max-width: 760px) {
@@ -951,6 +950,7 @@ input {
   .opt__body--row { flex-direction: column; align-items: flex-start; gap: 10px; }
   .footer__cols { grid-template-columns: minmax(0, 1fr); }
   .footer__base { flex-direction: column; gap: 12px; }
+  .footer__base span:nth-child(2) { text-align: left; }
   .arrivals__row { flex-direction: column; gap: 4px; }
 }
 

@@ -252,7 +252,10 @@
   <section class="order zone-paper" id="bestil" aria-labelledby="order-title">
     <div class="split order__head">
       <div class="split__lead">
-        <p class="eyebrow">04 — bestil</p>
+        <!-- The "04 — BESTIL" eyebrow is removed. It was the handoff's section
+             numbering leaking onto the page: nothing else is numbered, and the
+             headline opens the section perfectly well on its own. The 01–05
+             labels inside the form stay — those number the steps, not sections. -->
         <h2 class="headline headline--lower" id="order-title">vi brygger kun det, der er bestilt.</h2>
         <p class="body-lg">intet står på lager. intet bliver gammelt. intet bliver hældt ud. bestillingen lukker, før vi brygger.</p>
       </div>
@@ -306,14 +309,20 @@
 
         <!-- 02 how much -->
         <div class="step">
-          <h3 class="label" id="step-plan">02 — hvor meget</h3>
+          <!-- The ladder is only legible if it is stated: three per-can prices
+               side by side make the reader do the comparison. This line was in
+               the earlier handoff and comes back with the tiering. -->
+          <div class="step__head">
+            <h3 class="label" id="step-plan">02 — hvor meget</h3>
+            <p class="step__hint">pris pr. dåse falder med størrelsen</p>
+          </div>
           <div class="opts opts--3" role="radiogroup" aria-labelledby="step-plan">
             <label class="opt">
               <input class="opt__input" type="radio" name="plan" value="4">
               <span class="opt__body opt__body--card">
                 <span class="opt__size">4 dåser</span>
                 <span class="opt__rule"></span>
-                <span class="opt__price"><span>39 kr / dåse</span><span>156 kr</span></span>
+                <span class="opt__price"><span data-bind="cardUnit4">39 kr / dåse</span><span data-bind="cardTotal4">156 kr</span></span>
               </span>
             </label>
             <label class="opt">
@@ -321,7 +330,7 @@
               <span class="opt__body opt__body--card">
                 <span class="opt__size">8 dåser</span>
                 <span class="opt__rule"></span>
-                <span class="opt__price"><span>39 kr / dåse</span><span>312 kr</span></span>
+                <span class="opt__price"><span data-bind="cardUnit8">37 kr / dåse</span><span data-bind="cardTotal8">296 kr</span></span>
               </span>
             </label>
             <label class="opt">
@@ -329,7 +338,7 @@
               <span class="opt__body opt__body--card">
                 <span class="opt__size">12 dåser</span>
                 <span class="opt__rule"></span>
-                <span class="opt__price"><span>39 kr / dåse</span><span>468 kr</span></span>
+                <span class="opt__price"><span data-bind="cardUnit12">35 kr / dåse</span><span data-bind="cardTotal12">420 kr</span></span>
               </span>
             </label>
           </div>
@@ -433,9 +442,9 @@
         <hr class="rule rule--panel">
         <p class="summary__total">
           <span class="summary__cadence" data-bind="cadenceLabel">hver brygning</span>
-          <span class="summary__total-value" data-bind="priceLabel">296 kr</span>
+          <span class="summary__total-value" data-bind="priceLabel">280 kr</span>
         </p>
-        <p class="summary__fineprint" data-bind="unitPantLabel">37 kr pr. dåse · pant 8 kr</p>
+        <p class="summary__fineprint" data-bind="unitPantLabel">35 kr pr. dåse · pant 8 kr</p>
         <button class="btn btn--fill-ink btn--block summary__cta" type="button" data-action="order" data-bind="ctaLabel">bestil 08.26</button>
         <p class="summary__confirm" data-bind="confirmLabel" role="status"></p>
         <hr class="rule rule--panel">
@@ -480,14 +489,17 @@
     </nav>
     <!-- The øko-certification and pant-registration lines were removed: both
          named a certifying body Klar is not registered with yet. Do not restore
-         either until the paperwork exists. -->
-    <ul class="footer__duty">
-      <li>salg kun til personer over 18 år</li>
-    </ul>
+         either until the paperwork exists.
+
+         That emptied the handoff's fourth column, which left the four-column
+         grid looking broken, so the footer is three columns now and the one
+         surviving compliance line moved to the legal strip below — which is
+         where an age restriction belongs anyway. -->
   </div>
   <hr class="rule rule--on-ink">
   <div class="footer__base">
     <span>humlet hverdagsøl · <span data-bind="abv">2,8%</span> · 440 ml</span>
+    <span>salg kun til personer over 18 år</span>
     <span>intet på lager. intet gammelt. intet spildt.</span>
   </div>
 </footer>
@@ -503,8 +515,8 @@
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "DKK",
-    "lowPrice": "156",
-    "highPrice": "468",
+    "lowPrice": "148",
+    "highPrice": "420",
     "offerCount": "3",
     "availability": "https://schema.org/PreOrder",
     "areaServed": { "@type": "City", "name": "København" }

@@ -80,21 +80,23 @@ const CONFIG = {
 
   cansVolume: '440 ml',
 
-  /* Base price per box, at a flat 39 kr per can. The per-can figure is printed
-     on the option cards, so unit x cans must equal total — asserted in
-     tools/check-dates.mjs.
+  /* Pricing is a ladder, derived rather than listed: the smallest box is
+     basePricePerCan, and every step up the sizes takes another
+     sizeDiscountPerCanPerStep off every can. A standing order takes
+     standingOrderDiscountPerCan off on top of that.
 
-     Flat, not tiered: there is no volume discount any more, so all three size
-     cards show the same per-can price and the only price lever is the standing
-     order below. That matches this handoff, which — unlike the previous one —
-     carries no "pris pr. dåse falder med størrelsen" copy to justify a tier. */
-  prices: {
-    4:  { total: 156, unit: 39 },
-    8:  { total: 312, unit: 39 },
-    12: { total: 468, unit: 39 },
-  },
+       4 dåser   39 kr/can   156 kr     (standing: 37 -> 148 kr)
+       8 dåser   37 kr/can   296 kr     (standing: 35 -> 280 kr)
+      12 dåser   35 kr/can   420 kr     (standing: 33 -> 396 kr)
 
-  // a standing order takes this much off every can
+     Three numbers instead of a hand-written table, so the ladder cannot end up
+     internally inconsistent and adding a size is a one-element change. Totals
+     are unit x cans exactly — no rounding — because the per-can figure is
+     printed next to the total on the option cards and the two must agree.
+     Asserted in tools/check-dates.mjs. */
+  sizes: [4, 8, 12],
+  basePricePerCan: 39,
+  sizeDiscountPerCanPerStep: 2,
   standingOrderDiscountPerCan: 2,
 
   pantPerCan: 1, // kr, paid on delivery and refunded on return
@@ -170,11 +172,19 @@ function isServiceable(zip) {
 
 /* --- pricing -------------------------------------------------------------- */
 
+/* The per-can price for a size, before the standing-order discount. This is what
+   the option cards print, because the discount is disclosed on its own card in
+   step 03 rather than folded into the sizes. */
+function unitPriceFor(plan) {
+  const step = CONFIG.sizes.indexOf(plan);
+  if (step === -1) return CONFIG.basePricePerCan;
+  return CONFIG.basePricePerCan - step * CONFIG.sizeDiscountPerCanPerStep;
+}
+
 function priceFor(plan, cadence) {
-  const base = CONFIG.prices[plan];
-  const discount = cadence === 'once' ? 0 : plan * CONFIG.standingOrderDiscountPerCan;
-  const total = base.total - discount;
-  return { total, unit: Math.round(total / plan), pant: plan * CONFIG.pantPerCan };
+  const unit = unitPriceFor(plan)
+    - (cadence === 'once' ? 0 : CONFIG.standingOrderDiscountPerCan);
+  return { unit, total: unit * plan, pant: plan * CONFIG.pantPerCan };
 }
 
 /* --- the batch invariants ------------------------------------------------- */
@@ -267,7 +277,18 @@ function derive() {
   const slotLabel = CONFIG.slots[state.slot];
   const cadenceLabel = CONFIG.cadence[state.cadence];
 
+  /* The option cards print the ladder, so they read it from the same place the
+     summary does — a hand-typed card that disagrees with the total the customer
+     is charged is the worst kind of drift. */
+  const cardPrices = {};
+  for (const size of CONFIG.sizes) {
+    cardPrices[`cardUnit${size}`] = `${unitPriceFor(size)} kr / dåse`;
+    cardPrices[`cardTotal${size}`] = `${unitPriceFor(size) * size} kr`;
+  }
+
   return {
+    ...cardPrices,
+
     full,
 
     // header

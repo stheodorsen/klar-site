@@ -53,6 +53,10 @@ const { CONFIG, batchTimeline, priceFor, bestBeforeLabel } = exported;
 const failures = [];
 const notes = [];
 
+/* index.html is checked too: several numbers are rendered as static fallbacks
+   and must agree with the data behind them. */
+const html = readFileSync(join(siteDir, 'index.html'), 'utf8');
+
 /* Format from local components, not toISOString — the dates are constructed at
    local midnight, and in a positive-offset zone the UTC form lands on the
    previous day. This output is what a human reads in CI to sanity-check the
@@ -157,7 +161,6 @@ for (const key of ['current', 'next']) {
 }
 
 /* the årstid table is static markup, so confirm it still says what the data says */
-const html = readFileSync(join(siteDir, 'index.html'), 'utf8');
 for (const a of arrivals) {
   const row = new RegExp(
     `<dt>\\s*${a.region.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*</dt>\\s*<dd>\\s*`
@@ -185,26 +188,68 @@ if (CONFIG.batchFull !== (taken >= capacity)) {
   );
 }
 
-/* 5. the option cards print a per-can price next to a total, so the base table
-      has to multiply out exactly. */
-for (const [cans, plan] of Object.entries(CONFIG.prices)) {
-  if (plan.unit * Number(cans) !== plan.total) {
-    failures.push(
-      `price ${cans}: ${plan.unit} kr x ${cans} = ${plan.unit * Number(cans)}, `
-      + `but total is ${plan.total} kr.`,
-    );
-  }
-  // a standing order must not price below the next size down's per-can rate
-  const standing = priceFor(Number(cans), 'every');
-  if (standing.total <= 0) {
-    failures.push(`price ${cans}: standing-order total is ${standing.total} kr.`);
-  }
-}
+/* 5. the price ladder. The option cards print a per-can price next to a total,
+      so they have to multiply out exactly, the ladder has to actually get
+      cheaper as the boxes get bigger, and nothing may price at or below zero. */
+const ladder = CONFIG.sizes.map((size) => ({
+  size,
+  once: priceFor(size, 'once'),
+  standing: priceFor(size, 'every'),
+}));
+
 notes.push(
-  `prices   ${Object.entries(CONFIG.prices)
-    .map(([c]) => `${c}: ${priceFor(Number(c), 'once').total}/${priceFor(Number(c), 'every').total} kr`)
+  `prices   ${ladder.map((r) => `${r.size}: ${r.once.unit}/${r.standing.unit} kr/can`)
     .join('  ')}   (once/standing)`,
 );
+
+for (const row of ladder) {
+  for (const [label, p] of [['once', row.once], ['standing', row.standing]]) {
+    if (p.unit * row.size !== p.total) {
+      failures.push(
+        `price ${row.size} (${label}): ${p.unit} kr x ${row.size} = `
+        + `${p.unit * row.size}, but total is ${p.total} kr.`,
+      );
+    }
+    if (p.unit <= 0) {
+      failures.push(`price ${row.size} (${label}): per-can price is ${p.unit} kr.`);
+    }
+  }
+}
+
+for (let i = 1; i < ladder.length; i++) {
+  if (ladder[i].size <= ladder[i - 1].size) {
+    failures.push(
+      `CONFIG.sizes is not ascending: ${ladder[i - 1].size} then ${ladder[i].size}. `
+      + 'The ladder derives the discount from position, so order matters.',
+    );
+  }
+  if (!(ladder[i].once.unit < ladder[i - 1].once.unit)) {
+    failures.push(
+      `the ladder does not get cheaper: ${ladder[i - 1].size} cans at `
+      + `${ladder[i - 1].once.unit} kr/can, ${ladder[i].size} cans at `
+      + `${ladder[i].once.unit} kr/can.`,
+    );
+  }
+}
+
+/* The option cards are bound, but their HTML fallbacks are what a reader sees
+   before the script runs — so a stale fallback flashes a wrong price. */
+for (const row of ladder) {
+  for (const [key, want] of [
+    [`cardUnit${row.size}`, `${row.once.unit} kr / dåse`],
+    [`cardTotal${row.size}`, `${row.once.total} kr`],
+  ]) {
+    const m = html.match(new RegExp(`data-bind="${key}"[^>]*>([^<]*)<`));
+    if (!m) {
+      failures.push(`index.html has no element bound to ${key}.`);
+    } else if (m[1].trim() !== want) {
+      failures.push(
+        `index.html fallback for ${key} reads "${m[1].trim()}" but the ladder `
+        + `says "${want}" — a reader would see the wrong price until the script runs.`,
+      );
+    }
+  }
+}
 
 /* 6. The can artwork in the photography is composited pixel work, not live
       text — it has the batch and best-before printed in. If CONFIG moves off

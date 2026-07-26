@@ -130,13 +130,24 @@ unchanged, then written as WebP + JPEG at the widths the layout requests.
 call the offer `PreOrder` rather than `InStock` — brew-to-order is literally
 pre-ordering, and claiming stock would be wrong.
 
-**9. Pricing is flat, not tiered.** A can is 39 kr at every box size, so the
-three size cards show the same per-can price and the only price lever is the
-standing order (2 kr off per can). Requested after handoff. It is consistent with
-this handoff, which — unlike the previous one — carries no "pris pr. dåse falder
-med størrelsen" copy to justify a volume discount, but it does mean step 02 is
-now purely a quantity choice with no incentive to size up. **Worth a second look
-if the tiering was doing commercial work.**
+**9. Pricing is a derived ladder.** 39 kr per can at 4 cans, dropping 2 kr per
+size step (37 at 8, 35 at 12), with a further 2 kr off every can on a standing
+order — so 33 kr/can is the floor and 39 kr the ceiling. Requested after handoff,
+which specified a flat table.
+
+It is computed from three numbers (`sizes`, `basePricePerCan`,
+`sizeDiscountPerCanPerStep`) rather than a hand-written price table, so the ladder
+cannot end up internally inconsistent and adding a size is a one-element change.
+Totals are `unit x cans` exactly, never rounded, because the per-can figure is
+printed beside the total on the option cards. The cards are bound to the same
+computation the summary uses, and `check-dates.mjs` asserts the ladder gets
+cheaper as boxes get bigger, that everything multiplies out, and that the HTML
+fallbacks match — a stale fallback would flash a wrong price before the script
+runs.
+
+The `pris pr. dåse falder med størrelsen` hint returns to step 02 with the
+tiering; without it the reader has to compare three numbers to notice the ladder
+exists.
 
 **10. The 80% figure carries its source on the page.** The handoff records that
 the client had the citation removed. It is back, because a measured quantitative
@@ -157,6 +168,24 @@ measurement is those three terpenes specifically, so *"de flygtige humleolier"*
 is a fair but slightly broader paraphrase; and the same paper independently
 supports the can-over-bottle argument (hop aroma compounds accumulate in crown
 cap liners, while cans retain them), which the page does not currently make.
+
+**11. The footer is three columns, and the order section lost its eyebrow.**
+The handoff's fourth footer column held three compliance lines; two were removed
+as uncertified, which left a near-empty column making the four-column grid read
+as broken. It is three columns now, and the surviving age restriction moved to
+the legal strip — where a legal line belongs. The `04 — BESTIL` eyebrow is gone
+too: it was the handoff's section numbering leaking onto the page, and nothing
+else on the page is numbered. Both requested after handoff. The `01`–`05` labels
+inside the form stay — those number steps, not sections.
+
+**12. Asset URLs are content-hashed at deploy time.** `index.html` referenced
+`css/klar.css` and `js/klar.js` by bare path, so a browser holding a cached copy
+kept using the old ones after a deploy — the page looked current while running
+the previous stylesheet and the previous prices, which is worse than an obviously
+broken page because nothing signals it is stale. `tools/stamp-assets.mjs` rewrites
+those two URLs with a hash of each file's contents, and the workflow runs it
+against the checkout before uploading, so the committed HTML stays clean and
+diffable while every deploy busts the cache.
 
 ## Known gaps
 

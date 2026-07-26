@@ -32,6 +32,12 @@ jobs:
       - name: Check batch dates and prices
         run: node site/tools/check-dates.mjs
 
+      # Content-hash the CSS and JS URLs so a deploy cannot be served from a
+      # stale browser cache. Done here, not in the repo, so index.html stays
+      # clean in git.
+      - name: Stamp asset URLs
+        run: node site/tools/stamp-assets.mjs
+
       - uses: actions/configure-pages@v5
       # the site is static: no build step, publish site/ as-is
       - uses: actions/upload-pages-artifact@v3
