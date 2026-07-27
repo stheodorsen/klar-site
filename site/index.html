@@ -49,16 +49,16 @@
     <a class="header__wordmark" href="#let">Klar</a>
     <nav class="header__nav" aria-label="sektioner">
       <!-- The handoff flags that these labels do not match the section
-           headlines. "let" now does, since HVERDAGSØL became LET MED VILJE;
-           "frisk" and "årstid" still do not (HUMLE DRIKKES FRISKT / VI FØLGER
-           HØSTEN). Still an open question for the client, so left as designed
-           rather than quietly reworded. -->
+           headlines. "let" matches LET MED VILJE and "årstid" matches
+           VI BRYGGER EFTER ÅRSTIDEN; only "frisk" still does not
+           (HUMLE DRIKKES FRISKT). Still an open question for the client, so
+           left as designed rather than quietly reworded. -->
       <a href="#let">let</a>
       <a href="#frisk">frisk</a>
       <a href="#aarstid">årstid</a>
       <a href="#bestil">bestil</a>
     </nav>
-    <p class="header__status" data-bind="headStatus">08.26 · bestilling lukker 11.08</p>
+    <p class="header__status" data-bind="headStatus">08.26 · bestilling lukker 11.08.2026</p>
   </div>
 </header>
 
@@ -188,7 +188,7 @@
          wrapper the browser synthesises a baseline from the box instead, which
          is what left this section looking unaligned. -->
     <div class="season__grid">
-      <h2 class="headline season__headline" id="aarstid-title">årstidsbestemte humler</h2>
+      <h2 class="headline season__headline" id="aarstid-title">vi brygger efter årstiden</h2>
       <!-- Arrival in Denmark, not harvest — arrival is what determines what can
            be brewed. The calendar has a real gap: nothing lands feb–apr. -->
       <h3 class="eyebrow eyebrow--on-ink season__eyebrow" id="arrivals-title">lander i danmark</h3>
@@ -246,6 +246,17 @@
         <span class="can__abv" data-bind="abv">2,7%</span>
         <span class="can__duty" data-bind="canNextDuty">440 ml · øko · drik før 11.26</span>
       </div>
+
+      <!-- The can-over-bottle argument, beside the renders it argues for. Same
+           paper as the FAKTA box in frisk, independently verified there: Kemp
+           et al. find hop aroma compounds absorbing into crown-cap liners while
+           cans retain them. Full reference in site/README.md. Like the other
+           citation: if the source comes off, the claim goes with it. -->
+      <aside class="fact fact--cans" aria-labelledby="fact-can-title">
+        <h3 class="eyebrow" id="fact-can-title">derfor dåse</h3>
+        <p class="fact__claim">i flasken vandrer humlens aromastoffer ind i kapslens foring. i dåsen bliver de i øllet.</p>
+        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021</p>
+      </aside>
     </div>
   </section>
 
@@ -270,7 +281,7 @@
         <div class="meter__track" aria-hidden="true">
           <div class="meter__fill" id="meter-fill"></div>
         </div>
-        <p class="meter__note" data-bind="leftSub">en brygning er 150 liter. det er taget, og vi brygger ikke over.</p>
+        <p class="meter__note" data-bind="leftSub">en brygning er 296 dåser. vi brygger ikke over.</p>
       </div>
     </div>
 
@@ -291,7 +302,7 @@
                   <span class="opt__chip" data-bind="currentChip">84 tilbage</span>
                 </span>
                 <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="currentBody">lukker 11.08 · brygges 18.08 · kører 25.08</span>
+                <span class="opt__note" data-bind="currentBody">lukker 11.08.2026 · brygges 18.08.2026 · kører 25.08.2026</span>
               </span>
             </label>
             <label class="opt">
@@ -299,10 +310,10 @@
               <span class="opt__body opt__body--card">
                 <span class="opt__row">
                   <span class="opt__lead" data-bind="nextBatchLabel">09.26 · galaxy</span>
-                  <span class="opt__chip" data-bind="nextChip">åbner 11.08</span>
+                  <span class="opt__chip" data-bind="nextChip">åbner 11.08.2026</span>
                 </span>
                 <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="nextBody">lukker 08.09 · brygges 15.09 · kører 22.09</span>
+                <span class="opt__note" data-bind="nextBody">lukker 08.09.2026 · brygges 15.09.2026 · kører 22.09.2026</span>
               </span>
             </label>
           </div>
@@ -398,7 +409,7 @@
         <div class="step">
           <div class="step__head">
             <h3 class="label" id="step-zip">05 — leverer vi hos dig</h3>
-            <p class="step__hint">indre københavn</p>
+            <p class="step__hint">københavn og frederiksberg</p>
           </div>
           <form class="zip" id="zip-form" novalidate>
             <label class="visually-hidden" for="zip-input">postnummer</label>
@@ -408,6 +419,18 @@
             <button class="btn btn--fill-ink" type="submit">tjek adresse</button>
           </form>
           <p class="zip__answer" id="zip-answer" role="status"></p>
+          <!-- Waitlist capture for out-of-area postcodes — the form the
+               "skriv dig op" answer refers to. Hidden until a check comes back
+               unserviceable. Prototype boundary like the order button: state is
+               local and nothing is sent; in production this posts to a real
+               waitlist. -->
+          <form class="zip zip--waitlist" id="waitlist-form" hidden novalidate>
+            <label class="visually-hidden" for="waitlist-input">e-mail til ventelisten</label>
+            <input class="zip__input" id="waitlist-input" name="email" type="email"
+                   autocomplete="email" placeholder="din e-mail" aria-describedby="waitlist-answer">
+            <button class="btn btn--fill-ink" type="submit">skriv mig op</button>
+          </form>
+          <p class="zip__answer" id="waitlist-answer" role="status"></p>
         </div>
       </div>
 
@@ -429,7 +452,7 @@
           </div>
           <div class="summary__row">
             <dt>lukker</dt>
-            <dd data-bind="closeLabel">11.08</dd>
+            <dd data-bind="closeLabel">11.08.2026</dd>
           </div>
           <div class="summary__row">
             <dt>kassen</dt>
@@ -437,7 +460,7 @@
           </div>
           <div class="summary__row">
             <dt>levering</dt>
-            <dd data-bind="deliveryLabel">tirsdag 25.08, 16 — 18</dd>
+            <dd data-bind="deliveryLabel">tirsdag 25.08.2026, 16 — 18</dd>
           </div>
           <div class="summary__row">
             <dt>fragt</dt>

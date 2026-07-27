@@ -13,7 +13,7 @@ One page, three brand pillars in sequence, ending in an order configurator:
 
 ```
 header (live batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
-  → ÅRSTIDSBESTEMTE HUMLER #aarstid → 04 — BESTIL #bestil → closing line → footer
+  → VI BRYGGER EFTER ÅRSTIDEN #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 
 **Live preview:** https://stheodorsen.github.io/klar-site/

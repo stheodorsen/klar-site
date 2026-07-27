@@ -189,6 +189,19 @@ if (CONFIG.batchFull !== (taken >= capacity)) {
   );
 }
 
+/* the meter note prints the batch size in cans, and its HTML fallback is what a
+   reader sees before the script runs — so it has to follow CONFIG.capacity. */
+const leftSubFallback = html.match(/data-bind="leftSub"[^>]*>([^<]*)</);
+if (!leftSubFallback) {
+  failures.push('index.html has no element bound to leftSub.');
+} else if (!leftSubFallback[1].includes(`${capacity} dåser`)) {
+  failures.push(
+    `index.html fallback for leftSub reads "${leftSubFallback[1].trim()}" but `
+    + `capacity is ${capacity} — a reader would see the wrong batch size until `
+    + 'the script runs.',
+  );
+}
+
 /* 5. the price ladder. The option cards print a per-can price next to a total,
       so they have to multiply out exactly, the ladder has to actually get
       cheaper as the boxes get bigger, and nothing may price at or below zero. */

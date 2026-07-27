@@ -29,7 +29,7 @@ root README.
 
 ```
 header (batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
-  → ÅRSTIDSBESTEMTE HUMLER #aarstid → 04 — BESTIL #bestil → closing line → footer
+  → VI BRYGGER EFTER ÅRSTIDEN #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 
 Zones alternate ink and paper. The hero and LET MED VILJE are both ink and read
@@ -94,7 +94,7 @@ within a group, `:checked` styling, Space to select, and — when the current ba
 sells out — `disabled`, which removes it from the tab order without a
 `tabindex="-1"` dance. There are zero hand-built `role="radio"` elements left.
 
-**4. `ÅRSTIDSBESTEMTE HUMLER` is a grid, not the two-column split.** The handoff
+**4. `VI BRYGGER EFTER ÅRSTIDEN` is a grid, not the two-column split.** The handoff
 bottom-aligns this section like `frisk` and the order head. That works there
 because the right-hand element is a filled panel — a visible edge to align to.
 Here the right side is a list of hairline rows with no box, so bottom-aligning
@@ -107,8 +107,9 @@ on the aligned element itself — through a wrapper the browser synthesises a
 baseline from the box instead, which is why the nested-flex version looked
 unaligned. The cans moved flush left onto the content edge, where the pair
 (476px) sits inside the lead column's 640px measure. Four real edges instead of
-none. **The bottom-right of the section is now deliberately empty — worth a
-designer's eye.**
+none. The bottom-right of the section, which this arrangement left empty, now
+holds the `DERFOR DÅSE` fact box (see deviation 10) — 380px on the right
+content edge, the arrival table's own column, bottom-aligned to the cans.
 
 **5. The hero wordmark links to the top.** In the prototype the header `KLAR` is
 inert text. It is a link to `#let` here, requested after handoff. Note the anchor
@@ -201,7 +202,9 @@ is the claim almost verbatim. Two notes for whoever owns the copy: the
 measurement is those three terpenes specifically, so *"de flygtige humleolier"*
 is a fair but slightly broader paraphrase; and the same paper independently
 supports the can-over-bottle argument (hop aroma compounds accumulate in crown
-cap liners, while cans retain them), which the page does not currently make.
+cap liners, while cans retain them), which the page now makes in a second fact
+box — `DERFOR DÅSE`, beside the can renders in the årstid section, where it
+also closes the empty bottom-right corner deviation 4 left open.
 
 **11. The fold is exactly one viewport.** `min-height: calc(100svh - var(--header-h))`
 on the hero, replacing the handoff's fixed 820px — which happened to fill a 900px
@@ -243,7 +246,7 @@ image there and keeping the fold to one viewport are mutually exclusive.
 
 **12. Every section is one viewport, except the order form.** Requested after
 handoff: `min-height: calc(100svh - var(--header-h))` on the hero, LET MED VILJE,
-HUMLE DRIKKES FRISKT, ÅRSTIDSBESTEMTE HUMLER and the closing line, so scrolling steps
+HUMLE DRIKKES FRISKT, VI BRYGGER EFTER ÅRSTIDEN and the closing line, so scrolling steps
 section to section. `04 BESTIL` is deliberately exempt — it is a form, and forcing
 it to a screen height would either strand it in dead space or clip it.
 
@@ -261,7 +264,7 @@ distributes space that is actually free.
 - **The closing line now gets a whole screen to itself**, with the wink centred in
   it. That extra height is the point rather than a side effect.
 
-**ÅRSTIDSBESTEMTE HUMLER only matches on a window at least 1254px tall.** Below that it
+**VI BRYGGER EFTER ÅRSTIDEN only matches on a window at least 1254px tall.** Below that it
 stays taller — 1176px against an 822px fold at 1440×900. The blocker is the can
 renders: 560px tall, plus a minimum 128px of section padding, a 48px gap and the
 320px copy-and-table row, is 1056px before anything else. Squeezing that into 822
@@ -362,10 +365,10 @@ diffable while every deploy busts the cache.
   claim if the maltster is certified; the `øko` on the can is a product claim
   about Klar and is not. The can text cannot be changed by code — it is pixels.
   **Resolve before launch: either get certified, or drop the word.**
-- **The nav labels only partly match the section headlines.** `let` now matches
-  `LET MED VILJE`, but `frisk` and `årstid` still do not match
-  `HUMLE DRIKKES FRISKT` / `ÅRSTIDSBESTEMTE HUMLER`. The handoff raises this as an open
-  question for the client, so the rest are left as designed rather than quietly
+- **The nav labels only partly match the section headlines.** `let` matches
+  `LET MED VILJE` and `årstid` matches `VI BRYGGER EFTER ÅRSTIDEN`, but `frisk`
+  still does not match `HUMLE DRIKKES FRISKT`. The handoff raises this as an
+  open question for the client, so it is left as designed rather than quietly
   reworded.
 - **The Feb–April gap** in the harvest-arrival table is real and unexplained on
   the page. Also open: the tension between air-freighted New Zealand hops and
@@ -386,7 +389,8 @@ hard-coded and belongs on the server:
 | capacity / taken | 296 / 212 | live count that decrements on order |
 | `batchFull` | a hand-set flag | derived server-side from `taken >= capacity` |
 | prices | 88 / 160 / 216 kr, 2 kr/can standing discount | priced server-side |
-| serviceable area | 1050–1799 plus five postcodes | real delivery zones; the out-of-area branch should capture a waitlist rather than dead-end |
+| serviceable area | 1050–2500 plus brønshøj, vanløse, kastrup, hellerup | real delivery zones |
+| waitlist | out-of-area postcodes reveal an email form; the capture is local state | real waitlist storage behind the form |
 | order | sets local state | real checkout: 18+ age gate, address, payment, and a place in the batch |
 
 Also unbuilt: order management (change, skip, cancel before close), pant

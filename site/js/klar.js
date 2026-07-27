@@ -17,9 +17,11 @@
    ========================================================================== */
 
 const CONFIG = {
-  /* The batch record. Dates are DD.MM, batch ids are MM.YY, delivery is a
-     Danish weekday plus date. `closes` must precede `brews`, which must precede
-     `delivers` — asserted in tools/check-dates.mjs.
+  /* The batch record. Dates are DD.MM.YYYY — Danish day-month-year, printed
+     verbatim — batch ids are MM.YY, delivery is a Danish weekday plus date.
+     The two must never look alike: a bare DD.MM reads as a batch id one token
+     over. `closes` must precede `brews`, which must precede `delivers` —
+     asserted in tools/check-dates.mjs.
 
      bestBefore is derived as the batch month + shelfLifeMonths, and the can
      artwork in the photography has it printed in: replacing a batch here
@@ -27,7 +29,7 @@ const CONFIG = {
   batches: {
     current: {
       id: '08.26', hop: 'riwaka', origin: 'new zealand',
-      closes: '11.08', brews: '18.08', delivers: 'tirsdag 25.08',
+      closes: '11.08.2026', brews: '18.08.2026', delivers: 'tirsdag 25.08.2026',
     },
     /* The hop must have actually landed by brew day — see hopArrivals. This was
        citra, which is american, and usa hops do not arrive until
@@ -42,7 +44,7 @@ const CONFIG = {
        composited into the cans. See site/README.md. */
     next: {
       id: '09.26', hop: 'galaxy', origin: 'australien',
-      closes: '08.09', brews: '15.09', delivers: 'tirsdag 22.09',
+      closes: '08.09.2026', brews: '15.09.2026', delivers: 'tirsdag 22.09.2026',
     },
   },
 
@@ -62,8 +64,10 @@ const CONFIG = {
     { region: 'usa, england',       arrives: 'november — december', lands: 12 },
   ],
 
-  /* A brew is 150 litres — 296 cans. We do not brew over, so this is the whole
-     commercial constraint of the business in two numbers. */
+  /* A brew is a fixed number of cans. We do not brew over, so this is the
+     whole commercial constraint of the business in two numbers. The meter note
+     prints the capacity, so its HTML fallback must follow when this moves —
+     asserted in tools/check-dates.mjs. */
   capacity: 296,
   taken: 212,
 
@@ -128,10 +132,16 @@ const CONFIG = {
   },
 
   /* Placeholder for a real serviceable-area lookup. The out-of-area branch
-     should become a waitlist capture rather than a dead end. */
+     reveals the waitlist form; the capture itself is local state until the
+     backend exists.
+
+     The area is København and Frederiksberg (1050–2500 covers K, Frederiksberg,
+     Ø, N, S/Amager, NV, SV/Sydhavn and Valby), plus the districts at the same
+     ride distance that sit outside that band: Brønshøj (2700), Vanløse (2720),
+     Kastrup-siden af Amager (2770) and Hellerup (2900). */
   serviceable: {
-    ranges: [[1050, 1799]],
-    postcodes: [2100, 2200, 2300, 2400, 2450],
+    ranges: [[1050, 2500]],
+    postcodes: [2700, 2720, 2770, 2900],
   },
 };
 
@@ -143,9 +153,9 @@ function parseBatchId(id) {
   return { year: 2000 + year, month: month - 1 };
 }
 
-/* 'DD.MM' plus the year it belongs to -> a Date */
-function parseDayMonth(value, year) {
-  const [day, month] = value.split('.').map(Number);
+/* 'DD.MM.YYYY' -> a Date */
+function parseDate(value) {
+  const [day, month, year] = value.split('.').map(Number);
   return new Date(year, month - 1, day);
 }
 
@@ -225,10 +235,9 @@ const MS_PER_DAY = 86400000;
 
 function batchTimeline(key = 'current') {
   const batch = CONFIG.batches[key];
-  const { year } = parseBatchId(batch.id);
-  const closes = parseDayMonth(batch.closes, year);
-  const brews = parseDayMonth(batch.brews, year);
-  const delivers = parseDayMonth(batch.delivers.split(' ').pop(), year);
+  const closes = parseDate(batch.closes);
+  const brews = parseDate(batch.brews);
+  const delivers = parseDate(batch.delivers.split(' ').pop());
   const bestBefore = bestBeforeDate(batch.id);
   return {
     batch,
@@ -258,6 +267,9 @@ const state = {
   zip: '',
   // null until a check has run; then { zip, serviceable } or { tooShort: true }
   zipCheck: null,
+  // null until the waitlist form is submitted; then { signedUp: true } or
+  // { invalid: true }. Cleared with zipCheck — it belongs to one answer.
+  waitlist: null,
   ordered: false,
 };
 
@@ -281,6 +293,8 @@ for (const el of document.querySelectorAll('[data-bind-label]')) {
 }
 
 const zipAnswerEl = document.getElementById('zip-answer');
+const waitlistFormEl = document.getElementById('waitlist-form');
+const waitlistAnswerEl = document.getElementById('waitlist-answer');
 const meterFillEl = document.getElementById('meter-fill');
 const currentBatchInput = document.querySelector('input[name="batch"][value="current"]');
 const nextBatchInput = document.querySelector('input[name="batch"][value="next"]');
@@ -338,7 +352,7 @@ function derive() {
     leftLabel: full ? 'venteliste' : `${left} dåser tilbage`,
     leftSub: full
       ? `brygningen er bestilt op. vi brygger ikke over — så du kommer med i ${next.id}.`
-      : `en brygning er 150 liter. det er taget, og vi brygger ikke over.`,
+      : `en brygning er ${CONFIG.capacity} dåser. vi brygger ikke over.`,
     meterWidth: full ? '100%' : `${Math.round((CONFIG.taken / CONFIG.capacity) * 100)}%`,
 
     // 01 — which batch
@@ -376,7 +390,20 @@ function derive() {
     // recomputed rather than frozen at check time, so it cannot go stale when
     // the customer changes batch or window afterwards
     zipAnswer: zipAnswerText(batch, slotLabel),
+
+    // the waitlist form shows only while an out-of-area answer stands and the
+    // reader has not signed up yet
+    waitlistOpen: Boolean(
+      state.zipCheck && !state.zipCheck.tooShort && !state.zipCheck.serviceable,
+    ) && !state.waitlist?.signedUp,
+    waitlistAnswer: waitlistAnswerText(),
   };
+}
+
+function waitlistAnswerText() {
+  if (!state.waitlist) return '';
+  if (state.waitlist.invalid) return 'skriv en rigtig e-mail-adresse, så siger vi til.';
+  return `tak. vi skriver, når cyklen når ${state.zipCheck.zip}.`;
 }
 
 function zipAnswerText(batch, slotLabel) {
@@ -413,6 +440,11 @@ function render() {
     zipAnswerEl.textContent = values.zipAnswer;
   }
   zipAnswerEl.dataset.serviceable = String(Boolean(state.zipCheck?.serviceable));
+
+  waitlistFormEl.hidden = !values.waitlistOpen;
+  if (waitlistAnswerEl.textContent !== values.waitlistAnswer) {
+    waitlistAnswerEl.textContent = values.waitlistAnswer;
+  }
 
   meterFillEl.style.width = values.meterWidth;
 
@@ -463,6 +495,7 @@ zipInput.addEventListener('input', () => {
   if (zipInput.value !== cleaned) zipInput.value = cleaned;
   state.zip = cleaned;
   state.zipCheck = null; // typing clears the previous answer
+  state.waitlist = null; // and the waitlist belongs to that answer
   render();
 });
 
@@ -471,6 +504,29 @@ zipForm.addEventListener('submit', (event) => {
   state.zipCheck = state.zip.length < 4
     ? { tooShort: true, serviceable: false }
     : { zip: state.zip, serviceable: isServiceable(state.zip) };
+  state.waitlist = null; // a new check gets a fresh form
+  render();
+});
+
+const waitlistInput = document.getElementById('waitlist-input');
+
+waitlistInput.addEventListener('input', () => {
+  // typing withdraws a rejection; a confirmation hides the form, so it cannot
+  // be typed away
+  if (state.waitlist?.invalid) {
+    state.waitlist = null;
+    render();
+  }
+});
+
+waitlistFormEl.addEventListener('submit', (event) => {
+  event.preventDefault();
+  // Prototype boundary: in production this posts to the waitlist and the
+  // confirmation echoes the server's answer.
+  const email = waitlistInput.value.trim();
+  state.waitlist = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+    ? { signedUp: true }
+    : { invalid: true };
   render();
 });
 
