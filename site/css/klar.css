@@ -681,6 +681,18 @@ input {
   letter-spacing: var(--tr-meta);
   color: var(--grey-paper);
 }
+/* Three hop names do not fit beside the batch id at can width, so they get
+   their own line and are allowed to wrap onto two. Set a touch smaller than
+   the id: the id is the batch, the hops are what is in it. */
+.can__hops {
+  margin-top: calc(0.023 * var(--can-w));
+  font-size: calc(0.0455 * var(--can-w));      /* 10 at 220 */
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: var(--tr-meta);
+  color: var(--grey-paper);
+  text-wrap: balance;
+}
 .can__rule {
   width: 100%;
   height: 1px;

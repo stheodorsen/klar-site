@@ -46,9 +46,9 @@ for (const forbidden of ['document', 'window', 'matchMedia', 'localStorage']) {
 }
 
 const exported = new Function(
-  `${prelude}\nreturn { CONFIG, batchTimeline, batchOk, priceFor, bestBeforeLabel };`,
+  `${prelude}\nreturn { CONFIG, batchTimeline, batchOk, priceFor, bestBeforeLabel, MS_PER_DAY };`,
 )();
-const { CONFIG, batchTimeline, priceFor, bestBeforeLabel } = exported;
+const { CONFIG, batchTimeline, priceFor, bestBeforeLabel, MS_PER_DAY } = exported;
 
 const failures = [];   // wrong and fixable in code -> fails the deploy
 const warnings = [];   // known-pending assets -> reported, does not block
@@ -76,7 +76,7 @@ const daWeekday = new Intl.DateTimeFormat('da-DK', { weekday: 'long' });
 for (const key of ['current', 'next']) {
   const t = batchTimeline(key);
   notes.push(
-    `${key.padEnd(7)} ${t.batch.id} · ${t.batch.hop.padEnd(7)} `
+    `${key.padEnd(7)} ${t.batch.id} · ${t.batch.hops.join('/').padEnd(26)} `
     + `lukker ${fmt(t.closes)}  brygges ${fmt(t.brews)}  `
     + `kører ${fmt(t.delivers)}  bedst før ${t.bestBeforeLabel}  `
     + `(${t.daysOfLife} days of life, min ${t.required})`,
@@ -87,6 +87,20 @@ for (const key of ['current', 'next']) {
   }
   if (t.brews > t.delivers) {
     failures.push(`${key} (${t.batch.id}): brewed ${t.batch.brews}, after delivery ${t.batch.delivers}.`);
+  }
+
+  /* Ten days is the process, not a scheduling preference: dry hop on day
+     three, crash on day six, cone dumped daily through day nine, canned on day
+     ten. A batch scheduled tighter than that cannot be brewed as specified —
+     it would be canned while the hop is still burning. Shortening this is a
+     decision about the beer, so it should not be possible to make it by
+     editing a date. */
+  const brewToDelivery = Math.round((t.delivers - t.brews) / MS_PER_DAY);
+  if (brewToDelivery < 10) {
+    failures.push(
+      `${key} (${t.batch.id}): only ${brewToDelivery} days from brew (${t.batch.brews}) `
+      + `to delivery (${t.batch.delivers}); the process needs 10.`,
+    );
   }
   if (t.daysOfLife < t.required) {
     failures.push(
@@ -145,7 +159,7 @@ for (const key of ['current', 'next']) {
   }
   if (arrival.lands > brewMonth) {
     failures.push(
-      `${key} (${batch.id}): ${batch.hop} is from ${batch.origin}, which does not `
+      `${key} (${batch.id}): ${batch.hops.join(', ')} are from ${batch.origin}, which does not `
       + `land in Denmark until month ${arrival.lands} (${arrival.arrives}), but the `
       + `batch is brewed in month ${brewMonth}. Pick a hop that has arrived.`,
     );
@@ -154,7 +168,7 @@ for (const key of ['current', 'next']) {
     .filter((a) => a.lands <= brewMonth)
     .sort((a, b) => b.lands - a.lands)[0];
   notes.push(
-    `hop      ${batch.id} ${batch.hop.padEnd(7)} ${batch.origin.padEnd(18)} `
+    `hop      ${batch.id} ${batch.hops.join('/').padEnd(26)} ${batch.origin.padEnd(18)} `
     + `lands ${arrival.arrives}`
     + (freshest && freshest.region !== batch.origin
       ? `   (note: ${freshest.region} landed more recently)` : ''),
@@ -321,7 +335,7 @@ const PHOTO_LABELS = {
 const currentBatch = CONFIG.batches.current;
 const wantLabel = {
   id: currentBatch.id,
-  hop: currentBatch.hop,
+  hop: currentBatch.hops[0],
   bestBefore: bestBeforeLabel(currentBatch.id),
   abv: CONFIG.abv,
 };

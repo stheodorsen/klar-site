@@ -23,13 +23,20 @@ const CONFIG = {
      over. `closes` must precede `brews`, which must precede `delivers` —
      asserted in tools/check-dates.mjs.
 
+     Delivery is ten days after brew day, not seven. The beer needs the time:
+     dry hop lands day three, the tank is crashed on day six and the cone
+     dumped daily through day nine, and it cans on day ten. Canning it any
+     sooner puts hop burn in the can. Ten days off a Tuesday brew is a Friday
+     delivery, which is why the weekday moved too — also asserted in
+     tools/check-dates.mjs.
+
      bestBefore is derived as the batch month + shelfLifeMonths, and the can
      artwork in the photography has it printed in: replacing a batch here
      without re-compositing the photos leaves the cans contradicting the page. */
   batches: {
     current: {
-      id: '08.26', hop: 'riwaka', origin: 'new zealand',
-      closes: '11.08.2026', brews: '18.08.2026', delivers: 'tirsdag 25.08.2026',
+      id: '08.26', hops: ['riwaka', 'nectaron', 'motueka'], origin: 'new zealand',
+      closes: '11.08.2026', brews: '18.08.2026', delivers: 'fredag 28.08.2026',
     },
     /* The hop must have actually landed by brew day — see hopArrivals. This was
        citra, which is american, and usa hops do not arrive until
@@ -43,8 +50,8 @@ const CONFIG = {
        it. Changing that one is blocked on the photography, which has riwaka
        composited into the cans. See site/README.md. */
     next: {
-      id: '09.26', hop: 'galaxy', origin: 'australien',
-      closes: '08.09.2026', brews: '15.09.2026', delivers: 'tirsdag 22.09.2026',
+      id: '09.26', hops: ['galaxy', 'vic secret', 'eclipse'], origin: 'australien',
+      closes: '08.09.2026', brews: '15.09.2026', delivers: 'fredag 25.09.2026',
     },
   },
 
@@ -68,8 +75,8 @@ const CONFIG = {
      whole commercial constraint of the business in two numbers. The meter note
      prints the capacity, so its HTML fallback must follow when this moves —
      asserted in tools/check-dates.mjs. */
-  capacity: 296,
-  taken: 212,
+  capacity: 200,
+  taken: 116,
 
   /* Flip when the current batch is fully ordered. This rewrites the page's
      commercial state in one derived move — header, meter, the disabled current
@@ -184,8 +191,19 @@ function canDutyLine(batchId) {
   return `${CONFIG.cansVolume} · øko · drik før ${bestBeforeLabel(batchId)}`;
 }
 
+/* Every batch is three hops, not one: a donor picked for its bound thiol
+   precursors, a lead picked for total oil, and a lift for the citrus top
+   note. They all come from the same origin — the crop that just landed — so
+   the arrival check below still has one origin to test. hops[0] is the donor
+   and leads the list, which is why it is the one the photography shows. */
+function hopLine(batch) {
+  return batch.hops.join(' · ');
+}
+
+/* The can prints the id and the hops on separate lines — three hop names do
+   not fit on one line at can width. Everywhere with room prints them joined. */
 function batchLine(batch) {
-  return `${batch.id} · ${batch.hop}`;
+  return `${batch.id} · ${hopLine(batch)}`;
 }
 
 function isServiceable(zip) {
@@ -338,9 +356,11 @@ function derive() {
     // hero + cans + footer
     abv: CONFIG.abv,
     abvVol: `${CONFIG.abv} vol.`,
-    canCurrentBatch: batchLine(current),
+    canCurrentBatch: current.id,
+    canCurrentHops: hopLine(current),
     canCurrentDuty: canDutyLine(current.id),
-    canNextBatch: batchLine(next),
+    canNextBatch: next.id,
+    canNextHops: hopLine(next),
     canNextDuty: canDutyLine(next.id),
     canCurrentLabel: `Dåsen: mærket, KLAR, humlet hverdagsøl, ${batchLine(current)}, `
       + `${CONFIG.abv}, ${canDutyLine(current.id)}.`,
@@ -368,7 +388,7 @@ function derive() {
     // summary
     summaryState: full || effectiveBatch === 'next' ? 'næste brygning' : 'åben',
     batchLabel: batch.id,
-    hopLabel: batch.hop,
+    hopLabel: hopLine(batch),
     closeLabel: batch.closes,
     planLabel: `${state.plan} dåser · ${CONFIG.cansVolume}`,
     deliveryLabel: `${batch.delivers}, ${slotLabel}`,

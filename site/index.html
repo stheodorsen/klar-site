@@ -218,7 +218,7 @@
          argument made visually. -->
     <div class="cans">
       <div class="can" role="img" data-bind-label="canCurrentLabel"
-           aria-label="Dåsen: mærket, KLAR, humlet hverdagsøl, 08.26 · riwaka, 2,7%, 440 ml · øko · drik før 10.26.">
+           aria-label="Dåsen: mærket, KLAR, humlet hverdagsøl, 08.26 · riwaka · nectaron · motueka, 2,7%, 440 ml · øko · drik før 10.26.">
         <svg class="mark mark--can" viewBox="13 7 74 26" fill="none" aria-hidden="true">
           <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.84"/>
           <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.8" stroke-linecap="round"/>
@@ -226,14 +226,15 @@
         <span class="can__wordmark">Klar</span>
         <span class="can__descriptor">humlet hverdagsøl</span>
         <span class="can__spacer"></span>
-        <span class="can__batch" data-bind="canCurrentBatch">08.26 · riwaka</span>
+        <span class="can__batch" data-bind="canCurrentBatch">08.26</span>
+        <span class="can__hops" data-bind="canCurrentHops">riwaka · nectaron · motueka</span>
         <span class="can__rule"></span>
         <span class="can__abv" data-bind="abv">2,7%</span>
         <span class="can__duty" data-bind="canCurrentDuty">440 ml · øko · drik før 10.26</span>
       </div>
 
       <div class="can can--upcoming" role="img" data-bind-label="canNextLabel"
-           aria-label="Den kommende dåse: 09.26 · galaxy, 2,7%, 440 ml · øko · drik før 11.26.">
+           aria-label="Den kommende dåse: 09.26 · galaxy · vic secret · eclipse, 2,7%, 440 ml · øko · drik før 11.26.">
         <svg class="mark mark--can" viewBox="13 7 74 26" fill="none" aria-hidden="true">
           <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.84"/>
           <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.8" stroke-linecap="round"/>
@@ -241,7 +242,8 @@
         <span class="can__wordmark">Klar</span>
         <span class="can__descriptor">humlet hverdagsøl</span>
         <span class="can__spacer"></span>
-        <span class="can__batch" data-bind="canNextBatch">09.26 · galaxy</span>
+        <span class="can__batch" data-bind="canNextBatch">09.26</span>
+        <span class="can__hops" data-bind="canNextHops">galaxy · vic secret · eclipse</span>
         <span class="can__rule"></span>
         <span class="can__abv" data-bind="abv">2,7%</span>
         <span class="can__duty" data-bind="canNextDuty">440 ml · øko · drik før 11.26</span>
@@ -274,14 +276,14 @@
 
       <div class="meter">
         <p class="meter__top">
-          <span data-bind="currentBatchLabel">08.26 · riwaka</span>
+          <span data-bind="currentBatchLabel">08.26 · riwaka · nectaron · motueka</span>
           <span data-bind="openStateLabel">åben</span>
         </p>
         <p class="meter__count" data-bind="leftLabel" role="status">84 dåser tilbage</p>
         <div class="meter__track" aria-hidden="true">
           <div class="meter__fill" id="meter-fill"></div>
         </div>
-        <p class="meter__note" data-bind="leftSub">en brygning er 296 dåser. vi brygger ikke over.</p>
+        <p class="meter__note" data-bind="leftSub">en brygning er 200 dåser. vi brygger ikke over.</p>
       </div>
     </div>
 
@@ -298,22 +300,22 @@
               <input class="opt__input" type="radio" name="batch" value="current" checked>
               <span class="opt__body opt__body--card">
                 <span class="opt__row">
-                  <span class="opt__lead" data-bind="currentBatchLabel">08.26 · riwaka</span>
+                  <span class="opt__lead" data-bind="currentBatchLabel">08.26 · riwaka · nectaron · motueka</span>
                   <span class="opt__chip" data-bind="currentChip">84 tilbage</span>
                 </span>
                 <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="currentBody">lukker 11.08.2026 · brygges 18.08.2026 · kører 25.08.2026</span>
+                <span class="opt__note" data-bind="currentBody">lukker 11.08.2026 · brygges 18.08.2026 · kører 28.08.2026</span>
               </span>
             </label>
             <label class="opt">
               <input class="opt__input" type="radio" name="batch" value="next">
               <span class="opt__body opt__body--card">
                 <span class="opt__row">
-                  <span class="opt__lead" data-bind="nextBatchLabel">09.26 · galaxy</span>
+                  <span class="opt__lead" data-bind="nextBatchLabel">09.26 · galaxy · vic secret · eclipse</span>
                   <span class="opt__chip" data-bind="nextChip">åbner 11.08.2026</span>
                 </span>
                 <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="nextBody">lukker 08.09.2026 · brygges 15.09.2026 · kører 22.09.2026</span>
+                <span class="opt__note" data-bind="nextBody">lukker 08.09.2026 · brygges 15.09.2026 · kører 25.09.2026</span>
               </span>
             </label>
           </div>
@@ -378,7 +380,7 @@
               <input class="opt__input" type="radio" name="cadence" value="other">
               <span class="opt__body opt__body--row-stack">
                 <span class="opt__mid">hver anden</span>
-                <span class="opt__note">til den langsomme tirsdag</span>
+                <span class="opt__note">til den langsomme fredag</span>
               </span>
             </label>
           </div>
@@ -448,7 +450,7 @@
           </div>
           <div class="summary__row">
             <dt>humle</dt>
-            <dd data-bind="hopLabel">riwaka</dd>
+            <dd data-bind="hopLabel">riwaka · nectaron · motueka</dd>
           </div>
           <div class="summary__row">
             <dt>lukker</dt>
@@ -460,7 +462,7 @@
           </div>
           <div class="summary__row">
             <dt>levering</dt>
-            <dd data-bind="deliveryLabel">tirsdag 25.08.2026, 16 — 18</dd>
+            <dd data-bind="deliveryLabel">fredag 28.08.2026, 16 — 18</dd>
           </div>
           <div class="summary__row">
             <dt>fragt</dt>
