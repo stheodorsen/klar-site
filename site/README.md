@@ -29,7 +29,7 @@ root README.
 
 ```
 header (batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
-  → VI FØLGER HØSTEN #aarstid → 04 — BESTIL #bestil → closing line → footer
+  → ÅRSTIDSBESTEMTE HUMLER #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 
 Zones alternate ink and paper. The hero and LET MED VILJE are both ink and read
@@ -94,7 +94,7 @@ within a group, `:checked` styling, Space to select, and — when the current ba
 sells out — `disabled`, which removes it from the tab order without a
 `tabindex="-1"` dance. There are zero hand-built `role="radio"` elements left.
 
-**4. `VI FØLGER HØSTEN` is a grid, not the two-column split.** The handoff
+**4. `ÅRSTIDSBESTEMTE HUMLER` is a grid, not the two-column split.** The handoff
 bottom-aligns this section like `frisk` and the order head. That works there
 because the right-hand element is a filled panel — a visible edge to align to.
 Here the right side is a list of hairline rows with no box, so bottom-aligning
@@ -243,7 +243,7 @@ image there and keeping the fold to one viewport are mutually exclusive.
 
 **12. Every section is one viewport, except the order form.** Requested after
 handoff: `min-height: calc(100svh - var(--header-h))` on the hero, LET MED VILJE,
-HUMLE DRIKKES FRISKT, VI FØLGER HØSTEN and the closing line, so scrolling steps
+HUMLE DRIKKES FRISKT, ÅRSTIDSBESTEMTE HUMLER and the closing line, so scrolling steps
 section to section. `04 BESTIL` is deliberately exempt — it is a form, and forcing
 it to a screen height would either strand it in dead space or clip it.
 
@@ -261,7 +261,7 @@ distributes space that is actually free.
 - **The closing line now gets a whole screen to itself**, with the wink centred in
   it. That extra height is the point rather than a side effect.
 
-**VI FØLGER HØSTEN only matches on a window at least 1254px tall.** Below that it
+**ÅRSTIDSBESTEMTE HUMLER only matches on a window at least 1254px tall.** Below that it
 stays taller — 1176px against an 822px fold at 1440×900. The blocker is the can
 renders: 560px tall, plus a minimum 128px of section padding, a 48px gap and the
 320px copy-and-table row, is 1056px before anything else. Squeezing that into 822
@@ -364,7 +364,7 @@ diffable while every deploy busts the cache.
   **Resolve before launch: either get certified, or drop the word.**
 - **The nav labels only partly match the section headlines.** `let` now matches
   `LET MED VILJE`, but `frisk` and `årstid` still do not match
-  `HUMLE DRIKKES FRISKT` / `VI FØLGER HØSTEN`. The handoff raises this as an open
+  `HUMLE DRIKKES FRISKT` / `ÅRSTIDSBESTEMTE HUMLER`. The handoff raises this as an open
   question for the client, so the rest are left as designed rather than quietly
   reworded.
 - **The Feb–April gap** in the harvest-arrival table is real and unexplained on
