@@ -213,17 +213,20 @@ next section at any window height. `svh` rather than `vh`, because `vh` is the
 *largest* viewport on mobile: with the address bar showing, `100vh` overflows and
 the next section starts off-screen, which is the opposite of the point.
 
-Stacked, the hero is **flex, not grid**, and the reason is worth keeping. Its
-height comes from `min-height`, which leaves the container indefinite — and a grid
-`1fr` row then resolves against its own content rather than the free space, so the
-photograph's intrinsic height inflated the panel about 200px past the viewport.
-`minmax(0, 1fr)` does not fix it: the zero is the track's minimum, not how `fr`
-resolves. Flex measures free space from the used height, so `flex: 1 1 0` hands the
-photograph exactly what the text leaves.
+**Stacked (≤900px), the fold gives way to the photograph.** Filling only the
+height the text left inside one viewport gave the image about 140px at 390×844 —
+a letterbox slice of a portrait frame, which the client flagged as showing
+nothing. Showing the full image and holding the mobile fold to one viewport are
+mutually exclusive, and the client chose the image: the band now carries the
+photograph's own `aspect-ratio` (1919 / 2186), shows the whole frame uncropped,
+and the panel runs past the fold — exactly as the LET MED VILJE panel always has
+on a phone. `flex: 1 0 auto` keeps two properties: shrink 0 so a short window
+grows the panel rather than re-cropping the photograph, grow 1 so a window taller
+than the content stretches the band instead of ending the panel in dead space
+(cover then trims the sides, never the can).
 
-Verified exact at 1440×900, 1680×1200 and 375×812. At 320×640 the panel runs 62px
-over, because the photograph hits its 120px floor and the panel grows rather than
-squeezing the image away — a deliberate floor, not a miss.
+Verified exact at 1440×900 and 1680×1200; at 390×844 and 320×640 the panel runs
+past the viewport by design, with the full frame visible.
 
 **The photograph's column is capped, which is the other half of this.** Tying the
 panel to the viewport means its aspect now varies with the window, and past roughly
@@ -239,10 +242,8 @@ exactly 720/720; at 2560×1105 they are 1658/902. **The cost is that the 50/50
 spread stops being 50/50 on very wide windows** — worth a designer's eye, though
 the alternatives were cropping the can or growing the panel past the fold.
 
-One place this does not reach: stacked on a phone, the photograph is a full-width
-band of whatever height the text leaves (about 230px at 375×812), so it is a
-horizontal slice of a portrait frame rather than the whole thing. Showing the full
-image there and keeping the fold to one viewport are mutually exclusive.
+Stacked on a phone the cap is moot: the band carries the image's own aspect
+ratio, so the whole frame shows there too (see above).
 
 **12. Every section is one viewport, except the order form.** Requested after
 handoff: `min-height: calc(100svh - var(--header-h))` on the hero, LET MED VILJE,
