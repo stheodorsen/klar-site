@@ -102,6 +102,19 @@ for (const key of ['current', 'next']) {
       + `to delivery (${t.batch.delivers}); the process needs 10.`,
     );
   }
+
+  /* Ten days is the process with zero slack: a fermentation that stalls on a
+     day-10 schedule misses paid deliveries with no recovery path. The published
+     schedule carries a buffer week (delivery the Friday after the process
+     ends). A warning, not a failure — tightening it back is a business call,
+     but it should never happen by accident. */
+  if (brewToDelivery >= 10 && brewToDelivery < 14) {
+    warnings.push(
+      `${key} (${t.batch.id}): ${brewToDelivery} days brew-to-door leaves `
+      + 'little or no recovery buffer over the 10-day process. A stalled '
+      + 'fermentation has nowhere to go but a missed delivery date.',
+    );
+  }
   if (t.daysOfLife < t.required) {
     failures.push(
       `${key} (${t.batch.id}): bedst før ${t.bestBeforeLabel} is only ${t.daysOfLife} `
@@ -239,11 +252,20 @@ for (const row of ladder) {
         + `${p.unit * row.size}, but the box is ${p.beer} kr.`,
       );
     }
-    // and the headline total is the box plus the ride, nothing else folded in
-    if (p.beer + p.fee !== p.total) {
+    // The headline total is box + fragt + pant, nothing else and nothing less.
+    // Pant is in the total by law: Danish price-marking rules require the
+    // deposit included in the displayed price, refundable or not.
+    if (p.pant !== row.size * CONFIG.pantPerCan) {
       failures.push(
-        `price ${row.size} (${label}): ${p.beer} kr + ${p.fee} kr fragt = `
-        + `${p.beer + p.fee}, but total is ${p.total} kr.`,
+        `price ${row.size} (${label}): pant is ${p.pant} kr, but ${row.size} `
+        + `cans at ${CONFIG.pantPerCan} kr is ${row.size * CONFIG.pantPerCan} kr.`,
+      );
+    }
+    if (p.beer + p.fee + p.pant !== p.total) {
+      failures.push(
+        `price ${row.size} (${label}): ${p.beer} kr + ${p.fee} kr fragt + `
+        + `${p.pant} kr pant = ${p.beer + p.fee + p.pant}, but total is ${p.total} kr. `
+        + 'The displayed total must include pant (dansk prismærkning).',
       );
     }
     if (p.unit <= 0) {
@@ -304,6 +326,54 @@ for (const row of ladder) {
         + `says "${want}" — a reader would see the wrong price until the script runs.`,
       );
     }
+  }
+}
+
+/* The summary's static fallbacks print the default order's money before the
+   script runs. The default is whatever the markup checks, so read it from the
+   markup rather than assuming it here. */
+const checkedPlan = Number((html.match(
+  /name="plan" value="(\d+)" checked/,
+) ?? [])[1]);
+const checkedCadence = (html.match(
+  /name="cadence" value="(\w+)" checked/,
+) ?? [])[1];
+if (!checkedPlan || !checkedCadence) {
+  failures.push('index.html has no checked plan/cadence radio to derive the default order from.');
+} else {
+  const p = priceFor(checkedPlan, checkedCadence);
+  for (const [key, want] of [
+    ['feeLabel', `${p.fee} kr`],
+    ['pantLabel', `${p.pant} kr`],
+    ['priceLabel', `${p.total} kr`],
+    ['unitLabel', `${p.unit} kr pr. dåse`],
+  ]) {
+    const m = html.match(new RegExp(`data-bind="${key}"[^>]*>([^<]*)<`));
+    if (!m) {
+      failures.push(`index.html has no element bound to ${key}.`);
+    } else if (m[1].trim() !== want) {
+      failures.push(
+        `index.html fallback for ${key} reads "${m[1].trim()}" but the default `
+        + `order (${checkedPlan} cans, ${checkedCadence}) says "${want}".`,
+      );
+    }
+  }
+}
+
+/* The schema.org offer range is static JSON and includes pant, per the same
+   price-marking rule as the displayed total. Fragt stays out — schema treats
+   shipping as its own concept. */
+const schemaLow = Math.min(...ladder.map((r) => r.standing.beer + r.standing.pant));
+const schemaHigh = Math.max(...ladder.map((r) => r.once.beer + r.once.pant));
+for (const [field, want] of [['lowPrice', schemaLow], ['highPrice', schemaHigh]]) {
+  const m = html.match(new RegExp(`"${field}":\\s*"(\\d+)"`));
+  if (!m) {
+    failures.push(`index.html schema.org block has no ${field}.`);
+  } else if (Number(m[1]) !== want) {
+    failures.push(
+      `index.html schema.org ${field} is ${m[1]}, but the ladder (incl. pant) `
+      + `says ${want}.`,
+    );
   }
 }
 

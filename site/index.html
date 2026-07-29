@@ -134,15 +134,20 @@
         <h2 class="headline" id="frisk-title">humle drikkes friskt</h2>
         <p class="body-lg">humle er en blomst. den falmer. tid og varme tager det bedste først. derfor sælger vi kun øl, der er frisk. og kold hele vejen. fra tank til dør.</p>
       </div>
-      <!-- The handoff recorded that the client had this citation taken off the
-           page, which left the figure unsourced in public. It is back, verified:
-           Kemp et al. report an 80% drop in myrcene, humulene and caryophyllene
-           after three months at 20 C. Full reference in site/README.md. If it
-           comes off again, the claim goes with it. -->
+      <!-- Review softened this claim. The earlier copy printed "omkring 80% på
+           tre måneder ved 20 grader" — a precision the Kemp paper does not
+           hand over cleanly (it tracks 10 months at 3 and 20 C and reports
+           warm-stored hop aroma significantly depleted, cold-stored well
+           retained). The qualitative claim is what the paper supports without
+           argument. The citation stays — a measured claim in public needs a
+           source — and the work is Carlsberg Research Laboratory's, which is
+           worth saying out loud in Copenhagen. Full reference in
+           site/README.md. If the source comes off again, the claim goes with
+           it. -->
       <aside class="fact" aria-labelledby="fact-title">
         <h3 class="eyebrow" id="fact-title">fakta</h3>
-        <p class="fact__claim">de flygtige humleolier falder omkring 80% på tre måneder ved 20 grader.</p>
-        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021</p>
+        <p class="fact__claim">ved stuetemperatur er det meste af humlearomaen væk på få måneder. kold holder den.</p>
+        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021 · carlsberg research laboratory, københavn</p>
       </aside>
     </div>
 
@@ -160,7 +165,11 @@
                  alt="Ladcyklen med Klar-mærket i en københavnsk gade.">
           </picture>
         </div>
-        <figcaption class="photo__caption">bestilt, brygget, kørt ud i samme uge</figcaption>
+        <!-- "i samme uge" was reviewed off: brewed 18.08, delivered 04.09 is
+             neither the same week nor true of any schedule with a recovery
+             buffer in it. The order of events is the claim that always holds —
+             nothing is brewed before it is sold. -->
+        <figcaption class="photo__caption">bestilt, brygget, kørt ud — i den rækkefølge</figcaption>
       </figure>
 
       <figure class="photo">
@@ -252,13 +261,15 @@
       </div>
 
       <!-- The can-over-bottle argument, beside the renders it argues for. Same
-           paper as the FAKTA box in frisk, independently verified there: Kemp
-           et al. find hop aroma compounds absorbing into crown-cap liners while
-           cans retain them. Full reference in site/README.md. Like the other
-           citation: if the source comes off, the claim goes with it. -->
+           paper as the FAKTA box in frisk: Kemp et al. find hop aroma
+           compounds absorbing into crown-cap liners far more than into can
+           linings. "langt mindre", not "bliver i øllet" — can linings scalp
+           too, less but not zero, so the claim must not say the aroma stays
+           put. Full reference in site/README.md. Like the other citation: if
+           the source comes off, the claim goes with it. -->
       <aside class="fact fact--cans" aria-labelledby="fact-can-title">
         <h3 class="eyebrow" id="fact-can-title">derfor dåse</h3>
-        <p class="fact__claim">i flasken vandrer humlens aromastoffer ind i kapslens foring. i dåsen bliver de i øllet.</p>
+        <p class="fact__claim">i flasken vandrer humlens aromastoffer ind i kapslens foring. dåsens foring tager langt mindre.</p>
         <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021</p>
       </aside>
     </div>
@@ -306,7 +317,7 @@
                   <span class="opt__chip" data-bind="currentChip">84 tilbage</span>
                 </span>
                 <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="currentBody">lukker 11.08.2026 · brygges 18.08.2026 · kører 28.08.2026</span>
+                <span class="opt__note" data-bind="currentBody">lukker 11.08.2026 · brygges 18.08.2026 · kører 04.09.2026</span>
               </span>
             </label>
             <label class="opt">
@@ -317,7 +328,7 @@
                   <span class="opt__chip" data-bind="nextChip">åbner 11.08.2026</span>
                 </span>
                 <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="nextBody">lukker 08.09.2026 · brygges 15.09.2026 · kører 25.09.2026</span>
+                <span class="opt__note" data-bind="nextBody">lukker 08.09.2026 · brygges 15.09.2026 · kører 02.10.2026</span>
               </span>
             </label>
           </div>
@@ -464,25 +475,32 @@
           </div>
           <div class="summary__row">
             <dt>levering</dt>
-            <dd data-bind="deliveryLabel">fredag 28.08.2026, 16 — 18</dd>
+            <dd data-bind="deliveryLabel">fredag 04.09.2026, 16 — 18</dd>
           </div>
           <div class="summary__row">
             <dt>fragt</dt>
             <dd data-bind="feeLabel">39 kr</dd>
           </div>
+          <!-- Pant is itemised AND included in the total below: Danish
+               price-marking rules require the deposit in the displayed total.
+               The refund is the terms line's job. -->
+          <div class="summary__row">
+            <dt>pant</dt>
+            <dd data-bind="pantLabel">8 kr</dd>
+          </div>
         </dl>
         <hr class="rule rule--panel">
         <p class="summary__total">
           <span class="summary__cadence" data-bind="cadenceLabel">hver brygning</span>
-          <span class="summary__total-value" data-bind="priceLabel">327 kr</span>
+          <span class="summary__total-value" data-bind="priceLabel">335 kr</span>
         </p>
-        <p class="summary__fineprint" data-bind="unitPantLabel">36 kr pr. dåse · pant 8 kr</p>
+        <p class="summary__fineprint" data-bind="unitLabel">36 kr pr. dåse</p>
         <button class="btn btn--fill-ink btn--block summary__cta" type="button" data-action="order" data-bind="ctaLabel">bestil 08.26</button>
         <p class="summary__confirm" data-bind="confirmLabel" role="status"></p>
         <hr class="rule rule--panel">
         <ul class="summary__terms">
           <li data-bind="termLine">ingen binding · stop inden bestillingen lukker</li>
-          <li>tomme dåser tages med retur</li>
+          <li>tomme dåser tages med retur — pant refunderes</li>
           <li>18 år · vi tjekker alder ved døren</li>
         </ul>
       </aside>
@@ -513,20 +531,20 @@
       <a href="#aarstid">årstid</a>
       <a href="#bestil">bestil</a>
     </nav>
-    <nav class="footer__links" aria-label="praktisk">
-      <a href="#bestil">brygkalender</a>
-      <a href="#bestil">leveringsområder</a>
-      <a href="#bestil">pant og retur</a>
-      <a href="#bestil">handelsbetingelser</a>
-    </nav>
     <!-- The øko-certification and pant-registration lines were removed: both
          named a certifying body Klar is not registered with yet. Do not restore
          either until the paperwork exists.
 
-         That emptied the handoff's fourth column, which left the four-column
-         grid looking broken, so the footer is three columns now and the one
-         surviving compliance line moved to the legal strip below — which is
-         where an age restriction belongs anyway. -->
+         The "praktisk" column (brygkalender · leveringsområder · pant og retur
+         · handelsbetingelser) is gone too: every link resolved to #bestil, and
+         a terms link that opens the order form is worse than no terms link.
+         They return when the pages exist — and lawful e-commerce needs more
+         than the pages: CVR, the company name and address, and complaints
+         information (klageadgang) all have to appear before this sells
+         anything. None of that can be invented in code; see site/README.md
+         "Blocked before launch". The noindex in <head> stays until it is
+         resolved. -->
+
   </div>
   <hr class="rule rule--on-ink">
   <div class="footer__base">
@@ -547,8 +565,8 @@
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "DKK",
-    "lowPrice": "148",
-    "highPrice": "444",
+    "lowPrice": "152",
+    "highPrice": "456",
     "offerCount": "3",
     "availability": "https://schema.org/PreOrder",
     "areaServed": { "@type": "City", "name": "København" }

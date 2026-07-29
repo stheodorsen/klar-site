@@ -23,12 +23,15 @@ const CONFIG = {
      over. `closes` must precede `brews`, which must precede `delivers` —
      asserted in tools/check-dates.mjs.
 
-     Delivery is ten days after brew day, not seven. The beer needs the time:
-     dry hop lands day three, the tank is crashed on day six and the cone
-     dumped daily through day nine, and it cans on day ten. Canning it any
-     sooner puts hop burn in the can. Ten days off a Tuesday brew is a Friday
-     delivery, which is why the weekday moved too — also asserted in
-     tools/check-dates.mjs.
+     Delivery is seventeen days after brew day: ten for the process, then a
+     week of buffer. The ten is the beer's — dry hop lands day three, the tank
+     is crashed on day six and the cone dumped daily through day nine, and it
+     cans on day ten; any sooner puts hop burn in the can. The buffer week is
+     the recovery path: a fermentation that stalls (one batch sat at 1.016)
+     can be given days and still make a date that paying customers have
+     booked. Deliveries run on Fridays, so the published date is the Friday
+     after the process ends, not the Friday it ends on. check-dates.mjs
+     enforces the ten-day process floor and warns when the buffer is gone.
 
      bestBefore is derived as the batch month + shelfLifeMonths, and the can
      artwork in the photography has it printed in: replacing a batch here
@@ -36,7 +39,7 @@ const CONFIG = {
   batches: {
     current: {
       id: '08.26', hops: ['riwaka', 'nectaron', 'motueka'], origin: 'new zealand',
-      closes: '11.08.2026', brews: '18.08.2026', delivers: 'fredag 28.08.2026',
+      closes: '11.08.2026', brews: '18.08.2026', delivers: 'fredag 04.09.2026',
     },
     /* The hop must have actually landed by brew day — see hopArrivals. This was
        citra, which is american, and usa hops do not arrive until
@@ -51,7 +54,7 @@ const CONFIG = {
        composited into the cans. See site/README.md. */
     next: {
       id: '09.26', hops: ['galaxy', 'vic secret', 'eclipse'], origin: 'australien',
-      closes: '08.09.2026', brews: '15.09.2026', delivers: 'fredag 25.09.2026',
+      closes: '08.09.2026', brews: '15.09.2026', delivers: 'fredag 02.10.2026',
     },
   },
 
@@ -115,9 +118,10 @@ const CONFIG = {
 
      Itemised in the summary rather than folded into the per-can price, and
      included in the headline total, because the total shown before an order is
-     placed has to be what the customer actually pays. The deposit is the
-     opposite case and stays out of the total: pant is collected at the door and
-     refunded when the cans go back, so it is not a cost.
+     placed has to be what the customer actually pays. Pant is in the total for
+     the same reason with a legal edge to it: Danish price-marking rules
+     require the deposit included in the displayed price, refundable or not.
+     It gets its own summary row so the refund stays legible.
 
      Being flat, it lands hardest on the smallest box: 20% of a 4-can order
      against 8% of a 12-can one. Whether it should be waived above a threshold is
@@ -225,18 +229,21 @@ function unitPriceFor(plan) {
 }
 
 /* `beer` is the box on its own — that is what the option cards print, and it is
-   the figure that has to equal unit x cans. `total` is what the customer pays:
-   the box plus the ride. `pant` is neither, being refundable. */
+   the figure that has to equal unit x cans. `total` is the displayed price and
+   includes the pant: Danish price-marking rules require the deposit in the
+   total the customer is shown, refundable or not. The refund story is told by
+   itemising it, not by leaving it out. */
 function priceFor(plan, cadence) {
   const unit = unitPriceFor(plan)
     - (cadence === 'once' ? 0 : CONFIG.standingOrderDiscountPerCan);
   const beer = unit * plan;
+  const pant = plan * CONFIG.pantPerCan;
   return {
     unit,
     beer,
     fee: CONFIG.deliveryFee,
-    total: beer + CONFIG.deliveryFee,
-    pant: plan * CONFIG.pantPerCan,
+    pant,
+    total: beer + CONFIG.deliveryFee + pant,
   };
 }
 
@@ -389,8 +396,9 @@ function derive() {
     deliveryLabel: `${batch.delivers}, ${slotLabel}`,
     cadenceLabel,
     feeLabel: `${price.fee} kr`,
+    pantLabel: `${price.pant} kr`,
     priceLabel: `${price.total} kr`,
-    unitPantLabel: `${price.unit} kr pr. dåse · pant ${price.pant} kr`,
+    unitLabel: `${price.unit} kr pr. dåse`,
 
     termLine: state.cadence === 'once'
       ? 'ingen binding · engangskøb'
