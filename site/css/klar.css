@@ -104,7 +104,14 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  /* Ink, not paper. Mobile Safari tints its chrome — the status-bar area once
+     the page scrolls — from the page's background colour, and it reads it off
+     the body. With paper here the top of a scrolled page got a white glass
+     scrim over an ink panel. Every visible surface paints its own zone
+     (.zone-ink / .zone-paper), so the body colour only ever shows through to
+     the browser chrome and overscroll, both of which should match the ink the
+     header and footer actually are. theme-color in the head agrees. */
+  background: var(--ink);
   color: var(--ink);
   font: 300 var(--fs-sm)/1.6 var(--font);
   -webkit-font-smoothing: antialiased;
@@ -364,22 +371,6 @@ input {
 .header__nav a { border-bottom: 1px solid transparent; padding-bottom: 2px; }
 @media (hover: hover) {
   .header__nav a:hover { border-bottom-color: var(--card); }
-}
-
-.header__status {
-  display: flex;
-  align-items: center;
-  gap: 0.34em;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--tr-meta);
-  color: var(--grey-ink);
-}
-.header__status::before {
-  content: '';
-  width: 1px; height: 15px;
-  margin-right: calc(44px - 0.34em);
-  background: var(--grey-paper);
 }
 
 /* --- 1a. hero ------------------------------------------------------------ */
