@@ -348,11 +348,6 @@ function derive() {
 
     full,
 
-    // header
-    headStatus: full
-      ? `${current.id} · udsolgt`
-      : `${current.id} · bestilling lukker ${current.closes}`,
-
     // hero + cans + footer
     abv: CONFIG.abv,
     abvVol: `${CONFIG.abv} vol.`,

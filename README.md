@@ -12,7 +12,7 @@ option is the next batch.
 One page, three brand pillars in sequence, ending in an order configurator:
 
 ```
-header (live batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
+header → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
   → VI BRYGGER EFTER ÅRSTIDEN #aarstid → 04 — BESTIL #bestil → closing line → footer
 ```
 

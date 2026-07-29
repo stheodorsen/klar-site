@@ -104,7 +104,14 @@ html {
 
 body {
   margin: 0;
-  background: var(--paper);
+  /* Ink, not paper. Mobile Safari tints its chrome — the status-bar area once
+     the page scrolls — from the page's background colour, and it reads it off
+     the body. With paper here the top of a scrolled page got a white glass
+     scrim over an ink panel. Every visible surface paints its own zone
+     (.zone-ink / .zone-paper), so the body colour only ever shows through to
+     the browser chrome and overscroll, both of which should match the ink the
+     header and footer actually are. theme-color in the head agrees. */
+  background: var(--ink);
   color: var(--ink);
   font: 300 var(--fs-sm)/1.6 var(--font);
   -webkit-font-smoothing: antialiased;
@@ -364,22 +371,6 @@ input {
 .header__nav a { border-bottom: 1px solid transparent; padding-bottom: 2px; }
 @media (hover: hover) {
   .header__nav a:hover { border-bottom-color: var(--card); }
-}
-
-.header__status {
-  display: flex;
-  align-items: center;
-  gap: 0.34em;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--tr-meta);
-  color: var(--grey-ink);
-}
-.header__status::before {
-  content: '';
-  width: 1px; height: 15px;
-  margin-right: calc(44px - 0.34em);
-  background: var(--grey-paper);
 }
 
 /* --- 1a. hero ------------------------------------------------------------ */
@@ -1034,32 +1025,27 @@ input {
   .pillar { min-height: 0; }
   .pillar__media { aspect-ratio: 4 / 5; margin-top: clamp(56px, 9vw, 80px); }
 
-  /* Stacked, the hero still has to be exactly one viewport, so the two rows
-     divide that height rather than adding up to whatever they please: the text
-     takes what it needs and the photograph fills the remainder. Without this the
-     lockup plus a 4:5 photograph ran to roughly two screens, so the fold was
-     nowhere near the fold. The 34svh floor stops the photograph collapsing to a
-     sliver on a short window — past that the panel grows instead. */
-  /* Flex, not grid, for the stacked hero — and the reason is worth keeping.
-     The panel's height comes from min-height, which leaves the container's height
-     *indefinite*; a grid `1fr` row then resolves against its own content rather
-     than the free space, so the photograph's intrinsic height kept inflating the
-     panel roughly 200px past the viewport. `minmax(0, 1fr)` does not help: the
-     zero applies to the track's minimum, not to how fr resolves. Flex measures
-     free space from the container's used height, so `flex: 1 1 0` hands the
-     photograph exactly what the text leaves and no more.
+  /* Stacked, the photograph shows its whole frame. Filling only the height the
+     text left inside one viewport gave it roughly 140px on a phone — a
+     letterbox slice of a portrait image, which is no photograph at all. Showing
+     the full frame and holding the mobile fold to one viewport are mutually
+     exclusive (README deviation 11); the client chose the image, so the panel
+     runs past the fold here exactly as LET MED VILJE always has.
 
-     min-height on the media is the floor: on a short window the panel grows
-     rather than squeezing the photograph out of existence. */
+     flex-basis auto with the image's own aspect-ratio sizes the band to the
+     uncropped frame; shrink stays 0 so a short window grows the panel rather
+     than re-cropping the photograph. Grow stays 1 for tall windows where the
+     full frame still leaves the panel short of min-height: the band takes the
+     slack instead of the panel ending in dead space — the box goes taller than
+     0.878 and cover trims a little off the sides, never top or bottom. */
   .hero {
     display: flex;
     flex-direction: column;
   }
   .hero__text { padding: clamp(40px, 6vw, 64px) var(--pad-x) 0; }
   .hero__media {
-    flex: 1 1 0;
-    aspect-ratio: auto;
-    min-height: 120px;
+    flex: 1 0 auto;
+    aspect-ratio: 1919 / 2186;
     margin-top: clamp(32px, 5vw, 56px);
   }
   /* the mirror loses its meaning in one column, so both read text-first */
