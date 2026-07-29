@@ -184,11 +184,9 @@ The `pris pr. dåse falder med størrelsen` hint returns to step 02 with the
 tiering; without it the reader has to compare three numbers to notice the ladder
 exists.
 
-**10. The 80% figure carries its source on the page.** The handoff records that
-the client had the citation removed. It is back, because a measured quantitative
-claim in public with nothing behind it is a liability — and because the figure
-turned out to be accurate. Verified against the paper rather than taken on
-trust:
+**10. The freshness fact is qualitative, with its source on the page.** The
+handoff records that the client had the citation removed; it is back, because a
+measured claim in public with nothing behind it is a liability. The reference:
 
 > Kemp, O., Hofmann, S., Braumann, I., Jensen, S., Fenton, A., & Oladokun, O.
 > (2021). Changes in key hop-derived compounds and their impact on perceived
@@ -196,15 +194,21 @@ trust:
 > *Journal of the Institute of Brewing*, **127**(4), 367–384.
 > doi:[10.1002/jib.667](https://doi.org/10.1002/jib.667)
 
-The paper stores beers at 3 °C and 20 °C for 10 months and reports a **drop of
-80% in myrcene, humulene and caryophyllene after three months at 20 °C** — which
-is the claim almost verbatim. Two notes for whoever owns the copy: the
-measurement is those three terpenes specifically, so *"de flygtige humleolier"*
-is a fair but slightly broader paraphrase; and the same paper independently
-supports the can-over-bottle argument (hop aroma compounds accumulate in crown
-cap liners, while cans retain them), which the page now makes in a second fact
-box — `DERFOR DÅSE`, beside the can renders in the årstid section, where it
-also closes the empty bottom-right corner deviation 4 left open.
+An earlier revision printed *"omkring 80% på tre måneder ved 20 grader"*.
+Review flagged the precision: the paper tracks beers over 10 months at 3 °C and
+20 °C and finds hop aroma compounds significantly depleted in warm storage and
+well retained cold — it supports the direction and the rough timescale, but it
+does not hand over a clean 80%-at-three-months number to quote. The copy is now
+the qualitative claim the paper supports without argument (*"det meste af
+humlearomaen er væk på få måneder ved stuetemperatur"*). If the client wants
+the 80% back, source that exact figure first.
+
+Two more notes for whoever owns the copy: the same paper independently supports
+the can-over-bottle argument — hop aroma compounds absorb into crown-cap liners
+far more than into can linings, which is the `DERFOR DÅSE` fact box beside the
+can renders (softened in the same review from *"i dåsen bliver de i øllet"*:
+can linings scalp too, less but not zero). And the work came out of **Carlsberg
+Research Laboratory in Copenhagen** — a local hook the source line now uses.
 
 **11. The fold is exactly one viewport.** `min-height: calc(100svh - var(--header-h))`
 on the hero, replacing the handoff's fixed 820px — which happened to fill a 900px
@@ -288,11 +292,25 @@ rather than folded into the per-can price, and it **is** included in the headlin
 total, because the figure shown before an order is placed has to be what the
 customer actually pays.
 
-The deposit is the opposite case and deliberately stays out of the total: pant is
-collected at the door and refunded when the cans come back, so it is not a cost.
-It remains in the fineprint. Everything reconciles on the page — per-can × cans +
-fragt = total — and `check-dates.mjs` asserts exactly that, separately from the
-`unit × cans = box` assertion the option cards depend on.
+The deposit is in the total too. An earlier revision left it out on the argument
+that pant comes back with the cans and is therefore not a cost — review flagged
+that Danish price-marking rules require the deposit included in the displayed
+total regardless. So the summary itemises pant on its own row (8 dåser → 8 kr;
+Pant A, 1 kr per can under a litre) and the headline total includes it:
+per-can × cans + fragt + pant = total. `check-dates.mjs` asserts exactly that,
+separately from the `unit × cans = box` assertion the option cards depend on,
+and also asserts the summary's static fallbacks and the schema.org price range
+(which includes pant, excludes fragt) against the same ladder.
+
+**Delivery is published with a week of buffer.** Review also flagged that ten
+days brew-to-door — the process minimum: canned on day ten — left zero recovery
+path if a fermentation stalls against paid, dated deliveries. Deliveries run on
+Fridays, so the published date is now the Friday *after* the process ends
+(17 days brew-to-door), and `check-dates.mjs` warns whenever a batch is
+scheduled with less than 14. The frisk caption changed with it: *"bestilt,
+brygget, kørt ud i samme uge"* was already false at ten days and doubly so with
+a buffer, so it now claims the order of events — *"i den rækkefølge"* — which
+holds under any schedule.
 
 **One decision is still open.** Being flat, the fee lands hardest on the smallest
 box — **20% of a 4-can order** against 8% of a 12-can one — so whether it should
@@ -300,14 +318,18 @@ be waived above a threshold is a real pricing question. The check prints the spl
 on every run, and at 20% it now emits a warning rather than just a note. Note the
 fee equals the base per-can price, so a 4-can order pays for five cans' worth.
 
-**11. The footer is three columns, and the order section lost its eyebrow.**
+**11. The footer is two columns, and the order section lost its eyebrow.**
 The handoff's fourth footer column held three compliance lines; two were removed
 as uncertified, which left a near-empty column making the four-column grid read
-as broken. It is three columns now, and the surviving age restriction moved to
-the legal strip — where a legal line belongs. The `04 — BESTIL` eyebrow is gone
-too: it was the handoff's section numbering leaking onto the page, and nothing
-else on the page is numbered. Both requested after handoff. The `01`–`05` labels
-inside the form stay — those number steps, not sections.
+as broken, and the surviving age restriction moved to the legal strip — where a
+legal line belongs. The "praktisk" column went next, after review: all four of
+its links (`brygkalender`, `leveringsområder`, `pant og retur`,
+`handelsbetingelser`) were placeholders resolving to `#bestil`, and a terms link
+that opens the order form is worse than no terms link. They return when the
+pages exist — see Known gaps for what else has to exist with them. The
+`04 — BESTIL` eyebrow is gone too: it was the handoff's section numbering
+leaking onto the page, and nothing else on the page is numbered. The `01`–`05`
+labels inside the form stay — those number steps, not sections.
 
 **12. Asset URLs are content-hashed at deploy time.** `index.html` referenced
 `css/klar.css` and `js/klar.js` by bare path, so a browser holding a cached copy
@@ -366,6 +388,15 @@ diffable while every deploy busts the cache.
   claim if the maltster is certified; the `øko` on the can is a product claim
   about Klar and is not. The can text cannot be changed by code — it is pixels.
   **Resolve before launch: either get certified, or drop the word.**
+- **The legal information for lawful e-commerce does not exist yet.** Selling
+  to Danish consumers requires the CVR number, the company name and address,
+  and complaints information (klageadgang — Nævnenes Hus / the EU ODR route) on
+  the site, plus real `handelsbetingelser` and `pant og retur` pages. None of
+  it can be written by a developer: it needs the registered company details.
+  The footer's placeholder links to those pages were removed after review —
+  every one resolved to `#bestil` — and the column returns when the pages and
+  the details exist. Until all of this is resolved the `noindex, nofollow` in
+  `<head>` stays, as its own comment already says.
 - **The nav labels only partly match the section headlines.** `let` matches
   `LET MED VILJE` and `årstid` matches `VI BRYGGER EFTER ÅRSTIDEN`, but `frisk`
   still does not match `HUMLE DRIKKES FRISKT`. The handoff raises this as an
@@ -396,8 +427,9 @@ hard-coded and belongs on the server:
 
 Also unbuilt: order management (change, skip, cancel before close), pant
 handling, waitlist capture, and the `brygkalender` / `leveringsområder` /
-`pant og retur` / `handelsbetingelser` pages the footer links to — they currently
-point at `#bestil`.
+`pant og retur` / `handelsbetingelser` pages. Their footer links were removed
+after review (they were placeholders pointing at `#bestil`); the column comes
+back when the pages exist.
 
 ## Accessibility
 

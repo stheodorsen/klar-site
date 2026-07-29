@@ -954,12 +954,14 @@ input {
 /* --- footer ------------------------------------------------------------- */
 
 .footer { padding-top: var(--pad-y-band); }
-/* Three columns, not the handoff's four. The fourth held three compliance
-   lines; two were removed as uncertified and the survivor moved to the legal
-   strip, which left a near-empty column making the whole grid read as broken. */
+/* Two columns, down from the handoff's four. The fourth held compliance lines
+   removed as uncertified; the third held the "praktisk" links, removed after
+   review because every one was a placeholder resolving to #bestil. Both come
+   back when the paperwork and the pages exist — see index.html's footer
+   comment and README "Blocked before launch". */
 .footer__cols {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 48px;
   padding: 0 var(--pad-x) 64px;
 }
