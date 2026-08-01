@@ -1,19 +1,20 @@
 # Klar
 
-Marketing and ordering site for **Klar** — a Copenhagen brewery selling one
-hoppy everyday beer (*hverdagsøl*, 2,7% vol., 440 ml) by the batch. All UI copy
-is Danish.
+Marketing site for **Klar** — a Copenhagen brewery selling one hoppy everyday
+beer (*hverdagsøl*, 2,7% vol.) **on keg, B2B, to office Friday bars**. All UI
+copy is Danish.
 
-The commercial model is the unusual part, and the page is built around it:
-**nothing is stocked**. A batch is 150 litres — 296 cans. Orders close before
-brew day, the batch is brewed to the number ordered, and if it fills up the only
-option is the next batch.
-
-One page, three brand pillars in sequence, ending in an order configurator:
+The site is one page and 100% B2B fad: no cans, no cart, no consumer checkout.
+The commercial model is still the unusual part — **nothing is stocked**. A
+standing weekly slot means Monday tells us what to brew on Thursday, so the
+beer is always fresh. The page argues that, prices it (9 L / 20 L kegs), and
+ends in one form: a free pilot Friday.
 
 ```
-header (live batch status) → hero #let → LET MED VILJE → HUMLE DRIKKES FRISKT #frisk
-  → VI BRYGGER EFTER ÅRSTIDEN #aarstid → 04 — BESTIL #bestil → closing line → footer
+header → hero #top → LET MED VILJE #let → HUMLE DRIKKES FRISKT #frisk
+  → VI BRYGGER EFTER ÅRSTIDEN #aarstid
+  → vi brygger kun det, der er bestilt + PRIS #pris (one merged section)
+  → PRØV ET FAD #proev (form) → closing line → footer
 ```
 
 **Live preview:** https://stheodorsen.github.io/klar-site/
@@ -33,77 +34,64 @@ design handoff, the deviations and why, and what still needs a backend.
 site/                 the deployable site — this is what Pages publishes
   index.html
   css/klar.css        design tokens, then sections, then responsive
-  js/klar.js          CONFIG (batches, ABV, prices, area) + order configurator
+  js/klar.js          CONFIG (ABV, the two public prices, form target) + pilot form
   assets/img          responsive WebP + JPEG photography
   assets/icon         favicon set built from the micro-mark construction
-  tools/              asset generators + check-dates.mjs
-.github/workflows/    checks the batch record, then deploys site/ on push to main
+  tools/              asset generators + check-site.mjs
+.github/workflows/    checks the page's claims, then deploys site/ on push to main
 ```
 
-## The batch record is load-bearing
+## The page's claims are asserted, not trusted
 
-`CONFIG.batches` in [site/js/klar.js](site/js/klar.js) is the commercial state of
-the business: batch id, hop, order-close date, brew date, delivery date, plus
-capacity and quantity ordered. The best-before is derived from the batch month.
-
-A stale record does not break the page — it keeps looking perfectly fine while
-making claims that are no longer true: a best-before in the past, a delivery
-before the brew, a meter counting down to a batch that already shipped. So it is
-asserted rather than trusted, and the deploy workflow runs the check, meaning a
-stale batch fails the build instead of shipping:
+`CONFIG` in [site/js/klar.js](site/js/klar.js) declares the ABV, the two public
+keg prices and the form's submission target. The deploy workflow runs:
 
 ```bash
-node site/tools/check-dates.mjs
+node site/tools/check-site.mjs
 ```
 
-It asserts that orders close before brew day and brewing before delivery, that
-each batch still has at least 14 days of shelf life left after it is delivered,
-that the next batch really is next, that the named delivery weekday matches the
-date, that the sold-out flag agrees with `taken / capacity`, and that every
-per-can price multiplies out to its total.
+It asserts that every ABV printed on the page matches the declared one, that
+**no kroner amount other than the two public prices appears anywhere** (resale
+prices for bars and hotels are negotiated individually and must never be
+public), that the metadata sells kegs rather than the old cans, that the form
+stays accessible (fieldset/legend, labelled controls, errors wired via
+`aria-describedby`, the exact CTA), that the heading hierarchy has no jumps —
+and that the `[NAVN]`/`[BYDEL]`/`[NUMMER]` placeholders **fail the deploy the
+moment the `noindex` tag is removed**. While the site is a noindex preview they
+only warn.
 
-It also checks the hop against the arrival calendar — **no batch may be brewed
-with a hop that has not landed in Denmark yet** — and that the calendar rendered
-in the årstid section still matches the data behind it. That check exists because
-the failure is invisible: a variety gets picked for its flavour, and the page ends
-up describing a beer brewed with hops that were still on a ship.
-
-It also checks the batch against the **photography**, which is the one thing code
-cannot fix: the can labels in the four photos are composited pixel work, not live
-text, hard-coding `08.26 · riwaka`, `drik før 10.26` and `2,8%`. When `CONFIG`
-moves off that, the cans in the pictures contradict the page.
-
-That one **warns rather than fails**, and the distinction is deliberate: the
-failures above are things that are wrong and fixable in code, so they should stop
-a deploy. The photography is a known-pending asset already on the
-replace-before-launch list, and a check that blocks every deploy on it would just
-get deleted. It currently warns, because the ABV moved to 2,7% while the
-photographs still say 2,8%.
-
-Rather than reimplement the date maths, the check evaluates the pure prelude of
-`klar.js` (everything above its `state` marker, which is deliberately DOM-free),
-so there is one source of truth for the dates and no second copy to drift.
+Rather than reimplement the config, the check evaluates the pure prelude of
+`klar.js` (everything above its `dom` marker, which is deliberately DOM-free),
+so there is one source of truth and no second copy to drift.
 
 ## This is a preview deploy
 
-The site is a prototype and is deliberately **not indexable** — it carries
-placeholder AI photography and an *økologisk* claim with no certification behind
-it. Before it goes live on the real domain:
+The site is a prototype and is deliberately **not indexable**. Before it goes
+live on the real domain:
 
-1. delete `site/robots.txt`
-2. remove the `noindex` meta tag in `site/index.html`
-3. point `canonical`, `og:url` and `og:image` at the real domain
-4. replace the placeholder photography, and resolve the open items in
-   [site/README.md](site/README.md) — above all the `økologisk` claim, which no
-   longer has any certification stated behind it
+1. resolve the placeholders: the CVR number in the footer (`check-site.mjs`
+   blocks an indexable deploy on it), and the three names + bydel that bring
+   the held-back HVEM VI ER section onto the page
+2. shoot and add the photography: fad + hane (also the new OG image — it
+   currently reuses the can-era hero photo), and the three faces for
+   HVEM VI ER — never stock
+3. wire the form: HubSpot portal/form id in `CONFIG` (pipeline
+   `Klar Fredagsbar` — **never** `Felix Pipeline`, which has non-standard stage
+   ids and belongs to another company), or a fallback endpoint behind the same
+   markup
+4. resolve the `økologisk` claim — in the EU it is a legally protected term
+   that requires certification; either get certified or drop the word
+5. create `handelsbetingelser` as a real page before anything is invoiced
+6. delete `site/robots.txt`, remove the `noindex` meta tag, and point
+   `canonical`/`og:url` at the real domain
 
 ## Design handoff is not in this repo
 
 The site was built from a design handoff that is **deliberately excluded** (see
 `.gitignore`). `klar-design-brief.md` contains business-sensitive material —
-duty-band planning, pending Fødevarestyrelsen certification, pant registration
-and supplier negotiation notes — which does not belong in a public repository.
-Keep it in a private repo or outside git.
+duty-band planning, pending Fødevarestyrelsen certification and supplier
+negotiation notes — which does not belong in a public repository. Keep it in a
+private repo or outside git.
 
 `site/tools/build-images.py` reads that folder's `assets/` to regenerate the
 photography, so it needs the handoff present locally to re-run. The generated

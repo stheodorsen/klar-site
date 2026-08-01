@@ -1,8 +1,9 @@
 /* ==========================================================================
-   Klar — brew-to-order beer site
-   Built from design_handoff_klar_site/. Design tokens below are the single
-   source of truth; see site/README.md for the deviations from the handoff
-   and why each one was made.
+   Klar — humlet hverdagsøl på fad (B2B, single page)
+   Built from design_handoff_klar_site/ and the B2B fad spec. Design tokens
+   below are the single source of truth; see site/README.md for the deviations
+   from the handoff and why each one was made. The visual system survives the
+   B2B pivot untouched: colours, typography, spacing, image style, #26231F.
    ========================================================================== */
 
 /* --- tokens --------------------------------------------------------------- */
@@ -13,9 +14,9 @@
   --ink-hover: #3A362F;         /* button hover; hairlines and table rules on ink */
   --paper: #EBE9E3;
   --card: #FDFCF7;              /* cards, inputs, text on ink */
-  --card-edge: #DEDBD4;         /* 1px card rings, meter track, dividers on paper */
-  --grey-paper: #7C7365;        /* secondary text on paper */
-  --grey-strong: #5F5850;       /* small labels on paper, contrast-safe */
+  --card-edge: #DEDBD4;         /* 1px card rings, dividers on paper */
+  --grey-paper: #7C7365;        /* hairlines on ink */
+  --grey-strong: #5F5850;       /* secondary text on paper, contrast-safe */
   --grey-ink: #948C7F;          /* secondary text on ink */
   --deep: #1E1B18;              /* image wells behind photography */
 
@@ -24,9 +25,8 @@
      including the 22px/300 body copy, because the brief's own floor for it is
      >=24px (or >=19px at weight 400+). So all secondary *text* on paper uses
      --grey-strong (#5F5850, 5.77:1), which the handoff already defines as its
-     contrast-safe grey. --grey-paper is kept where it passes or isn't text: the
-     can renders (4.55:1 on the can body) and hairlines on ink.
-     See README deviation 1. */
+     contrast-safe grey. --grey-paper is kept where it isn't text: hairlines on
+     ink. See README deviation 1. */
 
   /* type — one stack, so the licensed grotesque swaps in here and nowhere else */
   --font: 'Helvetica Neue', Helvetica, Arial, sans-serif;
@@ -37,15 +37,11 @@
   --mark-w: 230px;
 
   --fs-headline: clamp(30px, 3.611vw, 52px);   /* section headlines, closing line */
-  --fs-total: clamp(30px, 2.778vw, 40px);      /* summary total, meter count */
-  --fs-size: clamp(26px, 2.222vw, 32px);       /* size options */
-  --fs-lead: clamp(22px, 1.806vw, 26px);       /* batch options */
-  --fs-body-lg: clamp(19px, 1.528vw, 22px);    /* body copy, card titles, captions */
+  --fs-lead: clamp(22px, 1.806vw, 26px);       /* lead lines (alle, prøv) */
+  --fs-body-lg: clamp(19px, 1.528vw, 22px);    /* body copy, captions */
   --fs-body: clamp(17px, 1.319vw, 19px);       /* fact box, table rows, CTA */
-  --fs-sm: 17px;                               /* summary values, explainers */
+  --fs-sm: 17px;                               /* explainers, form answers */
   --fs-label: 15px;                            /* labels, metadata, footer */
-  /* the can render's 13/11/10px sizes are fractions of --can-w, not tokens —
-     see "the can renders" */
 
   --tr-wordmark: 0.1em;
   --tr-label: 0.05em;                          /* caps labels */
@@ -56,12 +52,12 @@
   --gutter: clamp(20px, 5.5556vw, 80px);
   --pad-x: max(var(--gutter), (100% - 1280px) / 2);
   --pad-y: clamp(64px, 7.778vw, 112px);
-  --pad-y-panel: clamp(64px, 8.333vw, 120px);  /* the two dark spread panels */
+  --pad-y-panel: clamp(64px, 8.333vw, 120px);  /* the dark panels */
   --pad-y-band: clamp(60px, 6.667vw, 96px);    /* closing line, footer */
 
   --gap-col: clamp(44px, 6.667vw, 96px);       /* inter-column gap */
   --gap-card: clamp(24px, 2.222vw, 32px);
-  --gap-opt: clamp(16px, 1.3889vw, 20px);
+  --gap-field: clamp(16px, 1.3889vw, 20px);
 
   --header-h: 76px;
   /* The rising sun. The handoff specifies 34px over 760ms on an expo-out curve
@@ -118,8 +114,9 @@ img, svg, picture { display: block; }
 img { max-width: 100%; }
 button { font: inherit; letter-spacing: inherit; }
 a { color: inherit; text-decoration: none; }
+fieldset { border: 0; min-width: 0; }
 
-input {
+input, select, textarea {
   font: 300 var(--fs-sm) var(--font);
   color: var(--ink);
 }
@@ -171,7 +168,6 @@ input {
 .zone-ink .mark__circle, .zone-ink .mark__horizon { stroke: var(--card); }
 
 .mark--hero { width: var(--mark-w); max-width: 100%; }
-.mark--can { width: 124px; }
 
 /* The one animation in the brand: the circle rises through the horizon into
    its 2:1 position, once, on load. The horizon fades and does not move. */
@@ -255,7 +251,7 @@ input {
   text-transform: uppercase;
   text-wrap: pretty;
 }
-/* the order section's headline is a sentence, not a pillar name */
+/* `vi brygger kun det, der er bestilt` is a sentence, not a pillar name */
 .headline--lower { text-transform: none; }
 
 .body-lg {
@@ -282,10 +278,9 @@ input {
 }
 
 .rule { height: 1px; border: 0; margin: 0; background: var(--ink); }
-.rule--panel { background: var(--paper); margin: 26px 0; }
 .rule--on-ink { background: var(--grey-paper); margin-inline: var(--pad-x); }
 
-/* The two-column editorial split used by frisk, årstid and the order head:
+/* The two-column editorial split used by frisk, pris and the prøv head:
    lead copy left, a 380px aside right, bottom-aligned. */
 .split {
   display: flex;
@@ -318,7 +313,6 @@ input {
   transition: background-color 120ms linear, color 120ms linear;
 }
 .btn--fill-ink { background: var(--ink); color: var(--card); }
-.btn--block { display: flex; width: 100%; }
 
 @media (hover: hover) {
   .btn--fill-ink:hover { background: var(--ink-hover); }
@@ -328,6 +322,7 @@ input {
   background: var(--ink-hover);
   box-shadow: 0 0 0 3px var(--card-edge);
 }
+.btn:disabled { cursor: default; opacity: 0.6; }
 
 /* --- header -------------------------------------------------------------- */
 
@@ -366,27 +361,10 @@ input {
   .header__nav a:hover { border-bottom-color: var(--card); }
 }
 
-.header__status {
-  display: flex;
-  align-items: center;
-  gap: 0.34em;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--tr-meta);
-  color: var(--grey-ink);
-}
-.header__status::before {
-  content: '';
-  width: 1px; height: 15px;
-  margin-right: calc(44px - 0.34em);
-  background: var(--grey-paper);
-}
-
 /* --- 1a. hero ------------------------------------------------------------ */
 
 /* Exactly one viewport below the sticky header, so the fold is the fold and one
-   scroll lands on the next section. The handoff's 820px was a fixed number that
-   happened to fill a 900px-tall window; this holds at any height.
+   scroll lands on the next section.
 
    svh, not vh: on mobile vh is the *largest* viewport, so with the address bar
    showing, 100vh overflows and the next section starts off-screen — which is the
@@ -398,15 +376,9 @@ input {
      panel height — which is the designed case and everything up to roughly a
      16:10 window. Past that the panel gets wider relative to its height than the
      photograph's 0.878, and object-fit: cover starts eating the bottom of the
-     frame: on a 2560x1105 window it took about 250 source pixels off, which is
-     the can's base and the last line of its label.
-
-     So the photograph's column is capped at the width it can actually fill —
-     panel height x the image's aspect — and the text column absorbs whatever is
-     left. The photograph is then never cropped vertically and never letterboxed,
-     and it still runs flush to the right edge. The cost is that the 50/50 spread
-     stops being 50/50 on very wide windows; keeping it would mean either
-     cropping the can or growing the panel past the viewport. */
+     frame. So the photograph's column is capped at the width it can actually
+     fill — panel height x the image's aspect — and the text column absorbs
+     whatever is left. See README. */
   grid-template-columns:
     1fr
     minmax(0, min(50%, calc((100svh - var(--header-h)) * 0.878)));
@@ -414,16 +386,18 @@ input {
   min-height: calc(100svh - var(--header-h));
 }
 .hero__text {
+  /* The lockup and the one-liner centred as a group, the spec row down on the
+     bottom edge: the equal fr rows above and below make the centring exact,
+     and the spec bottom-aligns inside the lower one.
+
+     The vertical paddings and gaps are svh-based: the panel is exactly one
+     viewport, so everything inside it must compress on a short window rather
+     than push the fold down. */
   display: grid;
-  /* The lockup dead-centre of the panel, the spec row down on the bottom edge:
-     the equal fr rows above and below the lockup make the centring exact, and
-     the spec bottom-aligns inside the lower one. The rows' auto minimum keeps
-     the spec's margin-top as a floor between the two on short windows. Stacked
-     (≤900px) the container is content-sized, the fr rows collapse to their
-     minimums, and this degrades to the same simple stack as before. */
   grid-template-rows: 1fr auto 1fr;
   justify-items: start;
-  padding: var(--pad-y-panel) var(--gap-col) var(--pad-y-panel) var(--pad-x);
+  padding: clamp(48px, 8svh, var(--pad-y-panel)) var(--gap-col)
+           clamp(48px, 8svh, var(--pad-y-panel)) var(--pad-x);
 }
 .hero__text .lockup { grid-row: 2; }
 .hero__spec {
@@ -432,7 +406,7 @@ input {
   display: flex;
   flex-wrap: wrap;
   gap: 12px 36px;
-  margin-top: 64px;
+  margin-top: clamp(40px, 6svh, 64px);
   font-size: var(--fs-label);
   font-weight: 400;
   letter-spacing: 0.03em;
@@ -447,13 +421,10 @@ input {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  /* Centred: the column cap above means a wide window no longer crops top or
-     bottom, so the only crop left is horizontal, on a tall narrow window — and
-     the two subjects sit either side of centre, so 50% keeps both. */
   object-position: 50% 50%;
 }
 
-/* --- 1b. hverdagsøl ----------------------------------------------------- */
+/* --- 1b. let med vilje ---------------------------------------------------- */
 
 .pillar {
   display: grid;
@@ -479,30 +450,41 @@ input {
 }
 .pillar__text .body-lg { max-width: 520px; }
 
-/* --- 2. frisk ----------------------------------------------------------- */
+/* the opening line of the prøv section, set large */
+.block__lead {
+  font-size: var(--fs-lead);
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+/* --- humle drikkes friskt --------------------------------------------------- */
 
 .fresh {
   display: flex;
   flex-direction: column;
   /* Tighter than the handoff's 112px padding and 64px gap, which is what buys
-     this section its 106px of overshoot back so it lands on one viewport at
-     1440x900. The photo cards then take any slack on a taller window rather than
-     the section ending in dead space — see .photo__well. */
+     this section its overshoot back so it lands on one viewport at 1440x900.
+     The photo cards then take any slack on a taller window rather than the
+     section ending in dead space — see .photo__well. */
   gap: 44px;
   padding: 80px var(--pad-x);
   min-height: calc(100svh - var(--header-h));
 }
+/* A recessed well, not a bright card: --deep is the tone the photographs sit
+   in, so the fact reads as quiet apparatus rather than a shout. Tighter than
+   the old paper card on purpose (reworked 30.07.2026 — the paper version was
+   too big and too bright on the dark panel). Dark whichever zone it sits in,
+   so its text declares its own colours. */
 .fact {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  padding: 32px 34px;
-  background: var(--card);
-  box-shadow: inset 0 0 0 1px var(--card-edge);
-  /* the card is paper whichever zone it sits in, so its text is ink by its own
-     declaration — on the ink zone the inherited color is paper-on-paper */
-  color: var(--ink);
+  gap: 10px;
+  padding: 24px 26px;
+  background: var(--deep);
+  box-shadow: inset 0 0 0 1px var(--ink-hover);
+  color: var(--card);
 }
+.fact .eyebrow { color: var(--grey-ink); }
 .fact__claim {
   font-size: var(--fs-body);
   line-height: 1.5;
@@ -515,7 +497,7 @@ input {
   font-size: var(--fs-label);
   font-weight: 400;
   letter-spacing: var(--tr-meta);
-  color: var(--grey-strong);
+  color: var(--grey-ink);
 }
 .fact__source cite { font-style: normal; }
 
@@ -530,15 +512,12 @@ input {
 .photo__well {
   /* Flexible rather than a fixed 624/380: the cards stretch to fill the fold on
      a tall window and compress on a short one, with a floor so they never become
-     a sliver. The handoff's 380px is what this resolves to at 1440x900. */
-  /* zero basis, not auto: with an auto basis the well is sized from the
-     photograph's own height and there is no free space left to distribute, so
-     the section overshot the fold by 22px. At zero basis the well takes exactly
-     what the copy above leaves, floored so it never becomes a letterbox slit. */
+     a sliver. Zero basis, not auto: with an auto basis the well is sized from
+     the photograph's own height and there is no free space left to distribute. */
   flex: 1 1 0;
   min-height: 340px;
   overflow: hidden;
-  background: var(--card-edge);
+  background: var(--deep);   /* image well on the dark panel */
 }
 .photo__well picture { height: 100%; }
 .photo__well img { width: 100%; height: 100%; object-fit: cover; }
@@ -550,398 +529,229 @@ input {
   text-wrap: pretty;
 }
 
-/* --- 3. årstid ---------------------------------------------------------- */
+/* --- vi brygger efter årstiden ---------------------------------------------- */
 
+/* One viewport like the panels around it. The hop-yard band fills the lower
+   half the can renders used to, so the section no longer needs to centre its
+   grid — the photograph absorbs whatever the copy leaves.
+
+   Horizontal padding moves off the section and onto the grid, so the band can
+   run edge to edge; the bottom padding goes entirely, so it meets the dark
+   panel below the way the hero photograph meets the panel beside it. */
+/* The third spread, built like the hero: copy left, photograph filling the
+   right half at full height, the whole thing exactly one viewport.
+
+   The vertical padding is svh-based, like the hero's, because a half panel has
+   to hold headline, copy and the calendar inside one fold — on a short window
+   the padding gives way rather than pushing the section past it. */
 .season {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: stretch;
+  min-height: calc(100svh - var(--header-h));
+}
+.season__text {
   display: flex;
   flex-direction: column;
-  gap: 72px;
+  justify-content: center;
+  gap: clamp(16px, 2.4svh, 26px);
+  padding: clamp(40px, 7svh, var(--pad-y-panel)) var(--gap-col)
+           clamp(40px, 7svh, var(--pad-y-panel)) var(--pad-x);
+}
+.season__media { overflow: hidden; background: var(--deep); }
+/* <picture> is a block in the reset, so without an explicit height the img's
+   height:100% resolves against auto and the photograph's intrinsic size drives
+   the box instead of the box driving the photograph. */
+.season__media picture { height: 100%; }
+.season__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+}
+
+.season__cal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: clamp(8px, 1.6svh, 18px);
+}
+/* Two by two, not four across: a half panel has no room for four columns, and
+   four stacked rows would push the section past the fold. Each cell keeps the
+   hairline-over-content idiom of the old rows. */
+.arrivals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px var(--gap-card);
+}
+.arrivals__cell {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding-top: 14px;
+  border-top: 1px solid var(--ink);
+  font-size: var(--fs-body);
+  text-wrap: pretty;
+}
+.arrivals__cell dd { color: var(--grey-strong); }
+
+/* --- vi brygger kun det, der er bestilt + pris ------------------------------- */
+
+/* One argument, one section: the brew-to-order claim, the fast plads it
+   implies, and the price it costs — in the same grid idiom as årstiden above,
+   so the two ink panels read as a pair. */
+.brewed {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: var(--pad-y) var(--pad-x);
   min-height: calc(100svh - var(--header-h));
 }
+/* Two blocks, price left and argument right, mirrored against årstiden above
+   so the panels flip like the hero and let spread does. Areas do the flipping,
+   not the DOM: the h2 stays ahead of the price column's h3 so the heading
+   order holds.
 
-/* The handoff bottom-aligns this split, the same as frisk and the order head.
-   That works there because the right-hand element is a filled panel — a visible
-   edge to align to. Here the right side is a list of hairline rows with no box,
-   so bottom-aligning left "LANDER I DANMARK" stranded above the headline with
-   nothing to relate to, and the centred cans below aligned to neither column.
-
-   So this section is a grid instead, and the alignments are structural: row 1
-   is headline + eyebrow sharing a baseline, row 2 is body + table sharing one.
-   Both columns start on the content edge and the table ends on the right gutter,
-   giving the section four real edges instead of none. */
-.season__grid {
+   `align-items: center` rather than shared baselines. The copy is one line and
+   the price column is four times taller, so baseline alignment pinned the
+   headline to the top of all that space and it read as floating; centring the
+   two blocks against each other puts it where the eye expects it. */
+.brewed__grid {
   display: grid;
-  grid-template-columns: minmax(0, 640px) 380px;
-  grid-template-areas:
-    'headline eyebrow'
-    'body     table';
+  grid-template-columns: 380px minmax(0, 640px);
+  grid-template-areas: 'panel text';
   justify-content: space-between;
   column-gap: var(--gap-col);
-  row-gap: 34px;
-  align-items: baseline;
-}
-.season__headline { grid-area: headline; }
-.season__eyebrow { grid-area: eyebrow; }
-.season__body { grid-area: body; }
-.season__table { grid-area: table; }
-
-.arrivals__list { display: flex; flex-direction: column; gap: 14px; }
-.arrivals__row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 20px;
-  padding-top: 14px;
-  border-top: 1px solid var(--ink-hover);
-  font-size: var(--fs-body);
-}
-.arrivals__row dd { color: var(--grey-ink); }
-
-/* the can renders ---------------------------------------------------------
-   The only rounded and the only shadowed objects in the design.
-
-   Every internal metric is a fraction of --can-w, so the whole render scales
-   from one number and the proportions hold at any size. Container query units
-   were the obvious tool and are the wrong one here: cqw inside .can's own
-   padding resolves against the nearest *ancestor* container, not the element
-   declaring it, so the can inflates instead of scaling. A plain variable has no
-   such trap. 15.28vw is 220px on the 1440 canvas. */
-/* Flush left, not centred. Centred, the pair floated in the middle of the
-   section aligned to nothing; on the content edge they start where the headline
-   starts and the whole pair (476px) sits inside the lead column's 640px measure,
-   so they read as belonging to the argument above them. */
-.cans {
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  gap: 36px;
-  flex: 1 1 auto;
-  min-height: 0;
-  flex-wrap: wrap;   /* the fact card drops below the cans before anything shrinks */
-}
-
-/* the can-over-bottle argument, beside the renders it argues for. 380px on the
-   right content edge is the arrival table's own column, so the card closes the
-   section's fourth corner; bottom-aligned to the cans the way the handoff
-   bottom-aligns its other split rows. */
-.fact--cans {
-  width: min(380px, 100%);
-  margin-left: auto;
-  align-self: flex-end;
-}
-.can {
-  /* Sized so two cans plus the gap always fit inside the gutters, which keeps
-     flex-shrink from ever engaging: if the box were shrunk below --can-w, every
-     internal metric would still be computed against the variable and the
-     proportions would quietly drift. `flex: none` guarantees rendered width
-     equals the variable. 38vw is the widest that still fits at 320px. */
-  --can-w: min(220px, 38vw);
-
-  flex: none;
-  display: flex;
-  flex-direction: column;
+  row-gap: 44px;
   align-items: center;
-  width: var(--can-w);
-  aspect-ratio: 220 / 560;
-  padding: calc(0.209 * var(--can-w))
-           calc(0.127 * var(--can-w))
-           calc(0.155 * var(--can-w));         /* 46 28 34 at 220 */
-  border-radius: calc(0.1 * var(--can-w));     /* 22 at 220 */
-  background: linear-gradient(90deg, #EFEDE6 0%, var(--card) 18%, var(--card) 76%, #E9E7DF 100%);
-  box-shadow: 0 24px 48px -28px rgba(0, 0, 0, 0.55);
-  color: var(--ink);
-  text-align: center;
 }
-/* the upcoming batch, stepped back */
-.can--upcoming { opacity: 0.55; }
-
-.can .mark--can {
-  width: calc(0.564 * var(--can-w));           /* 124 at 220 */
-  margin-top: calc(0.127 * var(--can-w));
-}
-.can .mark__circle, .can .mark__horizon { stroke: var(--ink); }
-.can__wordmark {
-  margin-top: calc(0.136 * var(--can-w));
-  font-size: calc(0.168 * var(--can-w));       /* 37 at 220 */
-  letter-spacing: var(--tr-wordmark);
-  line-height: 1;
-  text-transform: uppercase;
-}
-.can__descriptor {
-  margin-top: calc(0.068 * var(--can-w));
-  font-size: calc(0.059 * var(--can-w));       /* 13 */
-  letter-spacing: var(--tr-headline);
-  color: var(--grey-paper);
-}
-.can__spacer { flex: 1; }
-.can__batch {
-  font-size: calc(0.05 * var(--can-w));        /* 11 */
-  font-weight: 400;
-  letter-spacing: var(--tr-meta);
-  color: var(--grey-paper);
-}
-/* Three hop names do not fit beside the batch id at can width, so they get
-   their own line and are allowed to wrap onto two. Set a touch smaller than
-   the id: the id is the batch, the hops are what is in it. */
-.can__hops {
-  margin-top: calc(0.023 * var(--can-w));
-  font-size: calc(0.0455 * var(--can-w));      /* 10 at 220 */
-  font-weight: 400;
-  line-height: 1.35;
-  letter-spacing: var(--tr-meta);
-  color: var(--grey-paper);
-  text-wrap: balance;
-}
-.can__rule {
-  width: 100%;
-  height: 1px;
-  margin: calc(0.073 * var(--can-w)) 0 calc(0.082 * var(--can-w));
-  background: var(--grey-ink);
-}
-.can__abv {
-  font-size: calc(0.1 * var(--can-w));         /* 22 */
-  font-weight: 400;
-  letter-spacing: var(--tr-meta);
-}
-.can__duty {
-  margin-top: calc(0.055 * var(--can-w));
-  font-size: calc(0.0455 * var(--can-w));      /* 10 */
-  font-weight: 400;
-  letter-spacing: var(--tr-meta);
-  color: var(--grey-paper);
-}
-
-/* --- 4. bestil ---------------------------------------------------------- */
-
-.order { padding: var(--pad-y) var(--pad-x); }
-.order__head { padding-bottom: 48px; }
-
-/* the batch meter --------------------------------------------------------- */
-
-.meter { display: flex; flex-direction: column; gap: 18px; }
-.meter__top {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  letter-spacing: var(--tr-label);
-  color: var(--grey-strong);
-}
-.meter__top span:last-child { color: var(--ink); }
-.meter__count { font-size: var(--fs-total); line-height: 1; }
-.meter__track { height: 6px; background: var(--card-edge); }
-.meter__fill { height: 6px; width: 0; background: var(--ink); }
-.meter__note {
-  font-size: var(--fs-sm);
-  line-height: 1.6;
-  color: var(--grey-strong);
-  text-wrap: pretty;
-}
-
-/* the form --------------------------------------------------------------- */
-
-.order__grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 400px;
-  gap: var(--gap-col);
-  align-items: start;
-  padding-top: 56px;
-}
-.steps { display: flex; flex-direction: column; gap: 48px; }
-.step { display: flex; flex-direction: column; gap: 20px; }
-.step__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 20px;
-}
-.step__hint {
-  font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--grey-strong);
-}
-
-/* option cards ----------------------------------------------------------- */
-
-.opts { display: grid; gap: var(--gap-opt); }
-.opts--2 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
-.opts--3 { grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); }
-
-.opt { display: block; cursor: pointer; }
-/* a real radio, visually hidden — native grouping, arrow keys and :checked,
-   rather than a hand-built role="radio" with a keydown handler */
-.opt__input {
-  position: absolute;
-  width: 1px; height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-}
-.opt__body {
+.brewed__text {
+  grid-area: text;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  background: var(--card);
-  /* the ring is an inset shadow, not a border, so selection never shifts
-     layout. 1px unselected, 2px selected — and hover stays 1px so hovering
-     can never read as selected. */
-  box-shadow: inset 0 0 0 1px var(--card-edge);
-  transition: box-shadow 120ms linear;
+  gap: 26px;
 }
-.opt__body--card { gap: 16px; padding: 30px; }
-.opt__body--row-stack { gap: 10px; padding: 26px 28px; }
-.opt__body--row {
-  flex-direction: row;
+.brewed__panel {
+  grid-area: panel;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.prices { display: flex; flex-direction: column; gap: 18px; }
+.prices__row {
+  display: flex;
   justify-content: space-between;
   align-items: baseline;
   gap: 20px;
-  padding: 26px 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--ink-hover);
+  font-size: var(--fs-body-lg);
 }
-
-@media (hover: hover) {
-  .opt:hover .opt__body { box-shadow: inset 0 0 0 1px var(--ink); }
-}
-.opt__input:checked + .opt__body { box-shadow: inset 0 0 0 2px var(--ink); }
-.opt__input:focus-visible + .opt__body {
-  box-shadow: inset 0 0 0 2px var(--ink), 0 0 0 3px var(--card-edge);
-}
-
-/* sold out: the current batch is not selectable, and `disabled` takes it out
-   of the tab order natively */
-.opt__input:disabled + .opt__body { opacity: 0.45; box-shadow: inset 0 0 0 1px var(--card-edge); }
-.opt:has(.opt__input:disabled) { cursor: default; }
-@media (hover: hover) {
-  .opt:has(.opt__input:disabled):hover .opt__body { box-shadow: inset 0 0 0 1px var(--card-edge); }
-}
-
-.opt__row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-}
-.opt__lead { font-size: var(--fs-lead); }
-.opt__size { font-size: var(--fs-size); }
-.opt__mid { font-size: var(--fs-body-lg); }
-.opt__chip { font-size: var(--fs-label); font-weight: 400; color: var(--grey-strong); }
-.opt__rule { height: 1px; background: var(--paper); }
-.opt__note {
+.prices__row dd { color: var(--grey-ink); }
+.prices__row .prices__amount { color: var(--card); font-weight: 400; }
+.prices__note {
   font-size: var(--fs-label);
   font-weight: 400;
   line-height: 1.6;
-  color: var(--grey-strong);
+  color: var(--grey-ink);
   text-wrap: pretty;
 }
-.opt__price {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  font-size: var(--fs-label);
-  font-weight: 400;
+
+/* sådan kører det + hane og anlæg -------------------------------------------
+   Deliberately quiet: eyebrow headings and small print under the price rows,
+   apparatus rather than argument. The buyer who needs the logistics finds
+   them; the page does not sell them. */
+/* --- prøv et fad --------------------------------------------------------------- */
+
+/* The horizontal padding sits on the children, not the section, so the
+   photograph can run edge to edge between the pitch and the form. */
+.pilot { padding: var(--pad-y) 0; }
+.pilot__head { padding-bottom: 48px; margin-inline: var(--pad-x); }
+
+.pilot__photo {
+  aspect-ratio: 2.2;
+  overflow: hidden;
+  background: var(--deep);
+}
+.pilot__photo picture { height: 100%; }
+.pilot__photo img { width: 100%; height: 100%; object-fit: cover; }
+
+.pilot__form { padding-top: 56px; margin-inline: var(--pad-x); }
+.pilot__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px var(--gap-col);
+  max-width: 980px;
 }
 
-/* postcode --------------------------------------------------------------- */
+.field { display: flex; flex-direction: column; gap: 10px; }
+.field--wide { grid-column: 1 / -1; }
 
-.zip { display: flex; gap: var(--gap-opt); align-items: stretch; }
-.zip__input {
-  flex: 1;
-  min-width: 0;
+.field__input {
+  width: 100%;
   background: var(--card);
   border: 0;
+  border-radius: 0;
   box-shadow: inset 0 0 0 1px var(--grey-ink);
-  padding: 24px 28px;
-  font-size: var(--fs-body-lg);
+  padding: 22px 26px;
+  font-size: var(--fs-body);
   letter-spacing: var(--tr-meta);
 }
-.zip__input::placeholder { color: var(--grey-strong); opacity: 1; }
-.zip__input:focus-visible {
+.field__input:focus-visible {
   outline: 0;
   box-shadow: inset 0 0 0 2px var(--ink);
 }
-.zip__answer {
-  font-size: var(--fs-body);
-  line-height: 1.6;
+/* a rejected value keeps its 2px ring so the error text has an anchor */
+.field__input[aria-invalid="true"] { box-shadow: inset 0 0 0 2px var(--ink); }
+.field__input--select {
+  appearance: none;
+  -webkit-appearance: none;
+  /* the square rule applies to selects too; the caret is the one glyph allowed */
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%),
+                    linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 32px) 50%, calc(100% - 26px) 50%;
+  background-size: 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 56px;
+}
+.field__input--area { resize: vertical; min-height: 120px; }
+
+/* Quieter than an error and permanent: the delivery area under the address
+   field. Sits above .field__error so a rejection appears below it, closest to
+   the input. */
+.field__hint {
+  font-size: var(--fs-label);
+  font-weight: 400;
+  line-height: 1.5;
   color: var(--grey-strong);
   text-wrap: pretty;
 }
-.zip__answer:empty { display: none; }
-.zip__answer[data-serviceable="true"] { color: var(--ink); }
 
-/* the waitlist form reuses .zip, whose display:flex would otherwise override
-   the hidden attribute's display:none */
-.zip--waitlist[hidden] { display: none; }
-
-/* order summary ---------------------------------------------------------- */
-
-.summary {
-  position: sticky;
-  top: calc(var(--header-h) + 44px);
-  background: var(--card);
-  padding: 44px 40px;
-  box-shadow: inset 0 0 0 1px var(--card-edge);
-}
-.summary__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-}
-.summary__state {
+/* Errors say what went wrong and what to do. Ink, weight 400 — the design has
+   no accent colour to shout with, so the ring on the field and the words do
+   the work. */
+.field__error {
   font-size: var(--fs-label);
   font-weight: 400;
-  letter-spacing: var(--tr-label);
-  color: var(--grey-strong);
+  line-height: 1.5;
+  color: var(--ink);
 }
-.summary__rows { display: flex; flex-direction: column; gap: 16px; }
-.summary__row {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  font-size: var(--fs-sm);
-}
-.summary__row dt {
-  flex: none;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--grey-strong);
-}
-.summary__row dd { text-align: right; }
+.field__error:empty { display: none; }
 
-.summary__total {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 20px;
-}
-.summary__cadence { font-size: var(--fs-body); }
-.summary__total-value { font-size: var(--fs-total); letter-spacing: 0.01em; }
-.summary__fineprint {
-  margin-top: 10px;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--grey-strong);
-}
-.summary__cta { margin-top: 32px; }
-.summary__confirm {
-  margin-top: 22px;
-  font-size: var(--fs-sm);
-  line-height: 1.55;
-  color: var(--grey-strong);
+.pilot__cta { margin-top: 44px; min-width: 320px; }
+.pilot__form-error { margin-top: 22px; max-width: 640px; }
+
+.pilot__confirm {
+  margin-top: 44px;
+  margin-inline: var(--pad-x);
+  font-size: var(--fs-body-lg);
+  line-height: 1.6;
+  max-width: 640px;
+  text-wrap: pretty;
   animation: klar-fade 400ms ease-out both;
 }
-.summary__confirm:empty { display: none; }
-.summary__terms {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  font-size: var(--fs-label);
-  font-weight: 400;
-  color: var(--grey-strong);
-}
+.pilot__confirm:empty { display: none; }
 
 /* --- closing line ------------------------------------------------------- */
 
@@ -963,12 +773,11 @@ input {
 /* --- footer ------------------------------------------------------------- */
 
 .footer { padding-top: var(--pad-y-band); }
-/* Three columns, not the handoff's four. The fourth held three compliance
-   lines; two were removed as uncertified and the survivor moved to the legal
-   strip, which left a near-empty column making the whole grid read as broken. */
+/* Two columns: brand and the repeated nav. The practical-links column is gone
+   with the pages it pointed at — links come back when the pages exist. */
 .footer__cols {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 48px;
   padding: 0 var(--pad-x) 64px;
 }
@@ -1016,39 +825,38 @@ input {
    here because the page is deployed and must not scroll sideways on a phone,
    not because it is resolved. The rule followed is the handoff's own: keep the
    gutter and the white space, drop to fewer columns rather than squeeze.
+   The spec's floor: responsive down to 360px, nav must not wrap under 360px.
    ========================================================================== */
-
-@media (max-width: 1100px) {
-  /* the 400px summary stops leaving the form a usable measure first */
-  .order__grid { grid-template-columns: minmax(0, 1fr) 340px; }
-}
 
 @media (max-width: 900px) {
   :root { --header-h: 112px; --mark-w: 200px; }
 
-  /* the two dark spread panels stack, photograph below the text, full-bleed */
+  /* The hero and let spread stack, photograph below the text, full-bleed.
+     årstiden deliberately does NOT stack here — it holds its half-and-half
+     split down to 700px (see below), because the hop yard going full width is
+     the thing that reads as broken on a laptop. */
   .hero,
   .pillar { grid-template-columns: minmax(0, 1fr); }
-  .hero__text { padding: var(--pad-y-panel) var(--pad-x) 0; }
   .pillar__text { padding: var(--pad-y-panel) var(--pad-x) 0; }
   .pillar { min-height: 0; }
   .pillar__media { aspect-ratio: 4 / 5; margin-top: clamp(56px, 9vw, 80px); }
 
+  /* the split survives, so the text column has to give up its inner gutter */
+  .season__text {
+    padding: clamp(32px, 6svh, var(--pad-y-panel)) clamp(24px, 3.5vw, 44px)
+             clamp(32px, 6svh, var(--pad-y-panel)) var(--pad-x);
+    gap: clamp(12px, 1.8svh, 20px);
+  }
+  .season__cal { margin-top: 4px; }
+  .arrivals { gap: 12px 20px; }
+
   /* Stacked, the hero still has to be exactly one viewport, so the two rows
      divide that height rather than adding up to whatever they please: the text
-     takes what it needs and the photograph fills the remainder. Without this the
-     lockup plus a 4:5 photograph ran to roughly two screens, so the fold was
-     nowhere near the fold. The 34svh floor stops the photograph collapsing to a
-     sliver on a short window — past that the panel grows instead. */
-  /* Flex, not grid, for the stacked hero — and the reason is worth keeping.
-     The panel's height comes from min-height, which leaves the container's height
-     *indefinite*; a grid `1fr` row then resolves against its own content rather
-     than the free space, so the photograph's intrinsic height kept inflating the
-     panel roughly 200px past the viewport. `minmax(0, 1fr)` does not help: the
-     zero applies to the track's minimum, not to how fr resolves. Flex measures
-     free space from the container's used height, so `flex: 1 1 0` hands the
-     photograph exactly what the text leaves and no more.
-
+     takes what it needs and the photograph fills the remainder. Flex, not grid —
+     the panel's height comes from min-height, which leaves the container's
+     height indefinite; a grid `1fr` row then resolves against its own content
+     rather than the free space. Flex measures free space from the used height,
+     so `flex: 1 1 0` hands the photograph exactly what the text leaves.
      min-height on the media is the floor: on a short window the panel grows
      rather than squeezing the photograph out of existence. */
   .hero {
@@ -1068,48 +876,42 @@ input {
   .split { flex-direction: column; align-items: flex-start; gap: 34px; }
   .split > :last-child:not(.split__lead) { flex: 0 0 auto; align-self: stretch; max-width: 520px; }
 
-  /* the season grid collapses to one column, keeping the reading order:
-     headline, argument, then the arrival table it is evidence for */
-  .season__grid {
+  /* stacked, the argument leads and the price follows it */
+  .brewed__grid {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: 'headline' 'body' 'eyebrow' 'table';
-    row-gap: 28px;
+    grid-template-areas: 'text' 'panel';
+    row-gap: 40px;
   }
-  .season__eyebrow { margin-top: 20px; }
-  .season__table { max-width: 520px; }
-  /* stacked, the card reads as the next block rather than a floating corner */
-  .fact--cans { margin-left: 0; align-self: flex-start; }
-
-  .order__grid { grid-template-columns: minmax(0, 1fr); }
-  .summary { position: static; }
+  .brewed__panel { max-width: 520px; }
 
   .footer__cols { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
-  .footer__brand { grid-column: 1 / -1; }
+}
+
+/* Below this the half panel genuinely stops working — the text column is under
+   300px and the calendar cells break mid-word — so årstiden finally stacks
+   like the other two spreads. */
+@media (max-width: 700px) {
+  .season { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+  .season__text { padding: var(--pad-y-panel) var(--pad-x) 0; }
+  .season__media { aspect-ratio: 4 / 5; margin-top: clamp(56px, 9vw, 80px); }
 }
 
 @media (max-width: 760px) {
   .photos { grid-template-columns: minmax(0, 1fr); gap: 48px; }
-  .fresh, .season { gap: 48px; }
-  .steps { gap: 44px; }
+  .fresh { gap: 48px; }
 
-  .zip { flex-direction: column; }
-
-  .summary { padding: 36px 28px; }
-  .opt__body--card { padding: 26px 28px; }
-
-  /* the two cans stay side by side so the same-beer comparison survives */
-  .cans { gap: 20px; }
+  .pilot__fields { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .pilot__cta { width: 100%; min-width: 0; }
 }
 
 @media (max-width: 520px) {
   :root { --mark-w: 168px; }
-  .header__nav { font-size: 14px; }
-  /* the window cards stay two-up, so their contents stack instead */
-  .opt__body--row { flex-direction: column; align-items: flex-start; gap: 10px; }
+  /* five one-word items have to hold one line at 360px — the gap steps down
+     before anything is allowed to wrap */
+  .header__nav { font-size: 14px; gap: 12px 20px; }
   .footer__cols { grid-template-columns: minmax(0, 1fr); }
   .footer__base { flex-direction: column; gap: 12px; }
   .footer__base span:nth-child(2) { text-align: left; }
-  .arrivals__row { flex-direction: column; gap: 4px; }
 }
 
 /* --- motion policy ------------------------------------------------------- */
@@ -1129,6 +931,6 @@ input {
 /* --- print -------------------------------------------------------------- */
 
 @media print {
-  .header, .skip-link, .order__grid { display: none; }
+  .header, .skip-link, .pilot__form { display: none; }
   .zone-ink { background: #fff; color: #000; }
 }

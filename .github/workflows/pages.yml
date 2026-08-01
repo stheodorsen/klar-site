@@ -27,10 +27,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # The freshness copy is only true while the batch config is current, so a
-      # stale brewMonth fails the deploy rather than shipping a false claim.
-      - name: Check batch dates and prices
-        run: node site/tools/check-dates.mjs
+      # The page's claims are asserted rather than trusted: one ABV everywhere,
+      # only the two public keg prices, an accessible form, and placeholders
+      # that block the deploy the moment noindex comes off.
+      - name: Check copy, prices and form
+        run: node site/tools/check-site.mjs
 
       # Content-hash the CSS and JS URLs so a deploy cannot be served from a
       # stale browser cache. Done here, not in the repo, so index.html stays

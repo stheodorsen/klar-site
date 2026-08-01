@@ -47,6 +47,40 @@ JOBS = [
     # the two freshness cards
     ("bike", "bike-klar.png", 624 / 380, (0.50, 0.42), [420, 640, 880, 1248], None),
     ("doorstep", "doorstep-klar.png", 624 / 380, (0.52, 0.62), [420, 640, 880, 1248], None),
+    # The hop yard, a full-bleed band closing VI BRYGGER EFTER ÅRSTIDEN. Its
+    # generator left the same four-pointed sparkle the hero had, here at
+    # x 2541-2631, y 1240-1340; the frame is cut at x=2535 to drop it, costing
+    # 10% off the right edge and nothing of the composition — the receding rows
+    # and the path stay centred.
+    #
+    # It fills the right half of its section at full height, like the hero's
+    # photograph, so the display box is portrait: 640x722 at 1280x800 is 0.886,
+    # 960x1002 at 1920x1080 is 0.958. Cut at 0.90, in the middle of that range,
+    # so cover trims a hair either way and never upscales. The crop keeps the
+    # full frame height — sky, horizon, farmhouse, rows and path — and takes
+    # 55% of the width centred on the path, which is the composition's spine.
+    ("hops", "hops.png", 0.90, (0.50, 0.50), [480, 720, 960, 1280],
+     (0, 0, 2535, 1536)),
+    # The office friday bar — the first photograph that shows the product as it
+    # is actually sold, keg and tap. Its source is already watermark-cropped and
+    # branded by tools/brand-photo.py, so no trim here. Cut to 1.91:1 for the
+    # link preview, biased upward so the chalkboard keeps its headroom.
+    # The office friday bar — the only photograph that shows the product as it
+    # is actually sold, keg and tap. Its generator left the same four-pointed
+    # sparkle the others had, at x 2435-2623, y 1083-1343; the frame is cut at
+    # x=2430 to drop it, which costs the right-hand end of the shared table and
+    # nothing of the subject.
+    #
+    # The keg and the blackboard are deliberately UNBRANDED. Compositing a Klar
+    # label onto them was tried and rejected (30.07.2026) — see site/README.md.
+    ("friday", "friday.png", 1200 / 630, (0.50, 0.30),
+     [640, 960, 1200, 1600], (0, 0, 2430, 1536)),
+    # The same photograph again, cut for the full-bleed band in PRØV ET FAD:
+    # wider than the link-preview crop, and biased higher so the blackboard and
+    # the window keep their headroom. Widths go to 1920 because the band spans
+    # the viewport rather than a content column.
+    ("fridayband", "friday.png", 2.2, (0.50, 0.23),
+     [640, 960, 1280, 1600, 1920], (0, 0, 2430, 1536)),
 ]
 
 
@@ -69,8 +103,18 @@ def main():
         sys.exit(f"source assets not found: {SRC}")
     OUT.mkdir(parents=True, exist_ok=True)
 
+    # Optional job filter, so replacing one photograph does not rewrite the
+    # other three — re-encoding them under a different Pillow build would show
+    # up as a diff on files nobody touched.
+    wanted = set(sys.argv[1:])
+    jobs = [j for j in JOBS if not wanted or j[0] in wanted]
+    if wanted:
+        unknown = wanted - {j[0] for j in JOBS}
+        if unknown:
+            sys.exit(f"unknown job(s): {', '.join(sorted(unknown))}")
+
     total_src = total_out = 0
-    for name, filename, aspect, pos, widths, trim in JOBS:
+    for name, filename, aspect, pos, widths, trim in jobs:
         src = SRC / filename
         total_src += src.stat().st_size
         im = Image.open(src).convert("RGB")

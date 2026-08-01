@@ -3,14 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Klar — humlet hverdagsøl, brygget til bestilling</title>
-<meta name="description" content="Klar er en humlet hverdagsøl på 2,7%. Vi brygger kun det, der er bestilt — intet står på lager. Økologisk malt, humle fra den seneste høst, kørt kold ud i København.">
+<title>Klar — humlet hverdagsøl på fad</title>
+<meta name="description" content="Klar er en humlet hverdagsøl på 2,7% — på fad til kontorets fredagsbar. Vi brygger kun det, der er bestilt, og leverer koldt i København og på Frederiksberg. Det første fad er gratis.">
 <meta name="theme-color" content="#26231F">
 
 <!-- PREVIEW DEPLOY ONLY — remove these two lines, robots.txt, and point the
      canonical/og:url/og:image below at klar.dk before going live. The site
-     still carries placeholder AI photography and an "økologisk" claim with no
-     certification behind it, so it must not be indexed as a live brewery. -->
+     still carries placeholder AI photography, an "økologisk" claim with no
+     certification behind it, and the [NAVN]/[BYDEL]/[NUMMER] placeholders in
+     HVEM VI ER and the footer — none of which may go live. check-site.mjs
+     fails the deploy if noindex is removed while placeholders remain. -->
 <meta name="robots" content="noindex, nofollow">
 
 <link rel="canonical" href="https://stheodorsen.github.io/klar-site/">
@@ -23,11 +25,16 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="da_DK">
 <meta property="og:site_name" content="Klar">
-<meta property="og:title" content="Klar — humlet hverdagsøl">
-<meta property="og:description" content="2,7%. Vi brygger kun det, der er bestilt. Intet på lager. Intet gammelt. Intet spildt.">
+<meta property="og:title" content="Klar — humlet hverdagsøl på fad">
+<meta property="og:description" content="lang fredag. hel lørdag. 2,7% på fad til fredagsbaren — vi brygger kun det, der er bestilt. Det første fad er gratis.">
 <meta property="og:url" content="https://stheodorsen.github.io/klar-site/">
-<meta property="og:image" content="https://stheodorsen.github.io/klar-site/assets/img/haze-1280.jpg">
-<meta property="og:image:alt" content="En dåse Klar og et uklart glas øl.">
+<!-- fad og hane, ikke dåse, as the spec requires: the only photograph on the
+     site that shows the product the way it is actually sold. Watermark-cropped
+     and cut to 1.91:1 by the `friday` job in tools/build-images.py. -->
+<meta property="og:image" content="https://stheodorsen.github.io/klar-site/assets/img/friday-1200.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Et fad Klar med hane på et rullebord i en fredagsbar på et kontor. En kvinde skænker et glas.">
 <meta name="twitter:card" content="summary_large_image">
 
 <link rel="preload" as="image" fetchpriority="high"
@@ -46,26 +53,28 @@
      at the hero instead, which scroll-padding-top lands at 0. -->
 <header class="header">
   <div class="header__bar">
-    <a class="header__wordmark" href="#let">Klar</a>
+    <a class="header__wordmark" href="#top">Klar</a>
+    <!-- All one word, per the spec, in page order — checked not to wrap at
+         360px (the nav gap and size step down at 520px to make sure). -->
     <nav class="header__nav" aria-label="sektioner">
-      <!-- The handoff flags that these labels do not match the section
-           headlines. "let" matches LET MED VILJE and "årstid" matches
-           VI BRYGGER EFTER ÅRSTIDEN; only "frisk" still does not
-           (HUMLE DRIKKES FRISKT). Still an open question for the client, so
-           left as designed rather than quietly reworded. -->
       <a href="#let">let</a>
       <a href="#frisk">frisk</a>
-      <a href="#aarstid">årstid</a>
-      <a href="#bestil">bestil</a>
+      <a href="#aarstid">sæsonbestemt</a>
+      <a href="#pris">nybrygget</a>
+      <a href="#proev">prøv</a>
     </nav>
-    <p class="header__status" data-bind="headStatus">08.26 · bestilling lukker 11.08.2026</p>
   </div>
 </header>
 
 <main id="main">
 
   <!-- 1a. hero ---------------------------------------------------------- -->
-  <section class="hero zone-ink" id="let">
+  <!-- The photograph is a hold-over from the can era and is on the
+       replace-before-launch list: the fad/hane shoot is scheduled for the
+       10.–16. aug week. The one-liner sits as a quiet single line under the
+       lockup — the large two-line lockup treatment was tried and rejected
+       (29.07.2026). -->
+  <section class="hero zone-ink" id="top">
     <div class="hero__text">
       <!-- vertical lockup: the horizon's ink extent, the wordmark's glyph ink
            and the descriptor's glyph ink all start and end on the same two
@@ -78,14 +87,12 @@
         <span class="lockup__wordmark">Klar</span>
         <span class="lockup__descriptor">humlet hverdagsøl</span>
       </h1>
-      <!-- 440 ml removed from the spec row; the volume still appears on both can
-           renders, in the summary's "kassen" row and in the footer legal strip -->
       <ul class="hero__spec">
-        <li><span data-bind="abvVol">2,7% vol.</span></li>
+        <li><span>2,7%</span></li>
         <li>økologisk malt</li>
+        <li>humle fra seneste høst</li>
         <li>kold hele vejen</li>
       </ul>
-      <!-- No CTA above the fold — a deliberate removal in the handoff. -->
     </div>
     <div class="hero__media">
       <picture>
@@ -96,17 +103,17 @@
              srcset="assets/img/haze-480.jpg 480w, assets/img/haze-720.jpg 720w, assets/img/haze-960.jpg 960w, assets/img/haze-1280.jpg 1280w"
              sizes="(max-width: 900px) 100vw, 50vw"
              width="1919" height="2186" fetchpriority="high" decoding="async"
-             alt="En dåse Klar ved siden af et glas uklar, gylden øl på et mørkt træbord. Foran ligger en humlekop.">
+             alt="Et glas uklar, gylden øl på et mørkt træbord. Foran ligger en humlekop.">
       </picture>
     </div>
   </section>
 
-  <div class="zone-ink"><hr class="rule rule--on-ink"></div>
-
   <!-- 1b. let med vilje -------------------------------------------------- -->
-  <!-- Mirror of the hero — image left, text right — so the two dark panels
-       read as a spread with the photograph flipping sides. -->
-  <section class="pillar pillar--mirror zone-ink" aria-labelledby="letvilje-title">
+  <!-- Mirror of the hero — image left, text right — with the zones
+       alternating dark/white section by section, so the spread flips both the
+       photograph and the ground. The kitchen photograph still shows a can and
+       is on the same replace list as the hero's. -->
+  <section class="pillar pillar--mirror zone-paper" id="let" aria-labelledby="let-title">
     <div class="pillar__media">
       <picture>
         <source type="image/webp"
@@ -116,34 +123,46 @@
              srcset="assets/img/kitchen-480.jpg 480w, assets/img/kitchen-720.jpg 720w, assets/img/kitchen-960.jpg 960w, assets/img/kitchen-1280.jpg 1280w"
              sizes="(max-width: 900px) 100vw, 50vw"
              width="1790" height="2039" loading="lazy" decoding="async"
-             alt="En dåse Klar på køkkenbordet om aftenen.">
+             alt="En øl på køkkenbordet om aftenen.">
       </picture>
     </div>
     <div class="pillar__text">
-      <h2 class="headline" id="letvilje-title">let med vilje</h2>
-      <p class="body-lg body-lg--on-ink">i århundreder var hverdagens øl let og frisk — den stærke var til fest. vi laver den igen, med humle fra i år.</p>
+      <h2 class="headline" id="let-title">let med vilje</h2>
+      <p class="body-lg">i århundreder var hverdagens øl let og frisk — den stærke var til fest. vi laver den igen, med humle fra i år.</p>
+      <p class="body-lg">2,7% er ikke en light-udgave af noget andet. det er den styrke, øllen er bygget til.</p>
     </div>
   </section>
 
-  <!-- 2. frisk ---------------------------------------------------------- -->
-  <section class="fresh zone-paper" id="frisk" aria-labelledby="frisk-title">
+  <!-- ALLE KAN VÆRE MED was cut at Sune's request (29.07.2026). The spec calls
+       it the actual sales argument, so the copy is preserved here for when it
+       earns its place back:
+       "fredagsbaren behøver ikke være slut klokken halv fem. / i de fleste
+       fredagsbarer er valget en stærk øl eller en sodavand. den, der er
+       gravid, træner, skal videre, eller bare ikke har lyst, går hjem tidligt.
+       / 2,7% er stadig øl. humlet, frisk, på hanen. eftermiddagen kan blive
+       lang, uden at aftenen går med." -->
+
+  <!-- humle drikkes friskt --------------------------------------------------- -->
+  <section class="fresh zone-ink" id="frisk" aria-labelledby="frisk-title">
     <div class="split">
       <div class="split__lead">
         <h2 class="headline" id="frisk-title">humle drikkes friskt</h2>
-        <p class="body-lg">humle er en blomst. den falmer. tid og varme tager det bedste først. derfor sælger vi kun øl, der er frisk. og kold hele vejen. fra tank til dør.</p>
+        <p class="body-lg body-lg--on-ink">humle er en blomst. den falmer. tid og varme tager det bedste først. derfor sælger vi kun øl, der er frisk. og kold hele vejen — fra tank til hane.</p>
       </div>
-      <!-- The handoff recorded that the client had this citation taken off the
-           page, which left the figure unsourced in public. It is back, verified:
-           Kemp et al. report an 80% drop in myrcene, humulene and caryophyllene
-           after three months at 20 C. Full reference in site/README.md. If it
-           comes off again, the claim goes with it. -->
+      <!-- The citation stays with the claim — a measured statement in public
+           needs to say where it came from. Kemp et al. report an 80% drop in
+           myrcene, humulene and caryophyllene after three months at 20 C; the
+           spec's wording is the fair paraphrase. Full reference in
+           site/README.md. If the source comes off again, the claim goes with it. -->
       <aside class="fact" aria-labelledby="fact-title">
         <h3 class="eyebrow" id="fact-title">fakta</h3>
-        <p class="fact__claim">de flygtige humleolier falder omkring 80% på tre måneder ved 20 grader.</p>
-        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021</p>
+        <p class="fact__claim">de flygtige humleolier falder markant i løbet af få måneder ved stuetemperatur. koldt lagret bliver de i øllen.</p>
+        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127 · 2021</p>
       </aside>
     </div>
 
+    <!-- Both photographs are delivery, not product, so they survive the pivot:
+         no cans in frame. Replace with the fad/hane shoot when it exists. -->
     <div class="photos">
       <figure class="photo">
         <div class="photo__well">
@@ -158,7 +177,7 @@
                  alt="Ladcyklen med Klar-mærket i en københavnsk gade.">
           </picture>
         </div>
-        <figcaption class="photo__caption">bestilt, brygget, kørt ud i samme uge</figcaption>
+        <figcaption class="photo__caption">vi kommer selv med fadet</figcaption>
       </figure>
 
       <figure class="photo">
@@ -174,322 +193,255 @@
                  alt="En køletaske med Klar-mærket stillet på et dørtrin.">
           </picture>
         </div>
-        <figcaption class="photo__caption">2 til 5 grader hele vejen til døren</figcaption>
+        <figcaption class="photo__caption">kold hele vejen — fra tank til hane</figcaption>
       </figure>
     </div>
+
   </section>
 
-  <!-- 3. årstid --------------------------------------------------------- -->
-  <section class="season zone-ink" id="aarstid" aria-labelledby="aarstid-title">
-    <!-- A four-cell grid rather than the two nested columns the other sections
-         use, so the alignments are structural: the headline and the eyebrow are
-         direct grid items sharing a row, and so are the body copy and the table.
-         Baseline alignment only works on the aligned element itself — through a
-         wrapper the browser synthesises a baseline from the box instead, which
-         is what left this section looking unaligned. -->
-    <div class="season__grid">
-      <h2 class="headline season__headline" id="aarstid-title">vi brygger efter årstiden</h2>
-      <!-- Arrival in Denmark, not harvest — arrival is what determines what can
-           be brewed. The calendar has a real gap: nothing lands feb–apr. -->
-      <h3 class="eyebrow eyebrow--on-ink season__eyebrow" id="arrivals-title">lander i danmark</h3>
-      <p class="body-lg body-lg--on-ink season__body">humle høstes på hver sin side af jorden med et halvt år imellem. vi brygger med den, der senest er landet. samme krop, samme styrke, samme profil — det er kun smagen, der flytter sig.</p>
-      <dl class="arrivals__list season__table" aria-labelledby="arrivals-title">
-        <div class="arrivals__row">
-          <dt>new zealand</dt>
-          <dd>maj — juni</dd>
-        </div>
-        <div class="arrivals__row">
-          <dt>australien</dt>
-          <dd>juni — juli</dd>
-        </div>
-        <div class="arrivals__row">
-          <dt>tjekkiet, tyskland</dt>
-          <dd>oktober — november</dd>
-        </div>
-        <div class="arrivals__row">
-          <dt>usa, england</dt>
-          <dd>november — december</dd>
-        </div>
-      </dl>
-    </div>
+  <!-- vi brygger efter årstiden --------------------------------------------- -->
+  <section class="season zone-paper" id="aarstid" aria-labelledby="aarstid-title">
+    <!-- A third spread, built like the hero: copy left, photograph filling the
+         right half at full height (30.07.2026). The arrival calendar sits in
+         the text column as a two-by-two grid — four across does not fit a half
+         panel, and four stacked rows would push the section past the fold. -->
+    <div class="season__text">
+      <h2 class="headline" id="aarstid-title">vi brygger efter årstiden</h2>
+      <p class="body-lg">humle høstes på hver sin side af jorden med et halvt år imellem. vi brygger med den, der senest er landet. samme krop, samme styrke, samme profil — det er kun smagen, der flytter sig.</p>
 
-    <!-- Only the batch line and the best-before differ between the two cans.
-         Everything else is fixed — that is the "same beer, new harvest"
-         argument made visually. -->
-    <div class="cans">
-      <div class="can" role="img" data-bind-label="canCurrentLabel"
-           aria-label="Dåsen: mærket, KLAR, humlet hverdagsøl, 08.26 · riwaka · nectaron · motueka, 2,7%, 440 ml · øko · drik før 10.26.">
-        <svg class="mark mark--can" viewBox="13 7 74 26" fill="none" aria-hidden="true">
-          <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.84"/>
-          <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <span class="can__wordmark">Klar</span>
-        <span class="can__descriptor">humlet hverdagsøl</span>
-        <span class="can__spacer"></span>
-        <span class="can__batch" data-bind="canCurrentBatch">08.26</span>
-        <span class="can__hops" data-bind="canCurrentHops">riwaka · nectaron · motueka</span>
-        <span class="can__rule"></span>
-        <span class="can__abv" data-bind="abv">2,7%</span>
-        <span class="can__duty" data-bind="canCurrentDuty">440 ml · øko · drik før 10.26</span>
-      </div>
-
-      <div class="can can--upcoming" role="img" data-bind-label="canNextLabel"
-           aria-label="Den kommende dåse: 09.26 · galaxy · vic secret · eclipse, 2,7%, 440 ml · øko · drik før 11.26.">
-        <svg class="mark mark--can" viewBox="13 7 74 26" fill="none" aria-hidden="true">
-          <circle class="mark__circle" cx="50" cy="26" r="18" stroke-width="1.84"/>
-          <line class="mark__horizon" x1="14" y1="32" x2="86" y2="32" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <span class="can__wordmark">Klar</span>
-        <span class="can__descriptor">humlet hverdagsøl</span>
-        <span class="can__spacer"></span>
-        <span class="can__batch" data-bind="canNextBatch">09.26</span>
-        <span class="can__hops" data-bind="canNextHops">galaxy · vic secret · eclipse</span>
-        <span class="can__rule"></span>
-        <span class="can__abv" data-bind="abv">2,7%</span>
-        <span class="can__duty" data-bind="canNextDuty">440 ml · øko · drik før 11.26</span>
-      </div>
-
-      <!-- The can-over-bottle argument, beside the renders it argues for. Same
-           paper as the FAKTA box in frisk, independently verified there: Kemp
-           et al. find hop aroma compounds absorbing into crown-cap liners while
-           cans retain them. Full reference in site/README.md. Like the other
-           citation: if the source comes off, the claim goes with it. -->
-      <aside class="fact fact--cans" aria-labelledby="fact-can-title">
-        <h3 class="eyebrow" id="fact-can-title">derfor dåse</h3>
-        <p class="fact__claim">i flasken vandrer humlens aromastoffer ind i kapslens foring. i dåsen bliver de i øllet.</p>
-        <p class="fact__source">kemp et al., <cite>j. inst. brewing</cite> 127(4) · 2021</p>
-      </aside>
-    </div>
-  </section>
-
-  <!-- 4. bestil --------------------------------------------------------- -->
-  <section class="order zone-paper" id="bestil" aria-labelledby="order-title">
-    <div class="split order__head">
-      <div class="split__lead">
-        <!-- The "04 — BESTIL" eyebrow is removed. It was the handoff's section
-             numbering leaking onto the page: nothing else is numbered, and the
-             headline opens the section perfectly well on its own. The 01–05
-             labels inside the form stay — those number the steps, not sections. -->
-        <h2 class="headline headline--lower" id="order-title">vi brygger kun det, der er bestilt.</h2>
-        <p class="body-lg">intet står på lager. intet bliver gammelt. intet bliver hældt ud. bestillingen lukker, før vi brygger.</p>
-      </div>
-
-      <div class="meter">
-        <p class="meter__top">
-          <span data-bind="currentBatchLabel">08.26 · riwaka · nectaron · motueka</span>
-          <span data-bind="openStateLabel">åben</span>
-        </p>
-        <p class="meter__count" data-bind="leftLabel" role="status">84 dåser tilbage</p>
-        <div class="meter__track" aria-hidden="true">
-          <div class="meter__fill" id="meter-fill"></div>
-        </div>
-        <p class="meter__note" data-bind="leftSub">en brygning er 200 dåser. vi brygger ikke over.</p>
-      </div>
-    </div>
-
-    <hr class="rule">
-
-    <div class="order__grid">
-      <div class="steps">
-
-        <!-- 01 which batch -->
-        <div class="step">
-          <h3 class="label" id="step-batch">01 — hvilken brygning</h3>
-          <div class="opts opts--2" role="radiogroup" aria-labelledby="step-batch">
-            <label class="opt">
-              <input class="opt__input" type="radio" name="batch" value="current" checked>
-              <span class="opt__body opt__body--card">
-                <span class="opt__row">
-                  <span class="opt__lead" data-bind="currentBatchLabel">08.26 · riwaka · nectaron · motueka</span>
-                  <span class="opt__chip" data-bind="currentChip">84 tilbage</span>
-                </span>
-                <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="currentBody">lukker 11.08.2026 · brygges 18.08.2026 · kører 28.08.2026</span>
-              </span>
-            </label>
-            <label class="opt">
-              <input class="opt__input" type="radio" name="batch" value="next">
-              <span class="opt__body opt__body--card">
-                <span class="opt__row">
-                  <span class="opt__lead" data-bind="nextBatchLabel">09.26 · galaxy · vic secret · eclipse</span>
-                  <span class="opt__chip" data-bind="nextChip">åbner 11.08.2026</span>
-                </span>
-                <span class="opt__rule"></span>
-                <span class="opt__note" data-bind="nextBody">lukker 08.09.2026 · brygges 15.09.2026 · kører 25.09.2026</span>
-              </span>
-            </label>
+      <!-- Arrival in Denmark, not harvest — arrival is what determines what
+           can be brewed. The calendar has a real gap: nothing lands feb–apr. -->
+      <div class="season__cal">
+        <h3 class="eyebrow" id="arrivals-title">lander i danmark</h3>
+        <dl class="arrivals" aria-labelledby="arrivals-title">
+          <div class="arrivals__cell">
+            <dt>new zealand</dt>
+            <dd>maj — juni</dd>
           </div>
-        </div>
-
-        <!-- 02 how much -->
-        <div class="step">
-          <!-- The ladder is only legible if it is stated: three per-can prices
-               side by side make the reader do the comparison. This line was in
-               the earlier handoff and comes back with the tiering. -->
-          <div class="step__head">
-            <h3 class="label" id="step-plan">02 — hvor meget</h3>
-            <p class="step__hint">pris pr. dåse falder med størrelsen</p>
+          <div class="arrivals__cell">
+            <dt>australien</dt>
+            <dd>juni — juli</dd>
           </div>
-          <div class="opts opts--3" role="radiogroup" aria-labelledby="step-plan">
-            <label class="opt">
-              <input class="opt__input" type="radio" name="plan" value="4">
-              <span class="opt__body opt__body--card">
-                <span class="opt__size">4 dåser</span>
-                <span class="opt__rule"></span>
-                <span class="opt__price"><span data-bind="cardUnit4">39 kr / dåse</span><span data-bind="cardTotal4">156 kr</span></span>
-              </span>
-            </label>
-            <label class="opt">
-              <input class="opt__input" type="radio" name="plan" value="8" checked>
-              <span class="opt__body opt__body--card">
-                <span class="opt__size">8 dåser</span>
-                <span class="opt__rule"></span>
-                <span class="opt__price"><span data-bind="cardUnit8">38 kr / dåse</span><span data-bind="cardTotal8">304 kr</span></span>
-              </span>
-            </label>
-            <label class="opt">
-              <input class="opt__input" type="radio" name="plan" value="12">
-              <span class="opt__body opt__body--card">
-                <span class="opt__size">12 dåser</span>
-                <span class="opt__rule"></span>
-                <span class="opt__price"><span data-bind="cardUnit12">37 kr / dåse</span><span data-bind="cardTotal12">444 kr</span></span>
-              </span>
-            </label>
+          <div class="arrivals__cell">
+            <dt>tjekkiet, tyskland</dt>
+            <dd>oktober — november</dd>
           </div>
-        </div>
-
-        <!-- 03 how often -->
-        <div class="step">
-          <h3 class="label" id="step-cadence">03 — hvor ofte</h3>
-          <div class="opts opts--3" role="radiogroup" aria-labelledby="step-cadence">
-            <label class="opt">
-              <input class="opt__input" type="radio" name="cadence" value="once">
-              <span class="opt__body opt__body--row-stack">
-                <span class="opt__mid">kun denne brygning</span>
-                <span class="opt__note">ingen plads næste gang</span>
-              </span>
-            </label>
-            <label class="opt">
-              <input class="opt__input" type="radio" name="cadence" value="every" checked>
-              <span class="opt__body opt__body--row-stack">
-                <span class="opt__mid">hver brygning</span>
-                <span class="opt__note">fast plads · 2 kr mindre pr. dåse</span>
-              </span>
-            </label>
-            <label class="opt">
-              <input class="opt__input" type="radio" name="cadence" value="other">
-              <span class="opt__body opt__body--row-stack">
-                <span class="opt__mid">hver anden</span>
-                <span class="opt__note">til den langsomme fredag</span>
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 04 window -->
-        <div class="step">
-          <h3 class="label" id="step-slot">04 — leveringsvindue</h3>
-          <div class="opts opts--2" role="radiogroup" aria-labelledby="step-slot">
-            <label class="opt">
-              <input class="opt__input" type="radio" name="slot" value="early" checked>
-              <span class="opt__body opt__body--row">
-                <span class="opt__mid">16 — 18</span>
-                <span class="opt__note">før aftensmad</span>
-              </span>
-            </label>
-            <label class="opt">
-              <input class="opt__input" type="radio" name="slot" value="late">
-              <span class="opt__body opt__body--row">
-                <span class="opt__mid">18 — 20</span>
-                <span class="opt__note">efter arbejde</span>
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 05 postcode -->
-        <div class="step">
-          <div class="step__head">
-            <h3 class="label" id="step-zip">05 — leverer vi hos dig</h3>
-            <p class="step__hint">københavn og frederiksberg</p>
-          </div>
-          <form class="zip" id="zip-form" novalidate>
-            <label class="visually-hidden" for="zip-input">postnummer</label>
-            <input class="zip__input" id="zip-input" name="zip" type="text"
-                   inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{4}"
-                   maxlength="4" placeholder="postnummer" aria-describedby="zip-answer">
-            <button class="btn btn--fill-ink" type="submit">tjek adresse</button>
-          </form>
-          <p class="zip__answer" id="zip-answer" role="status"></p>
-          <!-- Waitlist capture for out-of-area postcodes — the form the
-               "skriv dig op" answer refers to. Hidden until a check comes back
-               unserviceable. Prototype boundary like the order button: state is
-               local and nothing is sent; in production this posts to a real
-               waitlist. -->
-          <form class="zip zip--waitlist" id="waitlist-form" hidden novalidate>
-            <label class="visually-hidden" for="waitlist-input">e-mail til ventelisten</label>
-            <input class="zip__input" id="waitlist-input" name="email" type="email"
-                   autocomplete="email" placeholder="din e-mail" aria-describedby="waitlist-answer">
-            <button class="btn btn--fill-ink" type="submit">skriv mig op</button>
-          </form>
-          <p class="zip__answer" id="waitlist-answer" role="status"></p>
-        </div>
-      </div>
-
-      <!-- order summary -->
-      <aside class="summary" aria-labelledby="summary-label">
-        <p class="summary__head">
-          <span class="label" id="summary-label">din bestilling</span>
-          <span class="summary__state" data-bind="summaryState">åben</span>
-        </p>
-        <hr class="rule rule--panel">
-        <dl class="summary__rows">
-          <div class="summary__row">
-            <dt>brygning</dt>
-            <dd data-bind="batchLabel">08.26</dd>
-          </div>
-          <div class="summary__row">
-            <dt>humle</dt>
-            <dd data-bind="hopLabel">riwaka · nectaron · motueka</dd>
-          </div>
-          <div class="summary__row">
-            <dt>lukker</dt>
-            <dd data-bind="closeLabel">11.08.2026</dd>
-          </div>
-          <div class="summary__row">
-            <dt>kassen</dt>
-            <dd data-bind="planLabel">8 dåser · 440 ml</dd>
-          </div>
-          <div class="summary__row">
-            <dt>levering</dt>
-            <dd data-bind="deliveryLabel">fredag 28.08.2026, 16 — 18</dd>
-          </div>
-          <div class="summary__row">
-            <dt>fragt</dt>
-            <dd data-bind="feeLabel">39 kr</dd>
+          <div class="arrivals__cell">
+            <dt>usa, england</dt>
+            <dd>november — december</dd>
           </div>
         </dl>
-        <hr class="rule rule--panel">
-        <p class="summary__total">
-          <span class="summary__cadence" data-bind="cadenceLabel">hver brygning</span>
-          <span class="summary__total-value" data-bind="priceLabel">327 kr</span>
-        </p>
-        <p class="summary__fineprint" data-bind="unitPantLabel">36 kr pr. dåse · pant 8 kr</p>
-        <button class="btn btn--fill-ink btn--block summary__cta" type="button" data-action="order" data-bind="ctaLabel">bestil 08.26</button>
-        <p class="summary__confirm" data-bind="confirmLabel" role="status"></p>
-        <hr class="rule rule--panel">
-        <ul class="summary__terms">
-          <li data-bind="termLine">ingen binding · stop inden bestillingen lukker</li>
-          <li>tomme dåser tages med retur</li>
-          <li>18 år · vi tjekker alder ved døren</li>
-        </ul>
-      </aside>
+      </div>
     </div>
+
+    <!-- The hop yard. Unlike the other can-era photographs this one carries no
+         can, so it survives the B2B pivot intact; its generator sparkle is
+         cropped off in the `hops` job in tools/build-images.py, which also
+         cuts it to the portrait aspect this column displays it at. -->
+    <div class="season__media">
+      <picture>
+        <source type="image/webp"
+                srcset="assets/img/hops-480.webp 480w, assets/img/hops-720.webp 720w, assets/img/hops-960.webp 960w, assets/img/hops-1280.webp 1280w"
+                sizes="(max-width: 700px) 100vw, 50vw">
+        <img src="assets/img/hops-960.jpg"
+             srcset="assets/img/hops-480.jpg 480w, assets/img/hops-720.jpg 720w, assets/img/hops-960.jpg 960w, assets/img/hops-1280.jpg 1280w"
+             sizes="(max-width: 700px) 100vw, 50vw"
+             width="1382" height="1536" loading="lazy" decoding="async"
+             alt="En humlemark i sommer: rækker af humleplanter trukket op ad wirer mellem træpæle, en markvej ned gennem midten og en gård i det fjerne.">
+      </picture>
+    </div>
+  </section>
+
+  <!-- vi brygger kun det, der er bestilt + pris ------------------------------- -->
+  <!-- One section, one argument: nothing is stocked, a fast plads is what
+       makes that possible, and this is what it costs. The same grid idiom as
+       årstiden above — headline + eyebrow sharing a baseline, body + table
+       sharing the next — so the two panels read as a pair across the
+       white/dark alternation.
+
+       Only these two prices appear on the page. Resale prices for bars and
+       hotels are lower, negotiated individually, and must never be public —
+       check-site.mjs fails the deploy if any other kr amount shows up.
+
+       SÅDAN KØRER DET and HANE OG ANLÆG were cut at Sune's request
+       (29.07.2026). Spec copy preserved for when the logistics need a place:
+       "fast plads hver uge. samme dag, samme tid. / leveres torsdag, koldt.
+       står klar til fredag. / tomt fad hentes ved næste levering. / ingen
+       pant. ingen dåser. ingen oprydning." and "picnichane og køletaske er
+       med i prisen. ingen kulsyre, ingen strøm, ingen oplæring. / har
+       kontoret brug for et fast anlæg med to haner, stiller vi det til
+       rådighed. gratis ved to fade om ugen." -->
+  <section class="brewed zone-ink" id="pris" aria-labelledby="bestilt-title">
+    <!-- Two blocks that centre against each other rather than four cells on
+         shared baselines. With the copy down to one line the old arrangement
+         pinned the headline to the top of a much taller price column, so it
+         read as floating; the h2 still leads the DOM, ahead of the price
+         column's h3, so the heading order stays intact. -->
+    <div class="brewed__grid">
+      <div class="brewed__text">
+        <h2 class="headline headline--lower" id="bestilt-title">vi brygger kun det, der er bestilt</h2>
+        <p class="body-lg body-lg--on-ink">intet står på lager. intet bliver gammelt. intet bliver hældt ud.</p>
+        <!-- This section is one line of copy on purpose. Two second lines have
+             been written and cut here (30.07.2026) — the spec's own "en fast
+             plads betyder, at vi ved mandag…" and a replacement about the keg
+             being brewed for the customer. The headline plus the three-clause
+             line says it; anything after it repeated the argument. Leave the
+             space to the price table. -->
+        <!-- "lang fredag. hel lørdag." was tried here (and in the hero, twice)
+             and cut on every placement (29.07.2026). It survives in the
+             og:description only. -->
+      </div>
+      <div class="brewed__panel">
+        <h3 class="eyebrow eyebrow--on-ink" id="pris-title">pris</h3>
+        <dl class="prices" aria-labelledby="pris-title">
+          <div class="prices__row">
+            <dt>9 liter</dt>
+            <dd>22 glas</dd>
+            <dd class="prices__amount">500 kr</dd>
+          </div>
+          <div class="prices__row">
+            <dt>20 liter</dt>
+            <dd>50 glas</dd>
+            <dd class="prices__amount">1.000 kr</dd>
+          </div>
+        </dl>
+        <p class="prices__note">alle priser ekskl. moms. hane, køletaske, levering og afhentning er med. faktureres månedsvis forud. en uges varsel, hvis det skal stoppe.</p>
+      </div>
+    </div>
+
+    <!-- DERFOR FAD was cut at Sune's request (29.07.2026). Spec copy preserved
+         (with its source — if it returns, the citation returns with it):
+         "i flasken vandrer humlens aromastoffer ind i kapslens foring. i dåsen
+         sker det i langt mindre grad. på fad er der ingen foring — og fadet
+         bliver tømt samme eftermiddag. / det er den friskeste måde, vi kan
+         levere øllen på. / kemp et al., j. inst. brewing 127 · 2021" -->
+  </section>
+
+  <!-- HVEM VI ER is removed for now, at Sune's request (29.07.2026). It comes
+       back when the three names, the bydel and the portrait photography exist
+       — spec copy: "[NAVN], [NAVN] og [NAVN]. tre stykker fra københavn, der
+       brygger på et 150-liters anlæg i [BYDEL]. / vi kommer selv med fadet." -->
+
+  <!-- prøv et fad --------------------------------------------------------------- -->
+  <!-- Day-agnostic on purpose (29.07.2026): the pilot can land on a Friday,
+       a Thursday, or whatever day the office wants it. -->
+  <section class="pilot zone-paper" id="proev" aria-labelledby="proev-title">
+    <div class="split pilot__head">
+      <div class="split__lead">
+        <h2 class="headline" id="proev-title">prøv et fad</h2>
+        <p class="block__lead">et fad. en dag. gratis.</p>
+        <p class="body-lg">hane og levering med. vi henter det tomme igen. ingen binding, ingen faktura.</p>
+      </div>
+      <!-- The 18-year line was removed here (30.07.2026), and the delivery
+           area moved down to sit under the address field, where it answers the
+           question at the moment it is asked. The age restriction still stands
+           in the footer's legal strip — do not delete it there too. -->
+    </div>
+
+    <!-- The offer, photographed: a keg and a tap on a cart in an office. It
+         replaces the plain hairline that used to divide the pitch from the
+         form — a photograph of the thing being offered is a better divider
+         than a rule, and this is the only shot on the site showing the product
+         as it is actually sold. Full-bleed, like the hop yard.
+
+         The keg and the blackboard carry no branding on purpose — compositing
+         it on was tried and rejected; see site/README.md. -->
+    <div class="pilot__photo">
+      <picture>
+        <source type="image/webp"
+                srcset="assets/img/fridayband-640.webp 640w, assets/img/fridayband-960.webp 960w, assets/img/fridayband-1280.webp 1280w, assets/img/fridayband-1600.webp 1600w, assets/img/fridayband-1920.webp 1920w"
+                sizes="100vw">
+        <img src="assets/img/fridayband-1280.jpg"
+             srcset="assets/img/fridayband-640.jpg 640w, assets/img/fridayband-960.jpg 960w, assets/img/fridayband-1280.jpg 1280w, assets/img/fridayband-1600.jpg 1600w, assets/img/fridayband-1920.jpg 1920w"
+             sizes="100vw"
+             width="1920" height="873" loading="lazy" decoding="async"
+             alt="Et fad Klar med hane på et rullebord i en fredagsbar på et kontor. En kvinde skænker et glas, to kolleger ser til.">
+      </picture>
+    </div>
+
+    <!-- Submission goes to the endpoint configured in js/klar.js — HubSpot
+         (pipeline: Klar Fredagsbar) or the fallback endpoint behind the same
+         markup. Portal/form ids live in the config, never here. -->
+    <form class="pilot__form" id="pilot-form" novalidate>
+      <fieldset class="pilot__fields">
+        <legend class="visually-hidden">book en gratis fredag</legend>
+
+        <div class="field">
+          <label class="label" for="f-firma">firma</label>
+          <input class="field__input" id="f-firma" name="firma" type="text"
+                 autocomplete="organization" required aria-describedby="err-firma">
+          <p class="field__error" id="err-firma"></p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="f-navn">navn</label>
+          <input class="field__input" id="f-navn" name="navn" type="text"
+                 autocomplete="name" required aria-describedby="err-navn">
+          <p class="field__error" id="err-navn"></p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="f-email">e-mail</label>
+          <input class="field__input" id="f-email" name="email" type="email"
+                 autocomplete="email" required aria-describedby="err-email">
+          <p class="field__error" id="err-email"></p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="f-telefon">telefon · valgfrit</label>
+          <input class="field__input" id="f-telefon" name="telefon" type="tel"
+                 autocomplete="tel" aria-describedby="err-telefon">
+          <p class="field__error" id="err-telefon"></p>
+        </div>
+
+        <div class="field field--wide">
+          <label class="label" for="f-adresse">adresse</label>
+          <input class="field__input" id="f-adresse" name="adresse" type="text"
+                 autocomplete="street-address" required aria-describedby="hint-adresse err-adresse">
+          <!-- The delivery area, answering the question where it is actually
+               asked. Described by the input, so a screen reader hears it while
+               the field has focus rather than only if the user goes looking. -->
+          <p class="field__hint" id="hint-adresse">vi leverer i københavn og på frederiksberg.</p>
+          <p class="field__error" id="err-adresse"></p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="f-kontor">hvor mange på kontoret</label>
+          <select class="field__input field__input--select" id="f-kontor" name="kontor"
+                  required aria-describedby="err-kontor">
+            <option value="" selected>vælg</option>
+            <option value="under 20">under 20</option>
+            <option value="20–50">20–50</option>
+            <option value="over 50">over 50</option>
+          </select>
+          <p class="field__error" id="err-kontor"></p>
+        </div>
+
+        <div class="field">
+          <label class="label" for="f-dag">ønsket dag · valgfrit</label>
+          <input class="field__input" id="f-dag" name="dag" type="date"
+                 aria-describedby="err-dag">
+          <p class="field__error" id="err-dag"></p>
+        </div>
+
+        <div class="field field--wide">
+          <label class="label" for="f-besked">besked · valgfrit</label>
+          <textarea class="field__input field__input--area" id="f-besked" name="besked"
+                    rows="4" aria-describedby="err-besked"></textarea>
+          <p class="field__error" id="err-besked"></p>
+        </div>
+      </fieldset>
+
+      <button class="btn btn--fill-ink pilot__cta" type="submit">book et gratis fad</button>
+      <p class="field__error pilot__form-error" id="pilot-form-error"></p>
+    </form>
+    <!-- The confirmation is inline and in the site's voice, never an alert.
+         It lives outside the form so hiding the form on success cannot hide
+         the message it just announced. -->
+    <p class="pilot__confirm" id="pilot-confirm" role="status"></p>
   </section>
 
   <!-- closing line ------------------------------------------------------ -->
-  <!-- Alone. The explanatory second line ("det er hovedet ikke næste morgen")
-       was removed — it turned a wink into a health claim. -->
   <section class="closing zone-ink" aria-label="uklar i glasset. klar i hovedet.">
     <p class="closing__line">uklar i glasset. klar i hovedet.</p>
   </section>
@@ -503,32 +455,27 @@
   <div class="footer__cols">
     <div class="footer__brand">
       <span class="footer__wordmark">Klar</span>
+      <!-- The CVR line is removed until the real number exists. It is still a
+           launch requirement — a Danish company invoicing customers states its
+           CVR — so it comes back before the first invoice, together with
+           handelsbetingelser. -->
       <p class="footer__address">københavn n<br><a href="mailto:hej@klar.dk">hej@klar.dk</a></p>
     </div>
     <nav class="footer__links" aria-label="sektioner, gentaget">
       <a href="#let">let</a>
       <a href="#frisk">frisk</a>
-      <a href="#aarstid">årstid</a>
-      <a href="#bestil">bestil</a>
+      <a href="#aarstid">sæsonbestemt</a>
+      <a href="#pris">nybrygget</a>
+      <a href="#proev">prøv</a>
     </nav>
-    <nav class="footer__links" aria-label="praktisk">
-      <a href="#bestil">brygkalender</a>
-      <a href="#bestil">leveringsområder</a>
-      <a href="#bestil">pant og retur</a>
-      <a href="#bestil">handelsbetingelser</a>
-    </nav>
-    <!-- The øko-certification and pant-registration lines were removed: both
-         named a certifying body Klar is not registered with yet. Do not restore
-         either until the paperwork exists.
-
-         That emptied the handoff's fourth column, which left the four-column
-         grid looking broken, so the footer is three columns now and the one
-         surviving compliance line moved to the legal strip below — which is
-         where an age restriction belongs anyway. -->
+    <!-- The practical-links column (brygkalender, pant og retur, …) is gone:
+         the spec requires footer links to point at real pages or be removed,
+         and none of those pages exist. handelsbetingelser must come back as a
+         real page before invoicing starts. -->
   </div>
   <hr class="rule rule--on-ink">
   <div class="footer__base">
-    <span>humlet hverdagsøl · <span data-bind="abv">2,7%</span> · 440 ml</span>
+    <span>humlet hverdagsøl · 2,7%</span>
     <span>salg kun til personer over 18 år</span>
     <span>intet på lager. intet gammelt. intet spildt.</span>
   </div>
@@ -539,17 +486,20 @@
   "@context": "https://schema.org",
   "@type": "Product",
   "name": "Klar",
-  "description": "Humlet hverdagsøl på 2,7%. Brygget til bestilling i København N — intet står på lager. Økologisk malt og humle fra den seneste høst.",
+  "description": "Humlet hverdagsøl på 2,7% — på fad til kontorets fredagsbar. Brygget til bestilling i København; intet står på lager.",
   "brand": { "@type": "Brand", "name": "Klar" },
-  "category": "Øl",
+  "category": "Fadøl",
   "offers": {
     "@type": "AggregateOffer",
     "priceCurrency": "DKK",
-    "lowPrice": "148",
-    "highPrice": "444",
-    "offerCount": "3",
+    "lowPrice": "500",
+    "highPrice": "1000",
+    "offerCount": "2",
     "availability": "https://schema.org/PreOrder",
-    "areaServed": { "@type": "City", "name": "København" }
+    "areaServed": [
+      { "@type": "City", "name": "København" },
+      { "@type": "City", "name": "Frederiksberg" }
+    ]
   }
 }
 </script>

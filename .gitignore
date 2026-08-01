@@ -7,3 +7,8 @@
 # supplier negotiation notes. Keep it in a private repo or out of git.
 # site/tools/build-images.py reads its assets/ folder to regenerate imagery.
 design_handoff_klar_site/
+
+# The B2B fad spec is internal for the same reason: it names the private
+# resale-pricing policy, the pilot's kill criteria and the outbound target
+# list. The public repo must never carry it.
+klar-b2b-spec.md
